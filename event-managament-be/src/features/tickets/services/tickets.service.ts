@@ -14,4 +14,8 @@
   public async update(id: number, data: any): Promise<any> {
     throw new Error("Method not implemented.");
   }
+
+  public async delete(id: number): Promise<any> {
+    throw new Error("Method not implemented.");
+  }
 }

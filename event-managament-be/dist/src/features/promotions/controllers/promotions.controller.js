@@ -1,11 +1,20 @@
 export class PromotionsController {
-    async createPromotion(req, res, next) {
-        // TODO: Implement createPromotion
+    async create(req, res, next) {
+        throw new Error("Method not implemented.");
     }
-    async getPromotions(req, res, next) {
-        // TODO: Implement getPromotions
+    async findAll(req, res, next) {
+        throw new Error("Method not implemented.");
+    }
+    async findOne(req, res, next) {
+        throw new Error("Method not implemented.");
+    }
+    async update(req, res, next) {
+        throw new Error("Method not implemented.");
+    }
+    async delete(req, res, next) {
+        throw new Error("Method not implemented.");
     }
     async validateVoucher(req, res, next) {
-        // TODO: Implement validateVoucher
+        throw new Error("Method not implemented.");
     }
 }

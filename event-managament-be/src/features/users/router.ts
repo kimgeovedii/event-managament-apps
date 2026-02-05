@@ -12,10 +12,14 @@ export class UsersRouter {
   }
 
   private setupRoutes(): void {
-    this.router.get("/profile", this.usersController.getProfile);
-    this.router.patch("/profile", this.usersController.updateProfile);
-    this.router.get("/points", this.usersController.getPointHistory);
-    this.router.get("/vouchers", this.usersController.getVouchers);
+    this.router.post("/", this.usersController.create);
+    this.router.get("/", this.usersController.findAll);
+    this.router.get("/:id", this.usersController.findOne);
+    this.router.patch("/:id", this.usersController.update);
+    this.router.delete("/:id", this.usersController.delete);
+    
+    this.router.get("/:id/points", this.usersController.getPointHistory);
+    this.router.get("/:id/vouchers", this.usersController.getVouchers);
   }
 
   public getRouter(): Router {

@@ -9,9 +9,11 @@ export class OrdersRouter {
         this.setupRoutes();
     }
     setupRoutes() {
-        this.router.post("/", this.ordersController.createOrder);
-        this.router.get("/", this.ordersController.getOrders);
-        this.router.get("/:id", this.ordersController.getOrderById);
+        this.router.post("/", this.ordersController.create);
+        this.router.get("/", this.ordersController.findAll);
+        this.router.get("/:id", this.ordersController.findOne);
+        this.router.patch("/:id", this.ordersController.update);
+        this.router.delete("/:id", this.ordersController.delete);
         this.router.post("/:id/payment", this.ordersController.processPayment);
     }
     getRouter() {

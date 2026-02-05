@@ -1,17 +1,17 @@
 export class TicketsController {
-    async createTicket(req, res, next) {
-        // TODO: Implement createTicket
+    async create(req, res, next) {
+        throw new Error("Method not implemented.");
     }
-    async getTickets(req, res, next) {
-        // TODO: Implement getTickets
+    async findAll(req, res, next) {
+        throw new Error("Method not implemented.");
     }
-    async getTicketById(req, res, next) {
-        // TODO: Implement getTicketById
+    async findOne(req, res, next) {
+        throw new Error("Method not implemented.");
     }
-    async updateTicket(req, res, next) {
-        // TODO: Implement updateTicket
+    async update(req, res, next) {
+        throw new Error("Method not implemented.");
     }
-    async deleteTicket(req, res, next) {
-        // TODO: Implement deleteTicket
+    async delete(req, res, next) {
+        throw new Error("Method not implemented.");
     }
 }

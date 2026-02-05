@@ -1,14 +1,23 @@
 export class OrganizationsController {
-    async createOrganization(req, res, next) {
-        // TODO: Implement createOrganization
+    async create(req, res, next) {
+        throw new Error("Method not implemented.");
     }
-    async getOrganizations(req, res, next) {
-        // TODO: Implement getOrganizations
+    async findAll(req, res, next) {
+        throw new Error("Method not implemented.");
     }
-    async updateOrganization(req, res, next) {
-        // TODO: Implement updateOrganization
+    async findOne(req, res, next) {
+        throw new Error("Method not implemented.");
+    }
+    async update(req, res, next) {
+        throw new Error("Method not implemented.");
+    }
+    async delete(req, res, next) {
+        throw new Error("Method not implemented.");
     }
     async addTeamMember(req, res, next) {
-        // TODO: Implement addTeamMember
+        throw new Error("Method not implemented.");
+    }
+    async removeTeamMember(req, res, next) {
+        throw new Error("Method not implemented.");
     }
 }

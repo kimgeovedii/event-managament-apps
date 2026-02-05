@@ -14,6 +14,7 @@ export class DashboardRouter {
   private setupRoutes(): void {
     this.router.get("/stats", this.dashboardController.getStats);
     this.router.get("/reports", this.dashboardController.getReports);
+    this.router.get("/attendees", this.dashboardController.getAttendeeStats);
   }
 
   public getRouter(): Router {

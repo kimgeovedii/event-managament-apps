@@ -1,11 +1,20 @@
 export class UsersRepository {
+    async create(data) {
+        throw new Error("Method not implemented.");
+    }
+    async findMany() {
+        throw new Error("Method not implemented.");
+    }
     async findById(id) {
-        // TODO: Find user by id
+        throw new Error("Method not implemented.");
     }
     async update(id, data) {
-        // TODO: Update user data
+        throw new Error("Method not implemented.");
+    }
+    async delete(id) {
+        throw new Error("Method not implemented.");
     }
     async getPoints(userId) {
-        // TODO: Get user points
+        throw new Error("Method not implemented.");
     }
 }

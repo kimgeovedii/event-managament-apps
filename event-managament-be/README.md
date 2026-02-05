@@ -1,92 +1,131 @@
 # Event Management Platform Backend
 
-Backend API for Event Management Platform built with Express.js, TypeScript, and Prisma ORM.
+Backend API for a robust Event Management Platform, built using **Express.js**, **TypeScript**, and **Prisma ORM**. The project is designed with a **Feature-Based** and **Class-Based** architecture to ensure scalability and maintainability.
 
-## Project Structure (Feature-Based & Class-Based)
+## 🏗️ Architecture: Feature-Based & Class-Based
 
-The project follows a modular, feature-based architecture where each feature contains its own controllers, services, repositories, and routes. We use a **Class-Based** approach to maintain state and leverage dependency injection patterns.
+The project is organized into modular features. Each feature is self-contained and follows a standard internal structure:
+
+### 📁 Feature Folder Structure
+
+Every feature in `src/features/` follows this layout:
+
+- **`controllers/`**: Handles HTTP requests, input validation (Zod), and sends responses.
+- **`services/`**: Contains the core business logic. It acts as a bridge between Controllers and Repositories.
+- **`repositories/`**: Handles all Database (Prisma) operations.
+- **`router.ts`**: Defines the HTTP routes and maps them to Controller methods.
+
+### 📁 Project Root Structure
 
 ```text
 src/
-├── app.ts               # App class (registers middlewares/routes)
+├── app.ts               # App class (registers middlewares & feature routers)
 ├── index.ts             # Entry point (Server instantiation)
-├── infrastructure/      # Shared infrastructure (Prisma client, Logger)
-├── middlewares/         # Global middlewares (Auth, Error, RBAC)
-└── features/
-    ├── auth/            # Login, Registration, JWT handling
-    ├── users/           # Profile, Points (10k referral), Vouchers
-    ├── organizations/   # Organizer management, Team/Member roles
-    ├── tickets/         # Ticket CRUD, Allotments (Inventory), Discovery
-    ├── orders/          # Transaction flow, Invoices, Payment logic
-    ├── promotions/      # Ticket-specific discounts
-    ├── reviews/         # User ratings and reviews
-    └── dashboard/       # Visualization data for Organizers
+├── infrastructure/      # Shared infra (Prisma Service, Logger)
+├── middlewares/         # Shared middlewares (AuthGuard, RBAC, ErrorHandler)
+├── utils/               # Shared utility functions (JWT, Bcrypt, Multer)
+└── features/            # Feature modules
 ```
 
-## Development Rules
+---
 
-### 1. Class-Based Architecture
+## 🚀 Implemented Features
 
-- Controllers, Services, and Repositories MUST be implemented as classes.
-- Use `constructor` for dependency injection (e.g., Service injecting Repository).
+According to the project plan, the following feature modules have been scaffolded:
 
-### 2. Layered Responsibilities
+### 1. **Auth** (`features/auth`)
 
-- **Controllers**: Handle HTTP requests/responses, input validation (using Zod), and calling Services.
-- **Services**: Contain business logic. Do not interact directly with the database.
-- **Repositories**: Handle all database interactions via Prisma.
-- **Middlewares**: Handle cross-cutting concerns (Auth, Logging, Error handling).
+- **Logic**: JWT-based authentication.
+- **Key Methods**: `register`, `login`, `logout`, `refreshToken`.
 
-### 3. Naming Conventions
+### 2. **Users** (`features/users`)
 
-- Classes: `PascalCase` (e.g., `AuthController`, `TicketService`).
-- Methods/Variables: `camelCase`.
-- Files: `kebab-case.ts` (e.g., `auth.controller.ts`).
+- **Logic**: Profile management and loyalty systems.
+- **Marketplace Features**: 10k Referral points logic, Point history, and active Vouchers.
+- **Operations**: Full CRUD for user profiles.
 
-### 4. Error Handling
+### 3. **Organizations** (`features/organizations`)
 
-- Use global error handling middleware.
-- Throw custom error classes for better front-end error reporting.
+- **Logic**: Organizer management.
+- **Features**: Multi-member teams, roles (Admin/Member), and organization profiles.
+- **Operations**: CRUD for organizations and team member management.
 
-### 5. SOLID Principles
+### 4. **Tickets** (`features/tickets`)
 
-- Aim for Single Responsibility Principle in each class.
-- Favor composition over inheritance.
+- **Logic**: Event and Ticket discovery/management.
+- **Features**: Inventory allotments (prevents overselling), Categories, and Meta-data.
+- **Operations**: Full CRUD for tickets/events.
 
-## Setup Guide
+### 5. **Orders** (`features/orders`)
 
-### 1. Prerequisites
+- **Logic**: Transaction and Order processing.
+- **Features**: Invoice generation (Transaction + TransactionItems), status tracking.
+- **Operations**: Order placement, payment processing, and retrieval.
 
-- Node.js (v18 or later)
-- PostgreSQL
-- npm or yarn
+### 6. **Promotions** (`features/promotions`)
 
-### 2. Installation
+- **Logic**: Discounts and Vouchers.
+- **Features**: Ticket-specific promotions, validation logic.
+- **Operations**: Full CRUD for vouchers and promotions.
 
-```bash
-npm install
+### 7. **Reviews** (`features/reviews`)
+
+- **Logic**: Feedback system.
+- **Features**: User ratings and comments for events/tickets.
+- **Operations**: Full CRUD for reviews.
+
+### 8. **Dashboard** (`features/dashboard`)
+
+- **Logic**: Analytics for Organizers.
+- **Features**: Financial reports, attendee statistics, and event performance.
+
+---
+
+## 🛠️ Development Guidelines
+
+### 1. Class-Based Pattern
+
+Classes are used for Controllers, Services, and Repositories.
+
+```typescript
+// Example Pattern
+export class FeatureController {
+  constructor(private featureService: FeatureService) {}
+  public async create(req: Request, res: Response) { ... }
+}
 ```
 
-### 3. Environment Variables
+### 2. Dependency Injection
 
-Create a `.env` file in the root directory:
+Prefer passing dependencies through constructors rather than global instances to make testing easier.
 
-```env
-PORT=8000
-DATABASE_URL="postgresql://user:password@localhost:5432/event_management?schema=public"
-JWT_SECRET="your_secret_key"
-```
+### 3. Layered Responsibility
 
-### 4. Database Setup
+- **Controller**: Validate -> Call Service -> Respond.
+- **Service**: Business Logic -> Call Repository.
+- **Repository**: Prisma Query -> Return Data.
 
-```bash
-npx prisma generate
-npx prisma migrate dev
-```
+---
 
-### 5. Running the Application
+## ⚙️ Setup & Installation
 
-- Development: `npm run dev`
-- Build: `npm run build`
-- Production: `npm start`
-- Testing: `npm test`
+1. **Install Dependencies**:
+
+   ```bash
+   npm install
+   ```
+
+2. **Configure Environment**:
+   Update `.env` with your `DATABASE_URL` (Neon DB/PostgreSQL) and `JWT_SECRET`.
+
+3. **Database Migration**:
+
+   ```bash
+   npx prisma generate
+   npx prisma migrate dev
+   ```
+
+4. **Run Server**:
+   - Dev: `npm run dev` (uses `tsx watch` for hot-reloading)
+   - Test: `npm test`
+   - Build: `npm run build`

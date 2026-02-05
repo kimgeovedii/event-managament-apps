@@ -1,8 +1,11 @@
 export class DashboardController {
     async getStats(req, res, next) {
-        // TODO: Implement getStats
+        throw new Error("Method not implemented.");
     }
     async getReports(req, res, next) {
-        // TODO: Implement getReports
+        throw new Error("Method not implemented.");
+    }
+    async getAttendeeStats(req, res, next) {
+        throw new Error("Method not implemented.");
     }
 }

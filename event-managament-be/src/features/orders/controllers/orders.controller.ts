@@ -1,19 +1,27 @@
 ﻿import { Request, Response, NextFunction } from "express";
 
 export class OrdersController {
-  public async createOrder(req: Request, res: Response, next: NextFunction): Promise<void> {
-    // TODO: Implement createOrder
+  public async create(req: Request, res: Response, next: NextFunction): Promise<void> {
+    throw new Error("Method not implemented.");
   }
 
-  public async getOrders(req: Request, res: Response, next: NextFunction): Promise<void> {
-    // TODO: Implement getOrders
+  public async findAll(req: Request, res: Response, next: NextFunction): Promise<void> {
+    throw new Error("Method not implemented.");
   }
 
-  public async getOrderById(req: Request, res: Response, next: NextFunction): Promise<void> {
-    // TODO: Implement getOrderById
+  public async findOne(req: Request, res: Response, next: NextFunction): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+
+  public async update(req: Request, res: Response, next: NextFunction): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+
+  public async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
+    throw new Error("Method not implemented.");
   }
 
   public async processPayment(req: Request, res: Response, next: NextFunction): Promise<void> {
-    // TODO: Implement processPayment
+    throw new Error("Method not implemented.");
   }
 }

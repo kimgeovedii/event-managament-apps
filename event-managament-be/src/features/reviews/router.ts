@@ -12,7 +12,12 @@ export class ReviewsRouter {
   }
 
   private setupRoutes(): void {
-    this.router.post("/", this.reviewsController.createReview);
+    this.router.post("/", this.reviewsController.create);
+    this.router.get("/", this.reviewsController.findAll);
+    this.router.get("/:id", this.reviewsController.findOne);
+    this.router.patch("/:id", this.reviewsController.update);
+    this.router.delete("/:id", this.reviewsController.delete);
+    
     this.router.get("/ticket/:ticketId", this.reviewsController.getReviewsByTicket);
   }
 

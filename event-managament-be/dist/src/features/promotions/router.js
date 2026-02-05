@@ -9,8 +9,11 @@ export class PromotionsRouter {
         this.setupRoutes();
     }
     setupRoutes() {
-        this.router.post("/", this.promotionsController.createPromotion);
-        this.router.get("/", this.promotionsController.getPromotions);
+        this.router.post("/", this.promotionsController.create);
+        this.router.get("/", this.promotionsController.findAll);
+        this.router.get("/:id", this.promotionsController.findOne);
+        this.router.patch("/:id", this.promotionsController.update);
+        this.router.delete("/:id", this.promotionsController.delete);
         this.router.post("/validate", this.promotionsController.validateVoucher);
     }
     getRouter() {

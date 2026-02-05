@@ -6,4 +6,8 @@
   public async getFinancialReport(organizationId: number, range: string): Promise<any> {
     throw new Error("Method not implemented.");
   }
+
+  public async getAttendeeAnalytics(organizationId: number): Promise<any> {
+    throw new Error("Method not implemented.");
+  }
 }

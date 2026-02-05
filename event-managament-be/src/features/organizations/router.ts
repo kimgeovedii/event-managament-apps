@@ -12,10 +12,14 @@ export class OrganizationsRouter {
   }
 
   private setupRoutes(): void {
-    this.router.post("/", this.organizationsController.createOrganization);
-    this.router.get("/", this.organizationsController.getOrganizations);
-    this.router.patch("/:id", this.organizationsController.updateOrganization);
+    this.router.post("/", this.organizationsController.create);
+    this.router.get("/", this.organizationsController.findAll);
+    this.router.get("/:id", this.organizationsController.findOne);
+    this.router.patch("/:id", this.organizationsController.update);
+    this.router.delete("/:id", this.organizationsController.delete);
+    
     this.router.post("/:id/members", this.organizationsController.addTeamMember);
+    this.router.delete("/:id/members/:userId", this.organizationsController.removeTeamMember);
   }
 
   public getRouter(): Router {

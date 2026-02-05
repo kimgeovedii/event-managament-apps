@@ -1,8 +1,20 @@
 export class ReviewsController {
-    async createReview(req, res, next) {
-        // TODO: Implement createReview
+    async create(req, res, next) {
+        throw new Error("Method not implemented.");
+    }
+    async findAll(req, res, next) {
+        throw new Error("Method not implemented.");
+    }
+    async findOne(req, res, next) {
+        throw new Error("Method not implemented.");
+    }
+    async update(req, res, next) {
+        throw new Error("Method not implemented.");
+    }
+    async delete(req, res, next) {
+        throw new Error("Method not implemented.");
     }
     async getReviewsByTicket(req, res, next) {
-        // TODO: Implement getReviewsByTicket
+        throw new Error("Method not implemented.");
     }
 }

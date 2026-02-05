@@ -1,23 +1,23 @@
 ﻿import { Request, Response, NextFunction } from "express";
 
 export class TicketsController {
-  public async createTicket(req: Request, res: Response, next: NextFunction): Promise<void> {
-    // TODO: Implement createTicket
+  public async create(req: Request, res: Response, next: NextFunction): Promise<void> {
+    throw new Error("Method not implemented.");
   }
 
-  public async getTickets(req: Request, res: Response, next: NextFunction): Promise<void> {
-    // TODO: Implement getTickets
+  public async findAll(req: Request, res: Response, next: NextFunction): Promise<void> {
+    throw new Error("Method not implemented.");
   }
 
-  public async getTicketById(req: Request, res: Response, next: NextFunction): Promise<void> {
-    // TODO: Implement getTicketById
+  public async findOne(req: Request, res: Response, next: NextFunction): Promise<void> {
+    throw new Error("Method not implemented.");
   }
 
-  public async updateTicket(req: Request, res: Response, next: NextFunction): Promise<void> {
-    // TODO: Implement updateTicket
+  public async update(req: Request, res: Response, next: NextFunction): Promise<void> {
+    throw new Error("Method not implemented.");
   }
 
-  public async deleteTicket(req: Request, res: Response, next: NextFunction): Promise<void> {
-    // TODO: Implement deleteTicket
+  public async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
+    throw new Error("Method not implemented.");
   }
 }

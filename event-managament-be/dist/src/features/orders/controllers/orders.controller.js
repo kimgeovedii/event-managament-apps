@@ -1,14 +1,20 @@
 export class OrdersController {
-    async createOrder(req, res, next) {
-        // TODO: Implement createOrder
+    async create(req, res, next) {
+        throw new Error("Method not implemented.");
     }
-    async getOrders(req, res, next) {
-        // TODO: Implement getOrders
+    async findAll(req, res, next) {
+        throw new Error("Method not implemented.");
     }
-    async getOrderById(req, res, next) {
-        // TODO: Implement getOrderById
+    async findOne(req, res, next) {
+        throw new Error("Method not implemented.");
+    }
+    async update(req, res, next) {
+        throw new Error("Method not implemented.");
+    }
+    async delete(req, res, next) {
+        throw new Error("Method not implemented.");
     }
     async processPayment(req, res, next) {
-        // TODO: Implement processPayment
+        throw new Error("Method not implemented.");
     }
 }

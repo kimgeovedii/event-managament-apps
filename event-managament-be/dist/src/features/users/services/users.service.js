@@ -1,11 +1,20 @@
 export class UsersService {
-    async getProfile(userId) {
-        // TODO: Implement getProfile
+    async create(data) {
+        throw new Error("Method not implemented.");
     }
-    async updateProfile(userId, data) {
-        // TODO: Implement updateProfile
+    async findAll() {
+        throw new Error("Method not implemented.");
+    }
+    async findOne(id) {
+        throw new Error("Method not implemented.");
+    }
+    async update(id, data) {
+        throw new Error("Method not implemented.");
+    }
+    async delete(id) {
+        throw new Error("Method not implemented.");
     }
     async getPointsBalance(userId) {
-        // TODO: Implement getPointsBalance
+        throw new Error("Method not implemented.");
     }
 }

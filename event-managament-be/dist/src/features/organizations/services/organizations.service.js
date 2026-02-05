@@ -1,11 +1,23 @@
 export class OrganizationsService {
     async create(data) {
-        // TODO: Implement create organization
+        throw new Error("Method not implemented.");
     }
     async findAll() {
-        // TODO: Implement find all organizations
+        throw new Error("Method not implemented.");
+    }
+    async findOne(id) {
+        throw new Error("Method not implemented.");
+    }
+    async update(id, data) {
+        throw new Error("Method not implemented.");
+    }
+    async delete(id) {
+        throw new Error("Method not implemented.");
     }
     async addMember(organizationId, data) {
-        // TODO: Implement add member to team
+        throw new Error("Method not implemented.");
+    }
+    async removeMember(organizationId, userId) {
+        throw new Error("Method not implemented.");
     }
 }
