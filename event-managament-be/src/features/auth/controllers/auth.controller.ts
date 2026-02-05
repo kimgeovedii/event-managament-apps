@@ -30,6 +30,16 @@ export class AuthController {
     next: NextFunction,
   ): Promise<void> => {
     // TODO: Implement login
+    try {
+      const result = await this.authService.login(req.body);
+
+      res.status(200).json({
+        message: "Login Successfully",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
   };
 
   public logout = async (

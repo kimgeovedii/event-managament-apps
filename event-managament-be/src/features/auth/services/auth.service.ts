@@ -5,6 +5,7 @@ import {
   LoginRequest,
   RegisterRequest,
 } from "../types/auth.types.js";
+import jwt from "jsonwebtoken";
 
 export class AuthService {
   private AuthRepository = new AuthRepository();
@@ -29,13 +30,39 @@ export class AuthService {
 
   public login = async (data: LoginRequest): Promise<any> => {
     // TODO: Implement login logic
-    const checkUserLogin = await this.AuthRepository.findByEmail(data.email);
+    const user = await this.AuthRepository.findByEmail(data.email);
 
-    if (checkUserLogin) {
+    if (!user) {
+      throw new Error("invalid email or password");
     }
+    const isPasswordValid = await bcrypt.compare(data.password, user.password);
+    if (!isPasswordValid) {
+      throw new Error("invalid email or password");
+    }
+    const token = await this.generateTokens(user);
+
+    return {
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+      ...token,
+    };
   };
 
-  public generateTokens = async (user: AuthResponse): Promise<any> => {
+  public generateTokens = async (user: any): Promise<any> => {
     // TODO: Implement JWT generation
+    const payload = { id: user.id, role: user.role };
+    const secret = process.env.JWT_SECRET || "rahasia bro";
+
+    const accessToken = jwt.sign(payload, secret, { expiresIn: "1h" });
+    const refreshToken = jwt.sign(payload, secret, { expiresIn: "7d" });
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   };
 }
