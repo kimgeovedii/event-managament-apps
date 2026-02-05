@@ -1,0 +1,186 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CUSTOMER
+  ORGANIZER
+}
+
+enum OrgRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum VoucherType {
+  REFERRAL
+  PROMOTION
+}
+
+model User {
+  id                   Int                   @id @default(autoincrement())
+  name                 String
+  email                String                @unique
+  password             String
+  referralCode         String                @unique
+  points               Int                   @default(0)
+  role                 Role                  @default(CUSTOMER)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  organizationsManaged Organization[]        @relation("OrgCreator")
+  organizationTeams    OrganizationTeam[]
+  ticketsCreated       Ticket[]
+  referralsSent        ReferralTransaction[] @relation("ReferralFrom")
+  referralsReceived    ReferralTransaction[] @relation("ReferralTo")
+  userPoints           UserPoint[]
+  transactions         Transaction[]
+}
+
+model Organization {
+  id        Int                @id @default(autoincrement())
+  name      String
+  address   String?
+  creatorId Int
+  creator   User               @relation("OrgCreator", fields: [creatorId], references: [id])
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  teams     OrganizationTeam[]
+  tickets   Ticket[]
+}
+
+model OrganizationTeam {
+  id             Int          @id @default(autoincrement())
+  userId         Int
+  organizationId Int
+  role           OrgRole      @default(MEMBER)
+  field          String?
+  user           User         @relation(fields: [userId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Category {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  status  Boolean  @default(true)
+  tickets Ticket[]
+}
+
+model Ticket {
+  id             Int           @id @default(autoincrement())
+  title          String
+  description    String?
+  price          Float         @default(0)
+  startDate      DateTime
+  endDate        DateTime
+  organizationId Int
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  categoryId     Int
+  category       Category      @relation(fields: [categoryId], references: [id])
+  createdById    Int
+  createdBy      User          @relation(fields: [createdById], references: [id])
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  allotments     Allotment?
+  promotions     Promotion[]
+  items          TransactionItem[]
+}
+
+model Allotment {
+  id             Int      @id @default(autoincrement())
+  ticketId       Int      @unique
+  ticket         Ticket   @relation(fields: [ticketId], references: [id])
+  totalQuota     Int
+  remainingQuota Int
+  updatedAt      DateTime @updatedAt
+}
+
+model ReferralTransaction {
+  id         Int      @id @default(autoincrement())
+  fromUserId Int
+  toUserId   Int
+  date       DateTime @default(now())
+  amount     Float
+  expiredAt  DateTime
+  fromUser   User     @relation("ReferralFrom", fields: [fromUserId], references: [id])
+  toUser     User     @relation("ReferralTo", fields: [toUserId], references: [id])
+}
+
+model UserPoint {
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  remainingPoint Int
+  user           User     @relation(fields: [userId], references: [id])
+  createdAt      DateTime @default(now())
+  expiredAt      DateTime
+}
+
+model Voucher {
+  id           Int         @id @default(autoincrement())
+  type         VoucherType @default(PROMOTION)
+  name         String
+  code         String      @unique
+  amount       Float
+  maxClaim     Int?
+  startDate    DateTime
+  endDate      DateTime
+  promotions   Promotion[]
+  transactions Transaction[]
+}
+
+model Promotion {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  ticketId    Int
+  ticket      Ticket   @relation(fields: [ticketId], references: [id])
+  voucherId   Int
+  voucher     Voucher  @relation(fields: [voucherId], references: [id])
+  startDate   DateTime
+  endDate     DateTime
+}
+
+model Transaction {
+  id          Int               @id @default(autoincrement())
+  invoice     String            @unique
+  date        DateTime          @default(now())
+  totalPrice  Float
+  pointsUsed  Int               @default(0)
+  customerId  Int
+  customer    User              @relation(fields: [customerId], references: [id])
+  voucherId   Int?
+  voucher     Voucher?          @relation(fields: [voucherId], references: [id])
+  items       TransactionItem[]
+}
+
+model TransactionItem {
+  id            Int         @id @default(autoincrement())
+  transactionId Int
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  ticketId      Int
+  ticket        Ticket      @relation(fields: [ticketId], references: [id])
+  qty           Int
+  subTotal      Float
+  review        Review?
+}
+
+model Review {
+  id                Int             @id @default(autoincrement())
+  rating            Int
+  feedback          String?
+  transactionItemId Int             @unique
+  transactionItem   TransactionItem @relation(fields: [transactionItemId], references: [id])
+  createdAt         DateTime        @default(now())
+}
