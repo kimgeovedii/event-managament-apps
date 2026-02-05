@@ -1,7 +1,6 @@
 import express, { Application, Request, Response, NextFunction } from "express";
 import cors from "cors";
 import morgan from "morgan";
-import dotenv from "dotenv";
 import { AuthRouter } from "./features/auth/router.js";
 import { UsersRouter } from "./features/users/router.js";
 import { OrganizationsRouter } from "./features/organizations/router.js";
@@ -10,8 +9,6 @@ import { OrdersRouter } from "./features/orders/router.js";
 import { PromotionsRouter } from "./features/promotions/router.js";
 import { ReviewsRouter } from "./features/reviews/router.js";
 import { DashboardRouter } from "./features/dashboard/router.js";
-
-dotenv.config();
 
 class App {
   private app: Application;
