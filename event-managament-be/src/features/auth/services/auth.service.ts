@@ -52,6 +52,20 @@ export class AuthService {
     };
   };
 
+  public getMe = async (id: string): Promise<any> => {
+    const user = await this.AuthRepository.findById(id);
+    if (!user) {
+      throw new Error("user not found");
+    }
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      referralCode: user.referralCode,
+      role: user.role,
+    };
+  };
   public generateTokens = async (user: any): Promise<any> => {
     // TODO: Implement JWT generation
     const payload = { id: user.id, role: user.role };

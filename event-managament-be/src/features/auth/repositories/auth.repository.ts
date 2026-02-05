@@ -1,3 +1,4 @@
+import { id } from "zod/locales";
 import { prisma } from "../../../config/prisma.js";
 import { RegisterRequest } from "../types/auth.types.js";
 import { User } from "@prisma/client";
@@ -25,10 +26,13 @@ export class AuthRepository {
     });
   };
 
-  public updatePoint = async (
-    userId: string,
-    points: number,
-  ): Promise<any> => {
+  public findById = async (id: string): Promise<User | null> => {
+    return await prisma.user.findUnique({
+      where: { id: id },
+    });
+  };
+
+  public updatePoint = async (userId: string, points: number): Promise<any> => {
     // TODO: Update user points
   };
 }

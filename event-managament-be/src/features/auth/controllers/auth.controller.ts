@@ -48,6 +48,32 @@ export class AuthController {
     next: NextFunction,
   ): Promise<void> => {
     // TODO: Implement logout
+    try {
+      res.status(200).json({
+        message: "Logout Successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public me = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const id = req.user?.id;
+      if (!id) throw new Error("unauthorized");
+      const result = await this.authService.getMe(id);
+
+      res.status(200).json({
+        message: "successfully get user",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
   };
 
   public refreshToken = async (
