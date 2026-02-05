@@ -11,18 +11,18 @@ export class UsersRouter {
     this.setupRoutes();
   }
 
-  private setupRoutes(): void {
+  private setupRoutes = (): void => {
     this.router.post("/", this.usersController.create);
     this.router.get("/", this.usersController.findAll);
     this.router.get("/:id", this.usersController.findOne);
     this.router.patch("/:id", this.usersController.update);
     this.router.delete("/:id", this.usersController.delete);
-    
+
     this.router.get("/:id/points", this.usersController.getPointHistory);
     this.router.get("/:id/vouchers", this.usersController.getVouchers);
-  }
+  };
 
-  public getRouter(): Router {
+  public getRouter = (): Router => {
     return this.router;
-  }
+  };
 }

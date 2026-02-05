@@ -1,25 +1,25 @@
 ﻿export class UsersRepository {
-  public async create(data: any): Promise<any> {
+  public create = async (data: any): Promise<any> => {
     throw new Error("Method not implemented.");
-  }
+  };
 
-  public async findMany(): Promise<any[]> {
+  public findMany = async (): Promise<any[]> => {
     throw new Error("Method not implemented.");
-  }
+  };
 
-  public async findById(id: number): Promise<any> {
+  public findById = async (id: number): Promise<any> => {
     throw new Error("Method not implemented.");
-  }
+  };
 
-  public async update(id: number, data: any): Promise<any> {
+  public update = async (id: number, data: any): Promise<any> => {
     throw new Error("Method not implemented.");
-  }
+  };
 
-  public async delete(id: number): Promise<any> {
+  public delete = async (id: number): Promise<any> => {
     throw new Error("Method not implemented.");
-  }
+  };
 
-  public async getPoints(userId: number): Promise<any> {
+  public getPoints = async (userId: number): Promise<any> => {
     throw new Error("Method not implemented.");
-  }
+  };
 }

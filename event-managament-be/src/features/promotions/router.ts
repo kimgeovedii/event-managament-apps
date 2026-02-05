@@ -11,17 +11,17 @@ export class PromotionsRouter {
     this.setupRoutes();
   }
 
-  private setupRoutes(): void {
+  private setupRoutes = (): void => {
     this.router.post("/", this.promotionsController.create);
     this.router.get("/", this.promotionsController.findAll);
     this.router.get("/:id", this.promotionsController.findOne);
     this.router.patch("/:id", this.promotionsController.update);
     this.router.delete("/:id", this.promotionsController.delete);
-    
-    this.router.post("/validate", this.promotionsController.validateVoucher);
-  }
 
-  public getRouter(): Router {
+    this.router.post("/validate", this.promotionsController.validateVoucher);
+  };
+
+  public getRouter = (): Router => {
     return this.router;
-  }
+  };
 }
