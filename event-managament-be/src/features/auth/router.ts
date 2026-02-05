@@ -11,14 +11,14 @@ export class AuthRouter {
     this.setupRoutes();
   }
 
-  private setupRoutes(): void {
+  private setupRoutes = (): void => {
     this.router.post("/register", this.authController.register);
     this.router.post("/login", this.authController.login);
     this.router.post("/logout", this.authController.logout);
     this.router.post("/refresh-token", this.authController.refreshToken);
-  }
+  };
 
-  public getRouter(): Router {
+  public getRouter = (): Router => {
     return this.router;
-  }
+  };
 }

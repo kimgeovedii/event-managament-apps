@@ -1,25 +1,25 @@
 ﻿export class ReviewsService {
-  public async create(data: any): Promise<any> {
+  public create = async (data: any): Promise<any> => {
     throw new Error("Method not implemented.");
-  }
+  };
 
-  public async findAll(filters: any): Promise<any[]> {
+  public findAll = async (filters: any): Promise<any[]> => {
     throw new Error("Method not implemented.");
-  }
+  };
 
-  public async findOne(id: number): Promise<any> {
+  public findOne = async (id: number): Promise<any> => {
     throw new Error("Method not implemented.");
-  }
+  };
 
-  public async update(id: number, data: any): Promise<any> {
+  public update = async (id: number, data: any): Promise<any> => {
     throw new Error("Method not implemented.");
-  }
+  };
 
-  public async delete(id: number): Promise<any> {
+  public delete = async (id: number): Promise<any> => {
     throw new Error("Method not implemented.");
-  }
+  };
 
-  public async findByTicket(ticketId: number): Promise<any[]> {
+  public findByTicket = async (ticketId: number): Promise<any[]> => {
     throw new Error("Method not implemented.");
-  }
+  };
 }

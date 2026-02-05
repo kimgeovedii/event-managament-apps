@@ -22,7 +22,7 @@ class App {
     this.configureErrorHandling();
   }
 
-  private configureMiddlewares(): void {
+  private configureMiddlewares = (): void => {
     this.app.use(cors());
     this.app.use(express.json());
     this.app.use(morgan("dev"));
@@ -38,9 +38,9 @@ class App {
         .status(200)
         .json({ status: "ok", message: "Event Management API is running" });
     });
-  }
+  };
 
-  private configureRoutes(): void {
+  private configureRoutes = (): void => {
     this.app.use("/api/auth", new AuthRouter().getRouter());
     this.app.use("/api/users", new UsersRouter().getRouter());
     this.app.use("/api/organizations", new OrganizationsRouter().getRouter());
@@ -49,9 +49,9 @@ class App {
     this.app.use("/api/promotions", new PromotionsRouter().getRouter());
     this.app.use("/api/reviews", new ReviewsRouter().getRouter());
     this.app.use("/api/dashboard", new DashboardRouter().getRouter());
-  }
+  };
 
-  private configureErrorHandling(): void {
+  private configureErrorHandling = (): void => {
     // Global error handler
     this.app.use(
       (err: any, req: Request, res: Response, next: NextFunction) => {
@@ -63,19 +63,19 @@ class App {
         });
       },
     );
-  }
+  };
 
-  public getApp(): Application {
+  public getApp = (): Application => {
     return this.app;
-  }
+  };
 
-  public listen(): void {
+  public listen = (): void => {
     this.app.listen(this.port, () => {
       console.log(
         `[server]: Server is running at http://localhost:${this.port}`,
       );
     });
-  }
+  };
 }
 
 export default App;

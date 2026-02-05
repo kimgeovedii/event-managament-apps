@@ -1,21 +1,21 @@
 ﻿export class TicketsRepository {
-  public async create(data: any): Promise<any> {
+  public create = async (data: any): Promise<any> => {
     throw new Error("Method not implemented.");
-  }
+  };
 
-  public async findMany(filters: any): Promise<any[]> {
+  public findMany = async (filters: any): Promise<any[]> => {
     throw new Error("Method not implemented.");
-  }
+  };
 
-  public async findById(id: number): Promise<any> {
+  public findById = async (id: number): Promise<any> => {
     throw new Error("Method not implemented.");
-  }
+  };
 
-  public async update(id: number, data: any): Promise<any> {
+  public update = async (id: number, data: any): Promise<any> => {
     throw new Error("Method not implemented.");
-  }
+  };
 
-  public async delete(id: number): Promise<any> {
+  public delete = async (id: number): Promise<any> => {
     throw new Error("Method not implemented.");
-  }
+  };
 }

@@ -3,7 +3,7 @@ import { RegisterRequest } from "../types/auth.types.js";
 import { User } from "@prisma/client";
 
 export class AuthRepository {
-  public async findByEmail(email: string): Promise<any> {
+  public findByEmail = async (email: string): Promise<any> => {
     // TODO: Find user by email
     const checkUserByEmail = await prisma.user.findUnique({
       where: {
@@ -11,9 +11,9 @@ export class AuthRepository {
       },
     });
     return checkUserByEmail;
-  }
+  };
 
-  public async create(data: RegisterRequest): Promise<User> {
+  public create = async (data: RegisterRequest): Promise<User> => {
     return await prisma.user.create({
       data: {
         name: data.name,
@@ -23,9 +23,12 @@ export class AuthRepository {
         role: "CUSTOMER",
       },
     });
-  }
+  };
 
-  public async updatePoint(userId: string, points: number): Promise<any> {
+  public updatePoint = async (
+    userId: string,
+    points: number,
+  ): Promise<any> => {
     // TODO: Update user points
-  }
+  };
 }

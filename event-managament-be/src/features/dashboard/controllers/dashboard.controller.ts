@@ -1,15 +1,27 @@
 ﻿import { Request, Response, NextFunction } from "express";
 
 export class DashboardController {
-  public async getStats(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public getStats = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     throw new Error("Method not implemented.");
-  }
+  };
 
-  public async getReports(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public getReports = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     throw new Error("Method not implemented.");
-  }
+  };
 
-  public async getAttendeeStats(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public getAttendeeStats = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     throw new Error("Method not implemented.");
-  }
+  };
 }

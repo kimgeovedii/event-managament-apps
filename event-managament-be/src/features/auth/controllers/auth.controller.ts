@@ -6,11 +6,11 @@ export class AuthController {
   constructor() {
     this.authService = new AuthService();
   }
-  public async register(
+  public register = async (
     req: Request,
     res: Response,
     next: NextFunction,
-  ): Promise<void> {
+  ): Promise<void> => {
     // TODO: Implement registration
     try {
       const result = await this.authService.register(req.body);
@@ -22,29 +22,29 @@ export class AuthController {
     } catch (error) {
       next(error);
     }
-  }
+  };
 
-  public async login(
+  public login = async (
     req: Request,
     res: Response,
     next: NextFunction,
-  ): Promise<void> {
+  ): Promise<void> => {
     // TODO: Implement login
-  }
+  };
 
-  public async logout(
+  public logout = async (
     req: Request,
     res: Response,
     next: NextFunction,
-  ): Promise<void> {
+  ): Promise<void> => {
     // TODO: Implement logout
-  }
+  };
 
-  public async refreshToken(
+  public refreshToken = async (
     req: Request,
     res: Response,
     next: NextFunction,
-  ): Promise<void> {
+  ): Promise<void> => {
     // TODO: Implement token refresh
-  }
+  };
 }

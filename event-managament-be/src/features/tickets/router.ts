@@ -11,15 +11,15 @@ export class TicketsRouter {
     this.setupRoutes();
   }
 
-  private setupRoutes(): void {
+  private setupRoutes = (): void => {
     this.router.post("/", this.ticketsController.create);
     this.router.get("/", this.ticketsController.findAll);
     this.router.get("/:id", this.ticketsController.findOne);
     this.router.patch("/:id", this.ticketsController.update);
     this.router.delete("/:id", this.ticketsController.delete);
-  }
+  };
 
-  public getRouter(): Router {
+  public getRouter = (): Router => {
     return this.router;
-  }
+  };
 }

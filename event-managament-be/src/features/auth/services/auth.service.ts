@@ -11,7 +11,7 @@ export class AuthService {
   constructor() {
     this.AuthRepository = new AuthRepository();
   }
-  public async register(data: RegisterRequest): Promise<any> {
+  public register = async (data: RegisterRequest): Promise<any> => {
     // TODO: Implement registration logic
     const checkExistingUser = await this.AuthRepository.findByEmail(data.email);
     if (checkExistingUser) {
@@ -25,13 +25,17 @@ export class AuthService {
       password: hashPassword,
       referralCode: `REF-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
     });
-  }
+  };
 
-  public async login(data: LoginRequest): Promise<any> {
+  public login = async (data: LoginRequest): Promise<any> => {
     // TODO: Implement login logic
-  }
+    const checkUserLogin = await this.AuthRepository.findByEmail(data.email);
 
-  public async generateTokens(user: AuthResponse): Promise<any> {
+    if (checkUserLogin) {
+    }
+  };
+
+  public generateTokens = async (user: AuthResponse): Promise<any> => {
     // TODO: Implement JWT generation
-  }
+  };
 }
