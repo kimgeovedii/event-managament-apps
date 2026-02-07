@@ -1,7 +1,6 @@
-import { id } from "zod/locales";
 import { prisma } from "../../../config/prisma.js";
 import { RegisterRequest } from "../types/auth.types.js";
-import { User } from "@prisma/client";
+import { ReferralTransaction, User } from "@prisma/client";
 
 export class AuthRepository {
   public findByEmail = async (email: string): Promise<any> => {
@@ -14,7 +13,7 @@ export class AuthRepository {
     return checkUserByEmail;
   };
 
-  public create = async (data: RegisterRequest): Promise<User> => {
+  public createUser = async (data: RegisterRequest): Promise<User> => {
     return await prisma.user.create({
       data: {
         name: data.name,
@@ -32,7 +31,43 @@ export class AuthRepository {
     });
   };
 
-  public updatePoint = async (userId: string, points: number): Promise<any> => {
-    // TODO: Update user points
+  public referalTransaction = async (
+    formUserId: string,
+    toUserId: string,
+  ): Promise<ReferralTransaction> => {
+    return await prisma.referralTransaction.create({
+      data: {
+        fromUserId: formUserId,
+        toUserId: toUserId,
+        date: new Date(),
+        amount: 10000,
+        expiredAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+      },
+    });
+  };
+
+  public createVoucherRegister = async (
+    userId: string,
+    expiryDate: string,
+  ): Promise<any> => {
+    return await prisma.voucher.create({
+      data: {
+        name: "Referral Reward 10%",
+        code: `REF-${userId.substring(0, 5).toLocaleLowerCase}`,
+        type: "REFERRAL",
+        amount: 10,
+        maxClaim: 1,
+        startDate: new Date(),
+        endDate: expiryDate,
+      },
+    });
+  };
+
+  public findUserByReferralCode = async (
+    referralCode: string,
+  ): Promise<User | null> => {
+    return await prisma.user.findUnique({
+      where: { referralCode: referralCode },
+    });
   };
 }

@@ -6,11 +6,18 @@ import {
   RegisterRequest,
 } from "../types/auth.types.js";
 import jwt from "jsonwebtoken";
+import { UserPointRepository } from "src/features/userPoint/repositories/userPoint.repository.js";
+import { prisma } from "src/config/prisma.js";
+import { VoucherRepository } from "src/features/voucher/repositories/voucher.repository.js";
 
 export class AuthService {
+  private UserPointRepository = new UserPointRepository();
   private AuthRepository = new AuthRepository();
+  private VoucherRepository = new VoucherRepository();
   constructor() {
     this.AuthRepository = new AuthRepository();
+    this.UserPointRepository = new UserPointRepository();
+    this.VoucherRepository = new VoucherRepository();
   }
   public register = async (data: RegisterRequest): Promise<any> => {
     // TODO: Implement registration logic
@@ -18,13 +25,54 @@ export class AuthService {
     if (checkExistingUser) {
       throw new Error("email has been already taken");
     }
-
     const hashPassword = await bcrypt.hash(data.password, 10);
+    const friendReferralCode = data.referralCode;
+    const myNewReferralCode = `REF-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+    let referrerId: string | undefined;
 
-    return await this.AuthRepository.create({
-      ...data,
-      password: hashPassword,
-      referralCode: `REF-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
+    if (friendReferralCode) {
+      const referrer =
+        await this.AuthRepository.findUserByReferralCode(friendReferralCode);
+      if (!referrer) {
+        throw new Error("kode referral tidak valid!");
+      }
+      referrerId = referrer.id;
+    }
+    return await prisma.$transaction(async (tx) => {
+      const newUser = await this.AuthRepository.createUser({
+        ...data,
+        password: hashPassword,
+        referralCode: `REF-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
+      });
+      const referal = data.referralCode;
+      if (referal) {
+        const owner = await this.AuthRepository.findUserByReferralCode(referal);
+        if (owner) {
+          const expiredAt = new Date();
+          expiredAt.setMonth(expiredAt.getMonth() + 3);
+          await this.UserPointRepository.addPoint(
+            owner.id,
+            10000,
+            expiredAt,
+            tx,
+          );
+          const personalCode =
+            `REF-${newUser.id.substring(0, 5)}-${Math.random().toString(36).substring(2, 5)}`.toUpperCase();
+          await this.VoucherRepository.createVoucher(
+            {
+              name: `Referral Discount for ${newUser.email}`,
+              code: personalCode,
+              amount: 10, // 10%
+              maxClaim: 1, // Hanya bisa dipakai 1x
+              startDate: new Date(),
+              endDate: expiredAt, // Expire dalam 3 bulan
+            },
+            tx,
+          );
+        }
+      }
+
+      return newUser;
     });
   };
 
