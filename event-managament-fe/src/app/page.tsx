@@ -1,80 +1,107 @@
 "use client";
-
-import { Container, Typography, Box, Button, Paper, Stack } from "@mui/material";
-import { motion } from "framer-motion";
-import { RocketLaunchIcon, BeakerIcon } from "@heroicons/react/24/outline";
+import * as React from "react";
+import { Box, Container, Typography, Alert } from "@mui/material";
+import axios from "axios";
 
 export default function Home() {
+  const [data, setData] = React.useState([]);
+  const getData = async () => {
+    try {
+      // Call data from API
+      const res = await axios.get("http://localhost:8000/api/tickets");
+      console.log(res.data);
+
+      // Store data to local state(useState data)
+      setData(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  React.useEffect(() => {
+    getData(); // execute function get data when first page rendered
+  }, []);
+
   return (
-    <Container maxWidth="md">
-      <Box
-        sx={{
-          minHeight: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          py: 8,
-        }}
-      >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Paper
-            elevation={3}
-            sx={{
-              p: 6,
-              borderRadius: 4,
-              textAlign: "center",
-              background: "rgba(255, 255, 255, 0.9)",
-              backdropFilter: "blur(10px)",
-            }}
+    <Container maxWidth="xl" className="py-8 space-y-8">
+      {/* Hero / Header Section */}
+      <Box className="relative rounded-3xl bg-linear-to-r from-blue-600 to-indigo-600 p-8 md:p-12 text-white overflow-hidden shadow-2xl">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/4 blur-3xl" />
+        <div className="relative z-10 max-w-2xl">
+          <Typography
+            variant="h3"
+            component="h1"
+            className="font-extrabold mb-4 tracking-tight"
           >
-            <Stack spacing={4} alignItems="center">
-              <Box sx={{ display: "flex", gap: 2 }}>
-                <RocketLaunchIcon className="h-12 w-12 text-blue-600" />
-                <Typography variant="h2" component="h1" fontWeight="bold" gutterBottom>
-                  Event Platform FE
-                </Typography>
-              </Box>
+            Discover Unforgettable Experiences
+          </Typography>
+          <Typography variant="h6" className="text-blue-100 font-medium mb-8">
+            Find the best concerts, workshops, and meetups happening near you.
+          </Typography>
 
-              <Typography variant="h5" color="text.secondary">
-                Frontend scaffold is ready with <b>Feature-Based</b> structure.
-              </Typography>
-
-              <Stack direction="row" spacing={2}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  startIcon={<BeakerIcon className="h-5 w-5" />}
-                  sx={{ px: 4 }}
-                >
-                  Get Started
-                </Button>
-                <Button variant="outlined" size="large" sx={{ px: 4 }}>
-                  Documentation
-                </Button>
-              </Stack>
-
-              <Box sx={{ pt: 4, textAlign: "left", width: "100%" }}>
-                <Typography variant="subtitle2" color="primary" fontWeight="bold">
-                  Tech Stack Verified:
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  ✅ Next.js 15+ (App Router) <br />
-                  ✅ Material UI & Emotion <br />
-                  ✅ Zustand (State Management) <br />
-                  ✅ Framer Motion (Animations) <br />
-                  ✅ Formik & Yup (Forms) <br />
-                  ✅ Axios & js-cookie (Infrastructure)
-                </Typography>
-              </Box>
-            </Stack>
-          </Paper>
-        </motion.div>
+          {/* Search integrated in Hero */}
+          {/* <div className="bg-white p-2 rounded-xl shadow-lg max-w-xl">
+            <SearchBar onSearch={handleSearch} />
+          </div> */}
+        </div>
       </Box>
+
+      {/* Filters */}
+      {/* <EventFilters
+        category={category}
+        location={location}
+        onCategoryChange={handleCategoryChange}
+        onLocationChange={handleLocationChange}
+      /> */}
+
+      {/* Events Grid */}
+      {/* <Box>
+        <Typography
+          variant="h5"
+          className="font-bold mb-6 text-gray-800 border-l-4 border-blue-600 pl-3"
+        >
+          Upcoming Events
+        </Typography>
+
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <CircularProgress size={40} className="text-blue-600" />
+          </div>
+        ) : error ? (
+          <Alert severity="error" className="mb-4">
+            {error}
+          </Alert>
+        ) : events.length === 0 ? (
+          <Box className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+            <Typography variant="h6" className="text-gray-500">
+              No events found matching your criteria.
+            </Typography>
+            <Typography variant="body2" className="text-gray-400 mt-2">
+              Try adjusting your filters.
+            </Typography>
+          </Box>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {events.map((event) => (
+              <EventCard key={event.id} event={event} />
+            ))}
+          </div>
+        )}
+      </Box> */}
+
+      {/* Pagination */}
+      {/* {totalPages > 1 && (
+        <Box className="flex justify-center mt-12">
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={(_, p) => setPage(p)}
+            color="primary"
+            size="large"
+            className="shadow-sm bg-white rounded-full px-4 py-2"
+          />
+        </Box>
+      )} */}
     </Container>
   );
 }
