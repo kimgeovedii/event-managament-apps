@@ -40,7 +40,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
 }) => {
   return (
     <div className="bg-[#f8f6f7] dark:bg-[#221019] min-h-screen lg:h-screen flex flex-col font-[family-name:var(--font-display)] overflow-y-auto lg:overflow-hidden">
-      {/* Auth Navbar */}
+    
       <AuthNavbar
         actionText={navActionText}
         actionButtonText={navActionButtonText}
