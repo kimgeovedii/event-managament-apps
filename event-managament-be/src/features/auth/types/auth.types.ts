@@ -1,8 +1,8 @@
 export interface RegisterRequest {
   name: string;
   email: string;
-  password: string;
   referralCode?: string;
+  password: string;
 }
 
 export interface LoginRequest {
@@ -11,12 +11,15 @@ export interface LoginRequest {
 }
 
 export interface AuthResponse {
-  user: {
-    id: string;
-    email: string;
-    name: string;
-    role: string;
-  };
+  user: User;
   access_token: string;
   refresh_token: string;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  referralCode?: string;
 }
