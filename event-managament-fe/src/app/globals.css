@@ -1,15 +1,30 @@
+@import url("https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
+
+/* Enable class-based dark mode for manual toggle */
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* Neon Colors */
+  --neon-pink: #FF00FF;
+  --neon-cyan: #00FFFF;
+  --neon-purple: #B026FF;
+  --neon-lime: #CCFF00;
+  --background-dark: #050505;
+  --surface-dark: #121212;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: #ee2b8c;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: "Clash Display", sans-serif;
+  --font-body: "Space Grotesk", sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +37,69 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Spline Sans", Arial, Helvetica, sans-serif;
+}
+
+/* Font Family Utilities */
+.font-display {
+  font-family: "Clash Display", sans-serif;
+}
+.font-body {
+  font-family: "Space Grotesk", sans-serif;
+}
+
+/* Glass Card Effect */
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Sticker Rotate Effect */
+.sticker-rotate:hover {
+  transform: rotate(5deg) scale(1.05);
+}
+
+/* Marquee Animation */
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.marquee-content {
+  display: inline-block;
+  animation: marquee 20s linear infinite;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Hide scrollbar for filter bar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Custom scrollbar - Neon Theme */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #111;
+}
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border: 2px solid #111;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B026FF;
 }
