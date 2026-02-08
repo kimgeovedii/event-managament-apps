@@ -8,10 +8,12 @@
     "start": "next start"
   },
   "dependencies": {
+    "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@heroicons/react": "^2.2.0",
     "@mui/material": "^7.3.7",
+    "@mui/material-nextjs": "^7.3.7",
     "axios": "^1.13.4",
     "formik": "^2.4.9",
     "framer-motion": "^12.33.0",

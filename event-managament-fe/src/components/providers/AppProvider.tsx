@@ -5,28 +5,48 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ThemeProvider as HypeThemeProvider } from "@/features/theme";
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#2563eb", // Vibrant Blue
+      main: "#ee2b8c", // Hype Primary Pink
+      contrastText: "#ffffff",
     },
     secondary: {
-      main: "#7c3aed", // Vibrant Purple
+      main: "#221019", // Background Dark
     },
     background: {
-      default: "#f8fafc",
+      default: "#f8f6f7", // Background Light
+      paper: "#ffffff",
     },
   },
+  shape: {
+    borderRadius: 16, // 1rem
+  },
   typography: {
-    fontFamily: "var(--font-geist-sans), Inter, sans-serif",
+    fontFamily: "var(--font-geist-sans), Spline Sans, sans-serif",
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
           textTransform: "none",
-          borderRadius: "8px",
+          borderRadius: "9999px", // Full rounded buttons like in design
+          padding: "12px 24px",
+          fontWeight: 700,
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          "& .MuiOutlinedInput-root": {
+            borderRadius: "9999px", // Full rounded inputs
+            "& fieldset": {
+              borderColor: "#e6dbe0",
+            },
+          },
         },
       },
     },
@@ -38,17 +58,20 @@ export default function AppProvider({ children }: { children: ReactNode }) {
     <AppRouterCacheProvider>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <AnimatePresence mode="wait">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            transition={{ duration: 0.3 }}
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
+        <HypeThemeProvider>
+          <AnimatePresence mode="wait">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.3 }}
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
+        </HypeThemeProvider>
       </ThemeProvider>
     </AppRouterCacheProvider>
   );
 }
+
