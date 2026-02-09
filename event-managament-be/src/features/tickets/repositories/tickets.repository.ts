@@ -1,5 +1,5 @@
 ﻿import { prisma } from "src/config/prisma.js";
-import { Voucher, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 export class TicketsRepository {
   public create = async (
