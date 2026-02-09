@@ -1,8 +1,13 @@
 ﻿import { prisma } from "src/config/prisma.js";
+import { Voucher, Prisma } from "@prisma/client";
 
 export class TicketsRepository {
-  public create = async (data: any): Promise<any> => {
-    return prisma.ticket.create({
+  public create = async (
+    data: any,
+    tx?: Prisma.TransactionClient,
+  ): Promise<any> => {
+    const client = tx || prisma;
+    return await client.ticket.create({
       data,
     });
   };
@@ -30,7 +35,7 @@ export class TicketsRepository {
   };
 
   public findById = async (id: any): Promise<any> => {
-    return prisma.ticket.findUnique({
+    return await prisma.ticket.findUnique({
       where: { id },
       include: {
         category: true,
@@ -40,15 +45,20 @@ export class TicketsRepository {
     });
   };
 
-  public update = async (id: any, data: any): Promise<any> => {
-    return prisma.ticket.update({
+  public update = async (
+    id: string,
+    data: any,
+    tx?: Prisma.TransactionClient,
+  ): Promise<any> => {
+    const client = tx || prisma;
+    return await client.ticket.update({
       where: { id },
       data,
     });
   };
 
   public delete = async (id: any): Promise<any> => {
-    return prisma.ticket.delete({
+    return await prisma.ticket.delete({
       where: { id },
     });
   };
