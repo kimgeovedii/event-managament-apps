@@ -6,10 +6,9 @@ const apiFetch = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true, // Important if using httpOnly cookies for refresh tokens
+  withCredentials: true,
 });
 
-// Request Interceptor
 apiFetch.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = Cookies.get("token");
@@ -23,16 +22,12 @@ apiFetch.interceptors.request.use(
   },
 );
 
-// Response Interceptor
 apiFetch.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config;
 
-    // Handle 401 Unauthorized (Token Expired)
     if (error.response?.status === 401 && originalRequest) {
-      // Logic for refresh token could go here
-      // For now, we logout strictly
       Cookies.remove("token");
       Cookies.remove("refreshToken");
 
@@ -44,9 +39,8 @@ apiFetch.interceptors.response.use(
       }
     }
 
-    // Standardize Error Message
     if (error.response && error.response.data) {
-      return Promise.reject(error.response.data); // Return the actual error data object
+      return Promise.reject(error.response.data);
     }
 
     return Promise.reject(error);
