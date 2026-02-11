@@ -3,20 +3,21 @@
 import React from "react";
 import Link from "next/link";
 import { useLoginForm } from "../hooks";
-import { 
-  BoltIcon, 
-  EmailIcon, 
-  LockIcon, 
-  EyeIcon, 
-  EyeSlashIcon, 
-  ArrowRightIcon, 
+import {
+  BoltIcon,
+  EmailIcon,
+  LockIcon,
+  EyeIcon,
+  EyeSlashIcon,
+  ArrowRightIcon,
   CheckIcon,
-  GoogleIcon
+  GoogleIcon,
 } from "./ui/Icons";
+import { useStoreLogin } from "../store/useStoreLogin";
 
 const LoginForm: React.FC = () => {
   const { formik, showPassword, togglePasswordVisibility } = useLoginForm();
-
+  const { isAuthenticated, accessToken } = useStoreLogin();
   return (
     <div className="w-full max-w-[420px] flex flex-col gap-6 relative z-10">
       {/* Header */}
@@ -59,7 +60,9 @@ const LoginForm: React.FC = () => {
             />
           </div>
           {formik.touched.email && formik.errors.email && (
-            <span className="text-red-500 font-bold uppercase text-[10px] px-1">{formik.errors.email}</span>
+            <span className="text-red-500 font-bold uppercase text-[10px] px-1">
+              {formik.errors.email}
+            </span>
           )}
         </label>
 
@@ -90,7 +93,9 @@ const LoginForm: React.FC = () => {
             </button>
           </div>
           {formik.touched.password && formik.errors.password && (
-            <span className="text-red-500 font-bold uppercase text-[10px] px-1">{formik.errors.password}</span>
+            <span className="text-red-500 font-bold uppercase text-[10px] px-1">
+              {formik.errors.password}
+            </span>
           )}
         </label>
 
@@ -134,7 +139,9 @@ const LoginForm: React.FC = () => {
       {/* Divider */}
       <div className="relative flex py-2 items-center">
         <div className="flex-grow border-t-2 border-dashed border-gray-300 dark:border-zinc-800"></div>
-        <span className="flex-shrink-0 mx-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Or continue with</span>
+        <span className="flex-shrink-0 mx-4 text-[10px] font-black uppercase tracking-widest text-gray-400">
+          Or continue with
+        </span>
         <div className="flex-grow border-t-2 border-dashed border-gray-300 dark:border-zinc-800"></div>
       </div>
 
