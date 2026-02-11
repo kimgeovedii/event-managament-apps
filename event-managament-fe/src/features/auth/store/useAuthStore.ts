@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { signIn, signUp, getMe, signOut } from "../services/authService";
 import Cookies from "js-cookie";
-import { AuthState, SignIn } from "../types/auth.types";
+import { AuthState, SignIn, SignUp } from "../types/auth.types";
 
 export const useStoreLogin = create<AuthState>()(
   persist(
@@ -31,23 +31,35 @@ export const useStoreLogin = create<AuthState>()(
           return true;
         } catch (error: any) {
           console.error("Login failed", error);
+          // Handle specific backend error format { error: { message: "..." } }
+          const errorMessage =
+            error.response?.data?.message || // Standard Axios error structure
+            error.error?.message || // Backend custom structure { error: { message: "" } } via apiFetch interceptor
+            error.message || // Standard JS Error
+            "Login failed";
+
           set({
-            error: error.response?.data?.message || "Login failed",
+            error: errorMessage,
             isAuthenticated: false,
           });
           return false;
         }
       },
 
-      signUp: async (data: SignIn) => {
+      signUp: async (data: SignUp) => {
         try {
           await signUp(data);
           set({ error: null });
           return true;
         } catch (error: any) {
           console.error("Registration failed", error);
+           const errorMessage =
+            error.response?.data?.message ||
+            error.error?.message ||
+            error.message ||
+            "Registration failed";
           set({
-            error: error.response?.data?.message || "Registration failed",
+            error: errorMessage,
           });
           return false;
         }

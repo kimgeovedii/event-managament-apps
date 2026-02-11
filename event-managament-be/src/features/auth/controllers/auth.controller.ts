@@ -11,7 +11,7 @@ export class AuthController {
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
-    // TODO: Implement registration
+    // Handle registration request
     try {
       const result = await this.authService.register(req.body);
 

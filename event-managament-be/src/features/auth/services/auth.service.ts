@@ -20,7 +20,7 @@ export class AuthService {
     this.VoucherRepository = new VoucherRepository();
   }
   public register = async (data: RegisterRequest): Promise<any> => {
-    // TODO: Implement registration logic
+    // Registration logic
     const checkExistingUser = await this.AuthRepository.findByEmail(data.email);
     if (checkExistingUser) {
       throw new Error("email has been already taken");
