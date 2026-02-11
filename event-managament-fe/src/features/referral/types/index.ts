@@ -1,0 +1,48 @@
+// User Referral Types
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  avatar: string;
+  memberSince: string;
+  location: string;
+  referralCode: string;
+  tier: "Bronze" | "Silver" | "Gold" | "Platinum";
+}
+
+export interface PointsBalance {
+  current: number;
+  nextTier: string;
+  nextTierProgress: number;
+  expiresIn: string;
+}
+
+export interface ActivityItem {
+  id: string;
+  type: "referral" | "purchase" | "streak" | "bonus";
+  title: string;
+  description: string;
+  points: number;
+  timeAgo: string;
+  iconColor: string;
+}
+
+export interface ReferralStats {
+  friends: number;
+  coupons: number;
+}
+
+export interface Coupon {
+  id: string;
+  discount: string;
+  description: string;
+  isRedeemed: boolean;
+}
+
+export interface UserReferralData {
+  profile: UserProfile;
+  pointsBalance: PointsBalance;
+  recentActivity: ActivityItem[];
+  referralStats: ReferralStats;
+  coupons: Coupon[];
+}

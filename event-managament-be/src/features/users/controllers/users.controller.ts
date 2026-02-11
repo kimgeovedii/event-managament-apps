@@ -1,31 +1,59 @@
 ﻿import { Request, Response, NextFunction } from "express";
 
 export class UsersController {
-  public async create(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public create = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     throw new Error("Method not implemented.");
-  }
+  };
 
-  public async findAll(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public findAll = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     throw new Error("Method not implemented.");
-  }
+  };
 
-  public async findOne(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public findOne = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     throw new Error("Method not implemented.");
-  }
+  };
 
-  public async update(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public update = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     throw new Error("Method not implemented.");
-  }
+  };
 
-  public async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public delete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     throw new Error("Method not implemented.");
-  }
+  };
 
-  public async getPointHistory(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public getPointHistory = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     throw new Error("Method not implemented.");
-  }
+  };
 
-  public async getVouchers(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public getVouchers = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     throw new Error("Method not implemented.");
-  }
+  };
 }

@@ -1,5 +1,10 @@
-import App from './app.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
-const app = new App();
+const startApp = async () => {
+  const { default: App } = await import('./app.js');
+  const app = new App();
+  app.listen();
+};
 
-app.listen();
+startApp();

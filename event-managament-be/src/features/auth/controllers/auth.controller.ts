@@ -1,19 +1,86 @@
 import { Request, Response, NextFunction } from "express";
+import { AuthService } from "../services/auth.service.js";
 
 export class AuthController {
-  public async register(req: Request, res: Response, next: NextFunction): Promise<void> {
+  private authService = new AuthService();
+  constructor() {
+    this.authService = new AuthService();
+  }
+  public register = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     // TODO: Implement registration
-  }
+    try {
+      const result = await this.authService.register(req.body);
 
-  public async login(req: Request, res: Response, next: NextFunction): Promise<void> {
+      res.status(200).json({
+        message: "Register Successfully",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public login = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     // TODO: Implement login
-  }
+    try {
+      const result = await this.authService.login(req.body);
 
-  public async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
+      res.status(200).json({
+        message: "Login Successfully",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public logout = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     // TODO: Implement logout
-  }
+    try {
+      res.status(200).json({
+        message: "Logout Successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 
-  public async refreshToken(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public me = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const id = req.user?.id;
+      if (!id) throw new Error("unauthorized");
+      const result = await this.authService.getMe(id);
+
+      res.status(200).json({
+        message: "successfully get user",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public refreshToken = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     // TODO: Implement token refresh
-  }
+  };
 }

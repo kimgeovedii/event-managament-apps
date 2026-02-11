@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { AuthController } from "./controllers/auth.controller.js";
+import { verifyToken } from "src/middlewares/verifyToken.js";
 
 export class AuthRouter {
   private router: Router;
@@ -11,14 +12,15 @@ export class AuthRouter {
     this.setupRoutes();
   }
 
-  private setupRoutes(): void {
+  private setupRoutes = (): void => {
     this.router.post("/register", this.authController.register);
     this.router.post("/login", this.authController.login);
     this.router.post("/logout", this.authController.logout);
+    this.router.get("/me", verifyToken, this.authController.me);
     this.router.post("/refresh-token", this.authController.refreshToken);
-  }
+  };
 
-  public getRouter(): Router {
+  public getRouter = (): Router => {
     return this.router;
-  }
+  };
 }
