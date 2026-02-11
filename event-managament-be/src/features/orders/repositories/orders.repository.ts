@@ -87,8 +87,14 @@ export class OrdersRepository {
   };
 
   public delete = async (id: string): Promise<any> => {
-    return await prisma.transaction.delete({
-      where: { id },
+    return await prisma.$transaction(async (tx) => {
+      await tx.transactionItem.deleteMany({
+        where: { transactionId: id },
+      });
+
+      return await tx.transaction.delete({
+        where: { id },
+      });
     });
   };
 }
