@@ -2,7 +2,6 @@
 
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRegisterForm } from "../hooks";
 import { 
   UserIcon, 
@@ -11,36 +10,37 @@ import {
   EyeIcon, 
   EyeSlashIcon, 
   TicketIcon,
-  CheckIcon 
+  CheckIcon,
+  GoogleIcon
 } from "./ui/Icons";
 
 const RegisterForm: React.FC = () => {
   const { formik, showPassword, togglePasswordVisibility } = useRegisterForm();
 
   return (
-    <div className="w-full max-w-[440px] flex flex-col gap-3">
-      <div className="text-left mb-1">
-        <h2 className="text-2xl font-bold text-[#181114] dark:text-white mb-1 tracking-tight">
-          Create Account
+    <div className="w-full max-w-[440px] flex flex-col gap-6 relative z-10">
+      <div className="flex flex-col gap-1 mb-2">
+        <h2 className="text-3xl md:text-4xl font-black text-black dark:text-white mb-1 uppercase tracking-tighter leading-none italic drop-shadow-[2px_2px_0px_#ee2b8c] dark:drop-shadow-[2px_2px_0px_#FF00FF]">
+          Join The Squad
         </h2>
-        <p className="text-[#896175] dark:text-gray-400 text-sm">
-          Join the community and start collecting rewards today.
+        <p className="text-gray-600 dark:text-gray-400 text-xs md:text-sm font-bold uppercase tracking-wide">
+          Start earning rewards and get exclusive access.
         </p>
       </div>
 
       {/* Form */}
-      <form onSubmit={formik.handleSubmit} className="flex flex-col gap-3">
+      <form onSubmit={formik.handleSubmit} className="flex flex-col gap-4">
         {/* Full Name */}
-        <label className="flex flex-col gap-1">
-          <span className="text-[#181114] dark:text-white text-xs font-semibold">Full Name</span>
-          <div className="relative flex items-center">
-            <span className="absolute left-3 z-10 text-[#896175] dark:text-gray-400">
+        <label className="flex flex-col gap-1.5">
+          <span className="text-black dark:text-white text-xs font-black uppercase tracking-wider">Full Name</span>
+          <div className="relative flex items-center group">
+            <span className="absolute left-3 z-10 text-gray-400 group-focus-within:text-[#ee2b8c] dark:group-focus-within:text-[#FF00FF] transition-colors">
               <UserIcon />
             </span>
             <input 
-              className="w-full h-10 pl-10 pr-3 rounded-lg bg-[#f8f6f7] dark:bg-[#3a1d2e] border border-[#e6dbe0] dark:border-[#4a2d3e] focus:border-[#ee2b8c] focus:outline-none text-[#181114] dark:text-white placeholder:text-[#896175] dark:placeholder:text-gray-400 transition-all font-medium text-sm" 
+              className="w-full h-11 pl-10 pr-3 bg-white dark:bg-black border-2 border-gray-200 dark:border-zinc-800 focus:border-[#ee2b8c] dark:focus:border-[#FF00FF] focus:outline-none text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-zinc-600 transition-all font-bold text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] focus:shadow-[4px_4px_0px_0px_#ee2b8c] dark:focus:shadow-[4px_4px_0px_0px_#FF00FF]" 
               id="fullName"
-              placeholder="Enter your full name" 
+              placeholder="ENTER FULL NAME" 
               type="text"
               name="fullName"
               value={formik.values.fullName}
@@ -48,21 +48,21 @@ const RegisterForm: React.FC = () => {
             />
           </div>
           {formik.touched.fullName && formik.errors.fullName && (
-            <span className="text-red-500 text-[10px] px-1">{formik.errors.fullName}</span>
+            <span className="text-red-500 font-bold uppercase text-[10px] px-1">{formik.errors.fullName}</span>
           )}
         </label>
 
         {/* Email */}
-        <label className="flex flex-col gap-1">
-          <span className="text-[#181114] dark:text-white text-xs font-semibold">Email Address</span>
-          <div className="relative flex items-center">
-            <span className="absolute left-3 z-10 text-[#896175] dark:text-gray-400">
+        <label className="flex flex-col gap-1.5">
+          <span className="text-black dark:text-white text-xs font-black uppercase tracking-wider">Email Address</span>
+          <div className="relative flex items-center group">
+            <span className="absolute left-3 z-10 text-gray-400 group-focus-within:text-[#ee2b8c] dark:group-focus-within:text-[#FF00FF] transition-colors">
               <EmailIcon />
             </span>
             <input 
-              className="w-full h-10 pl-10 pr-3 rounded-lg bg-[#f8f6f7] dark:bg-[#3a1d2e] border border-[#e6dbe0] dark:border-[#4a2d3e] focus:border-[#ee2b8c] focus:outline-none text-[#181114] dark:text-white placeholder:text-[#896175] dark:placeholder:text-gray-400 transition-all font-medium text-sm" 
+              className="w-full h-11 pl-10 pr-3 bg-white dark:bg-black border-2 border-gray-200 dark:border-zinc-800 focus:border-[#ee2b8c] dark:focus:border-[#FF00FF] focus:outline-none text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-zinc-600 transition-all font-bold text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] focus:shadow-[4px_4px_0px_0px_#ee2b8c] dark:focus:shadow-[4px_4px_0px_0px_#FF00FF]" 
               id="email"
-              placeholder="name@example.com" 
+              placeholder="NAME@EXAMPLE.COM" 
               type="email"
               name="email"
               value={formik.values.email}
@@ -70,28 +70,28 @@ const RegisterForm: React.FC = () => {
             />
           </div>
           {formik.touched.email && formik.errors.email && (
-            <span className="text-red-500 text-[10px] px-1">{formik.errors.email}</span>
+            <span className="text-red-500 font-bold uppercase text-[10px] px-1">{formik.errors.email}</span>
           )}
         </label>
 
         {/* Password */}
-        <label className="flex flex-col gap-1">
-          <span className="text-[#181114] dark:text-white text-xs font-semibold">Password</span>
-          <div className="relative flex items-center">
-            <span className="absolute left-3 z-10 text-[#896175] dark:text-gray-400">
+        <label className="flex flex-col gap-1.5">
+          <span className="text-black dark:text-white text-xs font-black uppercase tracking-wider">Password</span>
+          <div className="relative flex items-center group">
+            <span className="absolute left-3 z-10 text-gray-400 group-focus-within:text-[#ee2b8c] dark:group-focus-within:text-[#FF00FF] transition-colors">
               <LockIcon />
             </span>
             <input 
-              className="w-full h-10 pl-10 pr-10 rounded-lg bg-[#f8f6f7] dark:bg-[#3a1d2e] border border-[#e6dbe0] dark:border-[#4a2d3e] focus:border-[#ee2b8c] focus:outline-none text-[#181114] dark:text-white placeholder:text-[#896175] dark:placeholder:text-gray-400 transition-all font-medium text-sm" 
+              className="w-full h-11 pl-10 pr-10 bg-white dark:bg-black border-2 border-gray-200 dark:border-zinc-800 focus:border-[#ee2b8c] dark:focus:border-[#FF00FF] focus:outline-none text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-zinc-600 transition-all font-bold text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] focus:shadow-[4px_4px_0px_0px_#ee2b8c] dark:focus:shadow-[4px_4px_0px_0px_#FF00FF]" 
               id="password"
-              placeholder="Create a password" 
+              placeholder="CREATE PASSWORD" 
               type={showPassword ? "text" : "password"}
               name="password"
               value={formik.values.password}
               onChange={formik.handleChange}
             />
             <button 
-              className="absolute right-3 z-10 text-[#896175] dark:text-gray-400 hover:text-[#181114] dark:hover:text-white transition-colors cursor-pointer bg-transparent border-none p-0" 
+              className="absolute right-3 z-10 text-gray-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer bg-transparent border-none p-0" 
               type="button"
               onClick={togglePasswordVisibility}
             >
@@ -99,24 +99,24 @@ const RegisterForm: React.FC = () => {
             </button>
           </div>
           {formik.touched.password && formik.errors.password && (
-            <span className="text-red-500 text-[10px] px-1">{formik.errors.password}</span>
+            <span className="text-red-500 font-bold uppercase text-[10px] px-1">{formik.errors.password}</span>
           )}
         </label>
 
         {/* Referral Code */}
-        <label className="flex flex-col gap-1">
+        <label className="flex flex-col gap-1.5">
           <div className="flex justify-between items-center">
-            <span className="text-[#181114] dark:text-white text-xs font-semibold">
-              Referral Code <span className="font-normal text-[#896175] dark:text-gray-500">(Optional)</span>
+            <span className="text-black dark:text-white text-xs font-black uppercase tracking-wider">
+              Referral Code <span className="font-bold text-gray-400">(Optional)</span>
             </span>
-            <span className="text-[10px] font-bold text-[#ee2b8c] animate-pulse">Earn Bonus Points</span>
+            <span className="text-[10px] font-black text-[#ee2b8c] dark:text-[#FF00FF] uppercase tracking-wider animate-pulse bg-black dark:bg-white text-white dark:text-black px-1.5 py-0.5 transform -rotate-2">Bonus Points!</span>
           </div>
-          <div className="relative flex items-center">
-            <span className="absolute left-3 z-10 text-[#ee2b8c]">
+          <div className="relative flex items-center group">
+            <span className="absolute left-3 z-10 text-[#ee2b8c] dark:text-[#FF00FF]">
               <TicketIcon />
             </span>
             <input 
-              className="w-full h-10 pl-10 pr-3 rounded-lg bg-[#ee2b8c]/5 dark:bg-[#ee2b8c]/10 border border-dashed border-[#ee2b8c]/30 focus:border-[#ee2b8c] focus:outline-none text-[#181114] dark:text-white placeholder:text-[#896175] dark:placeholder:text-gray-400 transition-all font-medium text-sm" 
+              className="w-full h-11 pl-10 pr-3 bg-[#ee2b8c]/5 dark:bg-[#FF00FF]/10 border-2 border-dashed border-[#ee2b8c]/50 dark:border-[#FF00FF]/50 focus:border-[#ee2b8c] dark:focus:border-[#FF00FF] focus:outline-none text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-zinc-600 transition-all font-bold text-sm shadow-[2px_2px_0px_0px_rgba(238,43,140,0.1)] focus:shadow-[4px_4px_0px_0px_#ee2b8c] dark:focus:shadow-[4px_4px_0px_0px_#FF00FF]" 
               id="referralCode"
               placeholder="HYPE-2023" 
               type="text"
@@ -128,30 +128,30 @@ const RegisterForm: React.FC = () => {
         </label>
 
         {/* Terms Checkbox */}
-        <label className="flex items-start gap-2 mt-1 cursor-pointer group select-none">
+        <label className="flex items-start gap-3 mt-1 cursor-pointer group select-none">
           <div className="relative flex items-center justify-center mt-0.5">
             <input 
-              className="peer h-4 w-4 cursor-pointer appearance-none rounded border border-[#e6dbe0] dark:border-[#4a2d3e] bg-white dark:bg-[#3a1d2e] checked:border-[#ee2b8c] checked:bg-[#ee2b8c] transition-all" 
+              className="peer h-5 w-5 cursor-pointer appearance-none border-2 border-gray-300 dark:border-zinc-700 bg-white dark:bg-black checked:border-[#ee2b8c] dark:checked:border-[#FF00FF] checked:bg-[#ee2b8c] dark:checked:bg-[#FF00FF] transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]" 
               type="checkbox"
               name="terms"
               checked={formik.values.terms}
               onChange={formik.handleChange}
             />
-            <span className="absolute text-white opacity-0 peer-checked:opacity-100 pointer-events-none">
+            <span className="absolute text-white opacity-0 peer-checked:opacity-100 pointer-events-none transform scale-75">
               <CheckIcon />
             </span>
           </div>
-          <span className="text-xs text-[#5f4351] dark:text-gray-400 group-hover:text-[#181114] dark:group-hover:text-gray-200 transition-colors leading-tight">
-             I agree to the <Link href="#" className="text-[#181114] dark:text-white underline decoration-[#ee2b8c]/50 hover:decoration-[#ee2b8c] font-medium">Terms & Conditions</Link> and <Link href="#" className="text-[#181114] dark:text-white underline decoration-[#ee2b8c]/50 hover:decoration-[#ee2b8c] font-medium">Privacy Policy</Link>.
+          <span className="text-xs text-gray-600 dark:text-gray-400 font-bold uppercase tracking-wide group-hover:text-black dark:group-hover:text-white transition-colors leading-tight">
+             I agree to the <Link href="#" className="text-black dark:text-white underline decoration-2 underline-offset-2 decoration-[#ee2b8c] dark:decoration-[#FF00FF] hover:text-[#ee2b8c] dark:hover:text-[#FF00FF]">Terms & Conditions</Link>
           </span>
         </label>
         {formik.touched.terms && formik.errors.terms && (
-          <span className="text-red-500 text-[10px] px-1">{formik.errors.terms}</span>
+          <span className="text-red-500 font-bold uppercase text-[10px] px-1">{formik.errors.terms}</span>
         )}
 
         {/* Submit Button */}
         <button 
-          className="mt-2 flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-full h-11 px-4 bg-[#ee2b8c] hover:bg-[#d91b7a] active:bg-[#b01663] text-white text-sm font-bold leading-normal tracking-[0.015em] transition-all shadow-lg shadow-[#ee2b8c]/25 hover:shadow-[#ee2b8c]/40 transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed" 
+          className="mt-2 w-full h-12 bg-[#ee2b8c] hover:bg-[#d61f7a] dark:bg-[#FF00FF] dark:hover:bg-[#d900d9] text-white dark:text-black text-sm font-black uppercase tracking-widest border-2 border-black shadow-[4px_4px_0px_0px_#000000] dark:shadow-[4px_4px_0px_0px_#ffffff] hover:shadow-[2px_2px_0px_0px_#000000] dark:hover:shadow-[2px_2px_0px_0px_#ffffff] hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed" 
           type="submit"
           disabled={!formik.isValid || !formik.dirty}
         >
@@ -160,33 +160,17 @@ const RegisterForm: React.FC = () => {
       </form>
 
       {/* Divider */}
-      <div className="relative flex py-1 items-center">
-        <div className="flex-grow border-t border-[#e6dbe0] dark:border-[#4a2d3e]"></div>
-        <span className="flex-shrink-0 mx-3 text-xs text-[#896175] dark:text-gray-500 font-medium">Or continue with</span>
-        <div className="flex-grow border-t border-[#e6dbe0] dark:border-[#4a2d3e]"></div>
+      <div className="relative flex py-2 items-center">
+        <div className="flex-grow border-t-2 border-dashed border-gray-300 dark:border-zinc-800"></div>
+        <span className="flex-shrink-0 mx-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Or continue with</span>
+        <div className="flex-grow border-t-2 border-dashed border-gray-300 dark:border-zinc-800"></div>
       </div>
 
       {/* Social Login */}
-      <div className="grid grid-cols-2 gap-3">
-        <button className="flex items-center justify-center gap-2 h-10 rounded-lg border border-[#e6dbe0] dark:border-[#4a2d3e] bg-white dark:bg-[#3a1d2e] hover:bg-[#f8f6f7] dark:hover:bg-[#4a2d3e] transition-colors text-[#181114] dark:text-white font-semibold text-xs">
-          <Image 
-            alt="Google Logo" 
-            className="w-4 h-4" 
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSqLVR5FYUoUtKAiflF-IBXdq4c5Ua_zpdPRl3IVnsZAX0pSOsgUgAfBVdOeOClAMDeOFGgzPrX9dyWnCr-3iy2DOzDbQkNMbAnmaloesokhSMpteYKRc0sHR46YVQDaeIWqzqGnxs5HXBfwpWZBE86qh4e_15uyD8MfOFJtjjUe_WJ-6m2tQqA-jiSW_64EOkkwYBhr2B9jwURtbUeQ0clEjCerI4nQehgcF-soqcFBRVSNmu6sbS5WlqRikKgG8I72cuGPpRgyM" 
-            width={16} 
-            height={16} 
-          />
-          Google
-        </button>
-        <button className="flex items-center justify-center gap-2 h-10 rounded-lg border border-[#e6dbe0] dark:border-[#4a2d3e] bg-white dark:bg-[#3a1d2e] hover:bg-[#f8f6f7] dark:hover:bg-[#4a2d3e] transition-colors text-[#181114] dark:text-white font-semibold text-xs">
-          <Image 
-            alt="Facebook Logo" 
-            className="w-4 h-4" 
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLxn7NkMJo473nE-2slq9ARs8vrBtQgd0uU0AQjTNkWXFv4fnN0NyfAuMRUaxzUfFi7ZRSFdh82fmCfbP5t3Evs98SfMDi7V8HwN2z6JywcjHqhaZYl1Z_P3V_Bv8K6lAW2yDTjZL3n24bdI4P2_C0IAazMkxbKmCZ6fjDCgcmWwFBGpoW7aKfbC6lmgvZTmCQFw-FFLhbTvX82nIEx7Bg1FFwN8Kmt8sy43RTXj65LmHBGIw5w1F87KHKT-jrOtBf3Nrahj99IDU" 
-            width={16} 
-            height={16} 
-          />
-          Facebook
+      <div className="flex flex-col gap-4">
+        <button className="flex items-center justify-center gap-2 h-11 border-2 border-gray-200 dark:border-zinc-800 bg-white dark:bg-black hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors text-black dark:text-white font-bold text-xs uppercase tracking-wide shadow-[2px_2px_0px_0px_#ccc] dark:shadow-[2px_2px_0px_0px_#333] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] w-full">
+          <GoogleIcon />
+          Continue with Google
         </button>
       </div>
     </div>

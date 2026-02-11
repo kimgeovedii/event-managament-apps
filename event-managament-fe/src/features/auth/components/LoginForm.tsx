@@ -2,57 +2,57 @@
 
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useLoginForm } from "../hooks";
-import { 
-  BoltIcon, 
-  EmailIcon, 
-  LockIcon, 
-  EyeIcon, 
-  EyeSlashIcon, 
-  ArrowRightIcon, 
-  ChevronRightIcon, 
-  CheckIcon 
+import {
+  BoltIcon,
+  EmailIcon,
+  LockIcon,
+  EyeIcon,
+  EyeSlashIcon,
+  ArrowRightIcon,
+  CheckIcon,
+  GoogleIcon,
 } from "./ui/Icons";
+import { useStoreLogin } from "../store/useStoreLogin";
 
 const LoginForm: React.FC = () => {
   const { formik, showPassword, togglePasswordVisibility } = useLoginForm();
-
+  const { isAuthenticated, accessToken } = useStoreLogin();
   return (
-    <div className="w-full max-w-[400px] flex flex-col gap-4">
+    <div className="w-full max-w-[420px] flex flex-col gap-6 relative z-10">
       {/* Header */}
-      <div className="flex flex-col gap-1 mb-1">
+      <div className="flex flex-col gap-2 mb-2">
         <div className="flex items-center gap-2 mb-1">
-          <div className="h-7 w-7 rounded-lg bg-[#ee2b8c] flex items-center justify-center text-white">
+          <div className="h-8 w-8 bg-[#ee2b8c] dark:bg-[#FF00FF] border-2 border-black flex items-center justify-center text-white shadow-[2px_2px_0px_0px_#000000] dark:shadow-[2px_2px_0px_0px_#ffffff]">
             <BoltIcon />
           </div>
-          <span className="text-lg font-bold tracking-tight text-[#181114] dark:text-white">
+          <span className="text-xl font-black uppercase tracking-tighter text-black dark:text-white italic">
             Hype
           </span>
         </div>
-        <h2 className="text-[#181114] dark:text-white text-2xl font-black leading-tight tracking-tight">
-          Log In to Hype
+        <h2 className="text-black dark:text-white text-3xl md:text-4xl font-black leading-none tracking-tighter uppercase drop-shadow-[2px_2px_0px_rgba(238,43,140,0.2)] dark:drop-shadow-[2px_2px_0px_rgba(255,0,255,0.4)]">
+          Log In
         </h2>
-        <p className="text-[#896175] dark:text-gray-300 text-sm font-normal">
-          Welcome back! Please enter your details.
+        <p className="text-gray-600 dark:text-gray-400 text-sm font-bold uppercase tracking-wide">
+          Welcome back! Enter your details.
         </p>
       </div>
 
       {/* Form */}
-      <form onSubmit={formik.handleSubmit} className="flex flex-col gap-3">
+      <form onSubmit={formik.handleSubmit} className="flex flex-col gap-4">
         {/* Email Field */}
-        <label className="flex flex-col gap-1">
-          <span className="text-[#181114] dark:text-white text-xs font-semibold">
+        <label className="flex flex-col gap-1.5">
+          <span className="text-black dark:text-white text-xs font-black uppercase tracking-wider">
             Email Address
           </span>
-          <div className="relative flex items-center">
-            <span className="absolute left-3 z-10 text-[#896175] dark:text-gray-400">
+          <div className="relative flex items-center group">
+            <span className="absolute left-3 z-10 text-gray-400 group-focus-within:text-[#ee2b8c] dark:group-focus-within:text-[#FF00FF] transition-colors">
               <EmailIcon />
             </span>
             <input
-              className="w-full h-10 pl-10 pr-3 rounded-lg bg-[#f8f6f7] dark:bg-[#3a1d2e] border border-[#e6dbe0] dark:border-[#4a2d3e] focus:border-[#ee2b8c] focus:outline-none text-[#181114] dark:text-white placeholder:text-[#896175] dark:placeholder:text-gray-400 transition-all font-medium text-sm"
+              className="w-full h-11 pl-10 pr-3 bg-white dark:bg-black border-2 border-gray-200 dark:border-zinc-800 focus:border-[#ee2b8c] dark:focus:border-[#FF00FF] focus:outline-none text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-zinc-600 transition-all font-bold text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] focus:shadow-[4px_4px_0px_0px_#ee2b8c] dark:focus:shadow-[4px_4px_0px_0px_#FF00FF]"
               id="email"
-              placeholder="Enter your email"
+              placeholder="ENTER YOUR EMAIL"
               type="email"
               name="email"
               value={formik.values.email}
@@ -60,30 +60,32 @@ const LoginForm: React.FC = () => {
             />
           </div>
           {formik.touched.email && formik.errors.email && (
-            <span className="text-red-500 text-[10px] px-1">{formik.errors.email}</span>
+            <span className="text-red-500 font-bold uppercase text-[10px] px-1">
+              {formik.errors.email}
+            </span>
           )}
         </label>
 
         {/* Password Field */}
-        <label className="flex flex-col gap-1">
-          <span className="text-[#181114] dark:text-white text-xs font-semibold">
+        <label className="flex flex-col gap-1.5">
+          <span className="text-black dark:text-white text-xs font-black uppercase tracking-wider">
             Password
           </span>
-          <div className="relative flex items-center">
-            <span className="absolute left-3 z-10 text-[#896175] dark:text-gray-400">
+          <div className="relative flex items-center group">
+            <span className="absolute left-3 z-10 text-gray-400 group-focus-within:text-[#ee2b8c] dark:group-focus-within:text-[#FF00FF] transition-colors">
               <LockIcon />
             </span>
             <input
-              className="w-full h-10 pl-10 pr-10 rounded-lg bg-[#f8f6f7] dark:bg-[#3a1d2e] border border-[#e6dbe0] dark:border-[#4a2d3e] focus:border-[#ee2b8c] focus:outline-none text-[#181114] dark:text-white placeholder:text-[#896175] dark:placeholder:text-gray-400 transition-all font-medium text-sm"
+              className="w-full h-11 pl-10 pr-10 bg-white dark:bg-black border-2 border-gray-200 dark:border-zinc-800 focus:border-[#ee2b8c] dark:focus:border-[#FF00FF] focus:outline-none text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-zinc-600 transition-all font-bold text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] focus:shadow-[4px_4px_0px_0px_#ee2b8c] dark:focus:shadow-[4px_4px_0px_0px_#FF00FF]"
               id="password"
-              placeholder="Enter your password"
+              placeholder="ENTER PASSWORD"
               type={showPassword ? "text" : "password"}
               name="password"
               value={formik.values.password}
               onChange={formik.handleChange}
             />
             <button
-              className="absolute right-3 z-10 text-[#896175] dark:text-gray-400 hover:text-[#181114] dark:hover:text-white transition-colors cursor-pointer bg-transparent border-none p-0"
+              className="absolute right-3 z-10 text-gray-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer bg-transparent border-none p-0"
               type="button"
               onClick={togglePasswordVisibility}
             >
@@ -91,32 +93,34 @@ const LoginForm: React.FC = () => {
             </button>
           </div>
           {formik.touched.password && formik.errors.password && (
-            <span className="text-red-500 text-[10px] px-1">{formik.errors.password}</span>
+            <span className="text-red-500 font-bold uppercase text-[10px] px-1">
+              {formik.errors.password}
+            </span>
           )}
         </label>
 
         {/* Actions Row */}
         <div className="flex items-center justify-between mt-1">
-          <label className="flex items-start gap-2 cursor-pointer group select-none">
-            <div className="relative flex items-center justify-center mt-0.5">
+          <label className="flex items-center gap-2 cursor-pointer group select-none">
+            <div className="relative flex items-center justify-center">
               <input
-                className="peer h-4 w-4 cursor-pointer appearance-none rounded border border-[#e6dbe0] dark:border-[#4a2d3e] bg-white dark:bg-[#3a1d2e] checked:border-[#ee2b8c] checked:bg-[#ee2b8c] transition-all"
+                className="peer h-5 w-5 cursor-pointer appearance-none border-2 border-gray-300 dark:border-zinc-700 bg-white dark:bg-black checked:border-[#ee2b8c] dark:checked:border-[#FF00FF] checked:bg-[#ee2b8c] dark:checked:bg-[#FF00FF] transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]"
                 type="checkbox"
                 name="remember"
                 checked={formik.values.remember}
                 onChange={formik.handleChange}
               />
-              <span className="absolute text-white opacity-0 peer-checked:opacity-100 pointer-events-none">
+              <span className="absolute text-white opacity-0 peer-checked:opacity-100 pointer-events-none transform scale-75">
                 <CheckIcon />
               </span>
             </div>
-            <span className="text-[#181114] dark:text-gray-200 text-xs font-medium group-hover:text-[#ee2b8c] transition-colors">
+            <span className="text-gray-600 dark:text-gray-300 text-xs font-bold uppercase tracking-wide group-hover:text-[#ee2b8c] dark:group-hover:text-[#FF00FF] transition-colors">
               Remember me
             </span>
           </label>
           <Link
             href="#"
-            className="text-xs font-semibold text-[#ee2b8c] hover:text-[#d61f7a] transition-colors"
+            className="text-xs font-bold uppercase tracking-wide text-[#ee2b8c] dark:text-[#FF00FF] hover:underline decoration-2 underline-offset-2"
           >
             Forgot Password?
           </Link>
@@ -124,62 +128,41 @@ const LoginForm: React.FC = () => {
 
         {/* Primary Button */}
         <button
-          className="mt-2 w-full h-11 bg-[#ee2b8c] hover:bg-[#d61f7a] text-white text-sm font-bold rounded-full shadow-lg shadow-[#ee2b8c]/30 hover:shadow-[#ee2b8c]/40 transition-all duration-200 active:scale-[0.99] flex items-center justify-center gap-2"
+          className="mt-2 w-full h-12 bg-[#ee2b8c] hover:bg-[#d61f7a] dark:bg-[#FF00FF] dark:hover:bg-[#d900d9] text-white dark:text-black text-sm font-black uppercase tracking-widest border-2 border-black shadow-[4px_4px_0px_0px_#000000] dark:shadow-[4px_4px_0px_0px_#ffffff] hover:shadow-[2px_2px_0px_0px_#000000] dark:hover:shadow-[2px_2px_0px_0px_#ffffff] hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center justify-center gap-2"
           type="submit"
         >
-          <span>Sign In</span>
+          <span>Log In</span>
           <ArrowRightIcon />
         </button>
       </form>
 
       {/* Divider */}
-      <div className="relative flex py-1 items-center">
-        <div className="flex-grow border-t border-[#e6dbe0] dark:border-[#4a2d3e]"></div>
-        <span className="flex-shrink-0 mx-3 text-xs text-[#896175] dark:text-gray-400 font-medium uppercase tracking-wider">Or continue with</span>
-        <div className="flex-grow border-t border-[#e6dbe0] dark:border-[#4a2d3e]"></div>
+      <div className="relative flex py-2 items-center">
+        <div className="flex-grow border-t-2 border-dashed border-gray-300 dark:border-zinc-800"></div>
+        <span className="flex-shrink-0 mx-4 text-[10px] font-black uppercase tracking-widest text-gray-400">
+          Or continue with
+        </span>
+        <div className="flex-grow border-t-2 border-dashed border-gray-300 dark:border-zinc-800"></div>
       </div>
 
       {/* Social Login */}
-      <div className="grid grid-cols-2 gap-3">
-        <button className="flex items-center justify-center gap-2 h-10 rounded-lg border border-[#e6dbe0] dark:border-[#4a2d3e] bg-white dark:bg-[#3a1d2e] hover:bg-[#f8f6f7] dark:hover:bg-[#4a2d3e] transition-colors text-[#181114] dark:text-white font-semibold text-xs">
-          <Image
-            alt="Google Logo"
-            className="w-4 h-4"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBWKfWAJig2saHdYwZ70vVAbCoy4hr3MMw9KZ9xPNp88RNA6yo5iesLKK5gPn3NoQyDTTrCR3NA6473191U-pqgHSaq5-6y2yz5caAqcYRkjUjbORHHElYb_CcFxRNbpeKLaFFKF_l0ihkwBARk5Wwpk-ry-5uVA8Zo_XF7BZ1DlYACwlETgtlIperTjZ42xZqHq1DfNR1WEVHpFddeQgQ1TkvMiuI1Nwd-tFMHoB28jp68F1FCvtSb8hHJ-KhUwcAFMSR__EWnAQ"
-            width={16}
-            height={16}
-          />
-          Google
-        </button>
-        <button className="flex items-center justify-center gap-2 h-10 rounded-lg border border-[#e6dbe0] dark:border-[#4a2d3e] bg-white dark:bg-[#3a1d2e] hover:bg-[#f8f6f7] dark:hover:bg-[#4a2d3e] transition-colors text-[#181114] dark:text-white font-semibold text-xs">
-          <Image
-            alt="Apple Logo"
-            className="w-4 h-4"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBG8ZsZVlTFMzShmpKQvXVP6f3WYtO_uhbBxI6PZIF81bCJAgPoXFYAhLDlvxJ3LfYt1PetRNs8kE0Z4wcY6FTdTn5dOrbPSsutn__--hN8Baa5b746IGFuzPEsw5jE9WRQgU3VLRWjTvsB5pgG31MT6gAfTVEt6QlGH1E6gIsQkZE0pnQfsHb82i1brgrKXAWxTjduuoIv9Hc0MTEmGj8CZU_cX3_dRjSMKSjXZMrzujcMcNb4KljTt8icNLwgOGvwzlSbiRz9-mI"
-            width={16}
-            height={16}
-          />
-          Apple
+      <div className="flex flex-col gap-4">
+        <button className="flex items-center justify-center gap-2 h-11 border-2 border-gray-200 dark:border-zinc-800 bg-white dark:bg-black hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors text-black dark:text-white font-bold text-xs uppercase tracking-wide shadow-[2px_2px_0px_0px_#ccc] dark:shadow-[2px_2px_0px_0px_#333] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] w-full">
+          <GoogleIcon />
+          Continue with Google
         </button>
       </div>
 
       {/* Footer CTA */}
-      <div className="mt-1 p-3 rounded-xl bg-[#f8f6f7] dark:bg-[#3a1d2e] border border-[#e6dbe0] dark:border-[#4a2d3e] text-center">
-        <p className="text-[#181114] dark:text-white text-xs font-medium">
+      <div className="mt-2 text-center">
+        <p className="text-gray-600 dark:text-gray-400 text-xs font-bold uppercase tracking-wide">
           New to Hype?
           <Link
             href="/register"
-            className="font-bold text-[#ee2b8c] hover:text-[#d61f7a] ml-1 inline-flex items-center gap-1 group transition-colors"
+            className="text-[#ee2b8c] dark:text-[#FF00FF] ml-1 hover:underline decoration-2 underline-offset-2"
           >
             Create an account
-            <span className="group-hover:translate-x-0.5 transition-transform inline-block">
-              <ChevronRightIcon />
-            </span>
           </Link>
-        </p>
-        <p className="text-[10px] text-[#896175] dark:text-gray-400 mt-0.5 font-medium">
-          Register now and get{" "}
-          <span className="text-[#ee2b8c] font-bold">10,000 points</span> bonus!
         </p>
       </div>
     </div>

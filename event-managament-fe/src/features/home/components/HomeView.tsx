@@ -1,8 +1,6 @@
 "use client";
 
 import React from "react";
-import { MainNavbar, MainFooter } from "@/components/layouts/home";
-import { FloatingThemeToggle } from "@/features/theme";
 import HeroSection from "./HeroSection";
 import MarqueeSection from "./MarqueeSection";
 import PromoCardsSection from "./PromoCardsSection";
@@ -15,9 +13,6 @@ import NewsletterSection from "./NewsletterSection";
 const HomeView: React.FC = () => {
   return (
     <div className="bg-white dark:bg-[#050505] text-gray-900 dark:text-white font-body min-h-screen flex flex-col selection:bg-[#ee2b8c] dark:selection:bg-[#FF00FF] selection:text-white dark:selection:text-black">
-      {/* Navbar */}
-      <MainNavbar />
-
       {/* Main Content */}
       <main className="flex-1 flex flex-col w-full overflow-x-hidden">
         {/* Hero Section */}
@@ -44,12 +39,6 @@ const HomeView: React.FC = () => {
         {/* Newsletter */}
         <NewsletterSection />
       </main>
-
-      {/* Footer */}
-      <MainFooter />
-
-      {/* Floating Theme Toggle */}
-      <FloatingThemeToggle />
     </div>
   );
 };
