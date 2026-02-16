@@ -13,10 +13,18 @@ import {
   CheckIcon,
   GoogleIcon,
 } from "./ui/Icons";
-import { useStoreLogin } from "../store/useStoreLogin";
+import { useStoreLogin } from "../store/useAuthStore";
+import { Alert, CircularProgress, Snackbar } from "@mui/material";
 
 const LoginForm: React.FC = () => {
-  const { formik, showPassword, togglePasswordVisibility } = useLoginForm();
+  const {
+    formik,
+    showPassword,
+    togglePasswordVisibility,
+    loading,
+    toast,
+    handleCloseToast,
+  } = useLoginForm();
   const { isAuthenticated, accessToken } = useStoreLogin();
   return (
     <div className="w-full max-w-[420px] flex flex-col gap-6 relative z-10">
@@ -131,8 +139,14 @@ const LoginForm: React.FC = () => {
           className="mt-2 w-full h-12 bg-[#ee2b8c] hover:bg-[#d61f7a] dark:bg-[#FF00FF] dark:hover:bg-[#d900d9] text-white dark:text-black text-sm font-black uppercase tracking-widest border-2 border-black shadow-[4px_4px_0px_0px_#000000] dark:shadow-[4px_4px_0px_0px_#ffffff] hover:shadow-[2px_2px_0px_0px_#000000] dark:hover:shadow-[2px_2px_0px_0px_#ffffff] hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center justify-center gap-2"
           type="submit"
         >
-          <span>Log In</span>
-          <ArrowRightIcon />
+          {loading ? (
+            <CircularProgress size={20} color="inherit" />
+          ) : (
+            <>
+              <span>Log In</span>
+              <ArrowRightIcon />
+            </>
+          )}
         </button>
       </form>
 
@@ -165,6 +179,21 @@ const LoginForm: React.FC = () => {
           </Link>
         </p>
       </div>
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={6000}
+        onClose={handleCloseToast}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseToast}
+          severity={toast.severity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {toast.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

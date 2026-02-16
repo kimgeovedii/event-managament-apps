@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { signIn } from "../services/authService";
-import { useStoreLogin } from "../store/useStoreLogin";
+import { useStoreLogin } from "../store/useAuthStore";
 import { useRouter } from "next/navigation";
 
 export interface LoginFormValues {
@@ -15,8 +15,14 @@ export interface LoginFormValues {
 export const useLoginForm = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState();
-  const { signIn, accessToken, refreshToken } = useStoreLogin();
+  const [loading, setLoading] = useState(false);
+  const { signIn, accessToken, refreshToken, error } = useStoreLogin();
+  const [toast, setToast] = useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "error",
+  });
+
   const formik = useFormik<LoginFormValues>({
     initialValues: {
       email: "",
@@ -28,9 +34,36 @@ export const useLoginForm = () => {
       password: Yup.string().required("Required"),
     }),
     onSubmit: async (values) => {
-      console.log("Login form values:", values);
-      // TODO: Implement actual login logi
-      await signIn(values);
+      setLoading(true);
+      try {
+        const success = await signIn(values);
+        if (success) {
+          setToast({
+            open: true,
+            message: "Login Successfully! Redirecting to home...",
+            severity: "success",
+          });
+          setTimeout(() => {
+            router.push("/");
+          }, 2000);
+        } else {
+          // Login failed
+          setToast({
+            open: true,
+            message: useStoreLogin.getState().error || "Login Failed, please verify your email and password",
+            severity: "error",
+          });
+        }
+      } catch (err: any) {
+        console.error("Login Error:", err);
+        setToast({
+          open: true,
+          message: "An unexpected error occurred",
+          severity: "error",
+        });
+      } finally {
+        setLoading(false);
+      }
     },
   });
   useEffect(() => {
@@ -41,10 +74,15 @@ export const useLoginForm = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
+  const handleCloseToast = () => {
+    setToast((prev) => ({ ...prev, open: false }));
+  };
   return {
     formik,
     showPassword,
+    loading,
+    toast,
+    handleCloseToast,
     togglePasswordVisibility,
   };
 };
