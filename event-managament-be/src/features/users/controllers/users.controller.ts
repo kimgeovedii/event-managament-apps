@@ -31,7 +31,7 @@ export class UsersController {
   ): Promise<void> => {
     try {
       const { id } = req.params;
-      const resul = await this.UsersService.findOne(id);
+      const resul = await this.UsersService.findOne(id as string);
 
       res.status(200).json({
         message: "successfully get user",

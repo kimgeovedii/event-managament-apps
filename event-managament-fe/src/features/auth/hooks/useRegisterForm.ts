@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useStoreLogin } from "../store/useAuthStore";
 import { SignUp } from "../types/auth.types";
 
+export type RegisterFormValues = SignUp;
+
 export const useRegisterForm = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
@@ -23,6 +25,7 @@ export const useRegisterForm = () => {
       password: "",
       referralCode: "",
       terms: false,
+      role: "CUSTOMER",
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Full name is required"),

@@ -87,7 +87,7 @@ export class ReviewsController {
     }
   };
 
-  public getReviewsByTicket = async (
+  public getReviewsByEvent = async (
     req: Request,
     res: Response,
     next: NextFunction,
@@ -95,10 +95,10 @@ export class ReviewsController {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
-      const ticketId = req.params.id as string;
+      const eventId = req.params.id as string;
 
-      const { data, meta } = await this.reviewsService.findByTicket(
-        ticketId,
+      const { data, meta } = await this.reviewsService.findByEvent(
+        eventId,
         page,
         limit,
       );

@@ -35,6 +35,40 @@ const RegisterForm: React.FC = () => {
           Start earning rewards and get exclusive access.
         </p>
       </div>
+      
+      {/* Role Selection */}
+      <div className="flex gap-4 mb-2">
+        <label className="flex-1 cursor-pointer group">
+          <input
+            type="radio"
+            name="role"
+            value="CUSTOMER"
+            checked={formik.values.role === "CUSTOMER"}
+            onChange={formik.handleChange}
+            className="hidden peer"
+          />
+          <div className="h-12 flex items-center justify-center border-2 border-gray-200 dark:border-zinc-800 bg-white dark:bg-black peer-checked:border-[#ee2b8c] dark:peer-checked:border-[#FF00FF] peer-checked:bg-[#ee2b8c]/5 dark:peer-checked:bg-[#FF00FF]/10 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] peer-checked:shadow-[4px_4px_0px_0px_#ee2b8c] dark:peer-checked:shadow-[4px_4px_0px_0px_#FF00FF]">
+            <span className="text-xs font-black uppercase tracking-wider text-gray-400 peer-checked:text-[#ee2b8c] dark:peer-checked:text-[#FF00FF]">
+              Customer
+            </span>
+          </div>
+        </label>
+        <label className="flex-1 cursor-pointer group">
+          <input
+            type="radio"
+            name="role"
+            value="ORGANIZER"
+            checked={formik.values.role === "ORGANIZER"}
+            onChange={formik.handleChange}
+            className="hidden peer"
+          />
+          <div className="h-12 flex items-center justify-center border-2 border-gray-200 dark:border-zinc-800 bg-white dark:bg-black peer-checked:border-[#ee2b8c] dark:peer-checked:border-[#FF00FF] peer-checked:bg-[#ee2b8c]/5 dark:peer-checked:bg-[#FF00FF]/10 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] peer-checked:shadow-[4px_4px_0px_0px_#ee2b8c] dark:peer-checked:shadow-[4px_4px_0px_0px_#FF00FF]">
+            <span className="text-xs font-black uppercase tracking-wider text-gray-400 peer-checked:text-[#ee2b8c] dark:peer-checked:text-[#FF00FF]">
+              Organizer
+            </span>
+          </div>
+        </label>
+      </div>
 
       {/* Form */}
       <form onSubmit={formik.handleSubmit} className="flex flex-col gap-4">

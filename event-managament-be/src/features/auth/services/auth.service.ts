@@ -6,18 +6,18 @@ import {
   RegisterRequest,
 } from "../types/auth.types.js";
 import jwt from "jsonwebtoken";
-import { UserPointRepository } from "src/features/userPoint/repositories/userPoint.repository.js";
-import { prisma } from "src/config/prisma.js";
-import { VoucherRepository } from "src/features/voucher/repositories/voucher.repository.js";
+import { UserPointRepository } from "../../userPoint/repositories/userPoint.repository.js";
+import { prisma } from "../../../config/prisma.js";
+import { UserCouponRepository } from "../../userCoupons/repositories/voucher.repository.js";
 
 export class AuthService {
   private UserPointRepository = new UserPointRepository();
   private AuthRepository = new AuthRepository();
-  private VoucherRepository = new VoucherRepository();
+  private UserCouponRepository = new UserCouponRepository();
   constructor() {
     this.AuthRepository = new AuthRepository();
     this.UserPointRepository = new UserPointRepository();
-    this.VoucherRepository = new VoucherRepository();
+    this.UserCouponRepository = new UserCouponRepository();
   }
   public register = async (data: RegisterRequest): Promise<any> => {
     // Registration logic
@@ -27,7 +27,7 @@ export class AuthService {
     }
     const hashPassword = await bcrypt.hash(data.password, 10);
     const friendReferralCode = data.referralCode;
-    const myNewReferralCode = `REF-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+
     let referrerId: string | undefined;
 
     if (friendReferralCode) {
@@ -38,38 +38,44 @@ export class AuthService {
       }
       referrerId = referrer.id;
     }
-    return await prisma.$transaction(async (tx) => {
+
+    return await prisma.$transaction(async (tx: any) => {
       const newUser = await this.AuthRepository.createUser({
         ...data,
         password: hashPassword,
         referralCode: `REF-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
       });
-      const referal = data.referralCode;
-      if (referal) {
-        const owner = await this.AuthRepository.findUserByReferralCode(referal);
-        if (owner) {
-          const expiredAt = new Date();
-          expiredAt.setMonth(expiredAt.getMonth() + 3);
-          await this.UserPointRepository.addPoint(
-            owner.id,
+
+      if (referrerId) {
+        // Create Referral Record
+        await this.AuthRepository.createReferral(referrerId, newUser.id, tx);
+
+        // Give Points to Referrer (10,000 pts, 3 months exp)
+        const pointExpiresAt = new Date();
+        pointExpiresAt.setMonth(pointExpiresAt.getMonth() + 3);
+        
+        await this.UserPointRepository.addPoint(
+            referrerId,
             10000,
-            expiredAt,
-            tx,
-          );
-          const personalCode =
-            `REF-${newUser.id.substring(0, 5)}-${Math.random().toString(36).substring(2, 5)}`.toUpperCase();
-          await this.VoucherRepository.createVoucher(
+            pointExpiresAt,
+            tx
+        );
+
+        // Give Coupon to Referee (10% discount, 3 months exp)
+        const couponExpiresAt = new Date();
+        couponExpiresAt.setMonth(couponExpiresAt.getMonth() + 3);
+        const couponCode = `REF-${newUser.id.substring(0, 5)}-${Math.random().toString(36).substring(2, 5)}`.toUpperCase();
+        
+        await this.UserCouponRepository.createUserCoupon(
             {
-              name: `Referral Discount for ${newUser.email}`,
-              code: personalCode,
-              amount: 10, // 10%
-              maxClaim: 1, // Hanya bisa dipakai 1x
-              startDate: new Date(),
-              endDate: expiredAt, // Expire dalam 3 bulan
+                userId: newUser.id,
+                code: couponCode,
+                discountPercentage: 10,
+                expiresAt: couponExpiresAt,
+                isUsed: false
             },
-            tx,
-          );
-        }
+            tx
+        );
       }
 
       return newUser;
@@ -77,7 +83,6 @@ export class AuthService {
   };
 
   public login = async (data: LoginRequest): Promise<any> => {
-    // TODO: Implement login logic
     const user = await this.AuthRepository.findByEmail(data.email);
 
     if (!user) {
@@ -87,14 +92,16 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new Error("invalid email or password");
     }
-    const token = await this.generateTokens(user);
+
+    const roles = user.roles.map((r: any) => r.role);
+    const token = await this.generateTokens({ ...user, roles });
 
     return {
       user: {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role,
+        roles,
       },
       ...token,
     };
@@ -106,17 +113,19 @@ export class AuthService {
       throw new Error("user not found");
     }
 
+    const roles = user.roles.map((r: any) => r.role);
+
     return {
       id: user.id,
       name: user.name,
       email: user.email,
       referralCode: user.referralCode,
-      role: user.role,
+      roles,
     };
   };
   public generateTokens = async (user: any): Promise<any> => {
-    // TODO: Implement JWT generation
-    const payload = { id: user.id, role: user.role };
+    const roles = user.roles || [];
+    const payload = { id: user.id, roles };
     const secret = process.env.JWT_SECRET || "rahasia bro";
 
     const accessToken = jwt.sign(payload, secret, { expiresIn: "1h" });

@@ -1,5 +1,7 @@
 ﻿import { Router } from "express";
 import { OrdersController } from "./controllers/orders.controller.js";
+import { verifyToken } from "../../middlewares/verifyToken.js";
+import { requireRole } from "../../middlewares/requireRole.js";
 
 export class OrdersRouter {
   private router: Router;
@@ -12,6 +14,9 @@ export class OrdersRouter {
   }
 
   private setupRoutes = (): void => {
+    // All orders routes require authentication + CUSTOMER role
+    this.router.use(verifyToken, requireRole("CUSTOMER"));
+
     this.router.post("/", this.ordersController.create);
     this.router.get("/", this.ordersController.findAll);
     this.router.get("/:id", this.ordersController.findOne);

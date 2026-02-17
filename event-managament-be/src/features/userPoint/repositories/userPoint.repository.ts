@@ -1,61 +1,63 @@
-import { UserPoint, Prisma } from "@prisma/client";
 import { prisma } from "../../../config/prisma.js";
+import { Prisma } from "@prisma/client";
 
 export class UserPointRepository {
   public addPoint = async (
     userId: string,
-    points: number,
+    amount: number,
     expiredDate: Date,
     tx?: Prisma.TransactionClient,
-  ): Promise<UserPoint> => {
+  ): Promise<any> => {
     const client = tx || prisma;
-    return await client.userPoint.create({
+    return await client.point.create({
       data: {
         userId: userId,
-        remainingPoint: points,
-        expiredAt: expiredDate,
+        amount: amount,
+        remainingAmount: amount,
+        type: "EARN_REFERRAL" as any, 
+        expiresAt: expiredDate,
       },
     });
   };
 
   public getUserBalance = async (userId: string): Promise<number> => {
-    const result = await prisma.userPoint.aggregate({
+    const result = await prisma.point.aggregate({
       where: {
         userId: userId,
-        expiredAt: {
+        expiresAt: {
           gt: new Date(),
         },
       },
       _sum: {
-        remainingPoint: true,
+        remainingAmount: true,
       },
     });
-    return result._sum.remainingPoint || 0;
+    return result._sum.remainingAmount || 0;
   };
 
   public usePoints = async (
     userId: string,
     amountToUse: number,
   ): Promise<void> => {
-    return await prisma.$transaction(async (tx) => {
-      const availablePoints = await tx.userPoint.findMany({
+    return await prisma.$transaction(async (tx: any) => {
+      const availablePoints = await tx.point.findMany({
         where: {
           userId: userId,
-          expiredAt: { gt: new Date() },
-          remainingPoint: { gt: 0 },
+          expiresAt: { gt: new Date() },
+          remainingAmount: { gt: 0 },
         },
-        orderBy: { expiredAt: "asc" },
+        orderBy: { expiresAt: "asc" },
       });
 
       let needed = amountToUse;
       for (const point of availablePoints) {
         if (needed <= 0) break;
-        const take = Math.min(needed, point.remainingPoint);
+        const take = Math.min(needed, point.remainingAmount);
 
-        await tx.userPoint.update({
+        await tx.point.update({
           where: { id: point.id },
           data: {
-            remainingPoint: point.remainingPoint - take,
+            remainingAmount: point.remainingAmount - take,
           },
         });
         needed -= take;

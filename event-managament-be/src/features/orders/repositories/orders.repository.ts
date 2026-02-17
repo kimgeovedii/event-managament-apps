@@ -5,12 +5,16 @@ export interface IOrdersRepositoryProps {
   invoice: string;
   totalPrice: number;
   pointUsed: number;
-  customerId: string;
+  customerId: string; 
+  eventId: string;
+  paymentMethod: string; 
   voucherId?: string;
   items: {
-    ticketId: string;
+    ticketTypeId: string; 
     qty: number;
     subTotal: number;
+    pricePerUnit?: number; 
+    totalPrice?: number;
   }[];
 }
 
@@ -23,18 +27,22 @@ export class OrdersRepository {
     return await client.transaction.create({
       data: {
         invoice: data.invoice,
-        totalPrice: data.totalPrice,
+        totalFinalPrice: data.totalPrice, 
+        totalOriginalPrice: data.totalPrice + (data.pointUsed || 0), 
         pointsUsed: data.pointUsed,
-        customerId: data.customerId,
-        voucherId: data.voucherId,
+        userId: data.customerId, 
+        eventId: data.eventId,
+        paymentMethod: data.paymentMethod, 
+        userCouponId: data.voucherId,
         items: {
           create: data.items.map((item) => ({
-            ticketId: item.ticketId,
-            qty: item.qty,
-            subTotal: item.subTotal,
+            ticketType: { connect: { id: item.ticketTypeId } }, 
+            quantity: item.qty,
+            totalPrice: item.subTotal,
+            pricePerUnit: item.pricePerUnit || (item.qty > 0 ? item.subTotal / item.qty : 0),
           })),
         },
-      },
+      } as any,
       include: {
         items: true,
       },
@@ -45,22 +53,26 @@ export class OrdersRepository {
     filters: any,
     skip?: number,
     take?: number,
-  ): Promise<any> => {
+  ): Promise<{ data: any[]; total: number }> => {
     const [data, total] = await prisma.$transaction([
       prisma.transaction.findMany({
         where: filters,
         include: {
-          items: true,
-          customer: true,
+          user: true,
+          event: true,
+          items: {
+            include: {
+              ticketType: true,
+            },
+          },
         },
         skip,
         take,
-        orderBy: { date: "desc" },
+        orderBy: { transactionDate: "desc" },
       }),
-      prisma.transaction.count({
-        where: filters,
-      }),
+      prisma.transaction.count({ where: filters }),
     ]);
+
     return { data, total };
   };
 
@@ -68,33 +80,27 @@ export class OrdersRepository {
     return await prisma.transaction.findUnique({
       where: { id },
       include: {
-        items: true,
-        customer: true,
+        user: true,
+        event: true,
+        items: {
+          include: {
+            ticketType: true,
+          },
+        },
       },
     });
   };
 
-  public update = async (
-    id: string,
-    data: any,
-    tx?: Prisma.TransactionClient,
-  ): Promise<any> => {
-    const client = tx || prisma;
-    return await client.transaction.update({
+  public update = async (id: string, data: any): Promise<any> => {
+    return await prisma.transaction.update({
       where: { id },
       data,
     });
   };
 
   public delete = async (id: string): Promise<any> => {
-    return await prisma.$transaction(async (tx) => {
-      await tx.transactionItem.deleteMany({
-        where: { transactionId: id },
-      });
-
-      return await tx.transaction.delete({
-        where: { id },
-      });
+    return await prisma.transaction.delete({
+      where: { id },
     });
   };
 }

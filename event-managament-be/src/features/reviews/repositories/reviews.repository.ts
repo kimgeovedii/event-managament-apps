@@ -21,11 +21,8 @@ export class ReviewsRepository {
       prisma.review.findMany({
         where: filters,
         include: {
-          transactionItem: {
-            include: {
-              ticket: true,
-            },
-          },
+          user: true, // Assuming we want user details
+          event: true,
         },
         skip,
         take,
@@ -43,11 +40,8 @@ export class ReviewsRepository {
     return await prisma.review.findUnique({
       where: { id },
       include: {
-        transactionItem: {
-          include: {
-            ticket: true,
-          },
-        },
+        user: true,
+        event: true,
       },
     });
   };
@@ -70,19 +64,20 @@ export class ReviewsRepository {
     });
   };
 
-  public findManyByTicket = async (
-    ticketId: string,
+  public findManyByEvent = async (
+    eventId: string,
     skip?: number,
     take?: number,
   ): Promise<any> => {
     const filters = {
-      transactionItem: {
-        ticketId: ticketId,
-      },
+      eventId: eventId,
     };
     const [data, total] = await prisma.$transaction([
       prisma.review.findMany({
         where: filters,
+        include: {
+            user: true
+        },
         skip,
         take,
         orderBy: { createdAt: "desc" },
