@@ -1,13 +1,26 @@
-import { Prisma } from "@prisma/client";
-import { prisma } from "src/config/prisma.js";
 
-class ReferralRepository {
-  public referralTransaction = async (
-    data: Prisma.ReferralTransactionCreateInput,
+import { Prisma } from "@prisma/client";
+import { prisma } from "../../../config/prisma.js";
+
+export class ReferralRepository {
+  public findUserWithReferralData = async (userId: string): Promise<any> => {
+    return await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        points: true,
+        coupons: true,
+        referralsSent: true,
+        referralsReceived: true,
+      },
+    });
+  };
+
+  public createReferral = async (
+    data: any,
     tx?: Prisma.TransactionClient,
   ) => {
     const client = tx || prisma;
-    return await client.referralTransaction.create({
+    return await client.referral.create({
       data: data,
     });
   };
