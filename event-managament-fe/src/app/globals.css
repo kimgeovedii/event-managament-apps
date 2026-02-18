@@ -9,10 +9,10 @@
   --background: #ffffff;
   --foreground: #171717;
   /* Neon Colors */
-  --neon-pink: #FF00FF;
-  --neon-cyan: #00FFFF;
-  --neon-purple: #B026FF;
-  --neon-lime: #CCFF00;
+  --neon-pink: #ff00ff;
+  --neon-cyan: #00ffff;
+  --neon-purple: #b026ff;
+  --neon-lime: #ccff00;
   --background-dark: #050505;
   --surface-dark: #121212;
 }
@@ -101,5 +101,5 @@ body {
   border: 2px solid #111;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #B026FF;
+  background: #b026ff;
 }

@@ -4,6 +4,8 @@ export interface RegisterRequest {
   referralCode?: string;
   password: string;
   role?: string;
+  organizerName?: string;
+  organizerDescription?: string;
 }
 
 export interface LoginRequest {

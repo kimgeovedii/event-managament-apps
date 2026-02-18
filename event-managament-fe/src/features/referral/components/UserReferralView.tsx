@@ -68,7 +68,7 @@ export const UserReferralView: React.FC = () => {
         </div>
 
         {/* Bottom Row - Activity & Stash */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 md:items-end">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 md:items-stretch">
           <div className="md:col-span-7">
             <RecentActivityCard 
               activities={data.recentActivity} 

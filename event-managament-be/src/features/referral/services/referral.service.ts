@@ -14,14 +14,15 @@ export class ReferralService {
       throw new Error("User not found");
     }
 
+    // Find the nearest expiry date from active points
+    const now = new Date();
+    const activePoints = user.points.filter((p: any) => p.expiresAt > now && p.remainingAmount > 0);
+    const nearestExpiry = activePoints.length > 0
+      ? activePoints.reduce((nearest: Date, p: any) => p.expiresAt < nearest ? p.expiresAt : nearest, activePoints[0].expiresAt)
+      : null;
+
     // Calculate points
-    const currentPoints = user.points.reduce((acc: any, curr: any) => {
-        const now = new Date();
-        if (curr.expiresAt > now) {
-            return acc + curr.remainingAmount;
-        }
-        return acc;
-    }, 0);
+    const currentPoints = activePoints.reduce((acc: number, curr: any) => acc + curr.remainingAmount, 0);
 
     // Determines Tier
     const tier = "Bronze"; // Placeholder
@@ -39,10 +40,10 @@ export class ReferralService {
         })),
         ...user.referralsReceived.map((ref: any) => ({
              id: ref.id,
-            type: "referral" as const,
+            type: "coupon" as const,
             title: "Referred by friend",
-            description: `You were referred`, 
-            points: 10000, 
+            description: `You received a 10% discount coupon`, 
+            points: 0, 
             timeAgo: ref.createdAt.toISOString(),
             iconColor: "text-blue-500",
         }))
@@ -71,7 +72,7 @@ export class ReferralService {
         current: currentPoints,
         nextTier: "Silver",
         nextTierProgress: 50,
-        expiresIn: "2024-12-31",
+        expiresIn: nearestExpiry ? nearestExpiry.toISOString().split('T')[0] : null,
       },
       recentActivity: recentActivity,
       referralStats: {
