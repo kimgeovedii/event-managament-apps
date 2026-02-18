@@ -4,11 +4,12 @@ import morgan from "morgan";
 import { AuthRouter } from "./features/auth/router.js";
 import { UsersRouter } from "./features/users/router.js";
 import { OrganizationsRouter } from "./features/organizations/router.js";
-import { TicketsRouter } from "./features/tickets/router.js";
+import { TicketsRouter } from "./features/events/router.js";
 import { OrdersRouter } from "./features/orders/router.js";
 import { PromotionsRouter } from "./features/promotions/router.js";
 import { ReviewsRouter } from "./features/reviews/router.js";
 import { DashboardRouter } from "./features/dashboard/router.js";
+import { ReferralRouter } from "./features/referral/router.js";
 
 class App {
   private app: Application;
@@ -52,6 +53,7 @@ class App {
     this.app.use("/api/promotions", new PromotionsRouter().getRouter());
     this.app.use("/api/reviews", new ReviewsRouter().getRouter());
     this.app.use("/api/dashboard", new DashboardRouter().getRouter());
+    this.app.use("/api/referrals", new ReferralRouter().getRouter());
   };
 
   private configureErrorHandling = (): void => {

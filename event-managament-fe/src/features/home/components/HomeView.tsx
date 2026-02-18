@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import HeroSection from "./HeroSection";
 import MarqueeSection from "./MarqueeSection";
@@ -7,7 +5,6 @@ import PromoCardsSection from "./PromoCardsSection";
 import CategorySection from "./CategorySection";
 import FilterBar from "./FilterBar";
 import EventsGridSection from "./EventsGridSection";
-import PaginationBar from "./PaginationBar";
 import NewsletterSection from "./NewsletterSection";
 
 const HomeView: React.FC = () => {
@@ -32,9 +29,6 @@ const HomeView: React.FC = () => {
 
         {/* Events Grid */}
         <EventsGridSection />
-
-        {/* Pagination */}
-        <PaginationBar />
 
         {/* Newsletter */}
         <NewsletterSection />

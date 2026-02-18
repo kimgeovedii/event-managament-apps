@@ -3,8 +3,8 @@
 import React from "react";
 import Link from "next/link";
 import { useMobileMenu } from "@/features/home/hooks";
-import { useStoreLogin } from "@/features/auth/store/useStoreLogin";
-import { useState } from "react";
+import { useStoreLogin } from "@/features/auth/store/useAuthStore";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 // MUI Components
@@ -20,6 +20,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Logout from "@mui/icons-material/Logout";
 import Person from "@mui/icons-material/Person";
 import Settings from "@mui/icons-material/Settings";
+import Campaign from "@mui/icons-material/Campaign";
 
 // Hamburger Icon
 const MenuIcon = () => (
@@ -58,7 +59,20 @@ const CloseIcon = () => (
 const MainNavbar: React.FC = () => {
   const router = useRouter();
   const { isOpen, toggle, close } = useMobileMenu();
-  const { isAuthenticated, signOut } = useStoreLogin(); // Ambil dari store
+  const { isAuthenticated, signOut, user } = useStoreLogin();
+
+  const isOrganizer = user?.roles?.includes("ORGANIZER") ?? false;
+
+  // Detect Tailwind dark mode
+  const [isDark, setIsDark] = useState(false);
+  useEffect(() => {
+    const html = document.documentElement;
+    const check = () => setIsDark(html.classList.contains("dark"));
+    check();
+    const observer = new MutationObserver(check);
+    observer.observe(html, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
 
   // State untuk Menu Dropdown
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -134,33 +148,62 @@ const MainNavbar: React.FC = () => {
                   aria-controls={open ? "account-menu" : undefined}
                   aria-haspopup="true"
                   aria-expanded={open ? "true" : undefined}
+                  sx={{
+                    border: "2px solid",
+                    borderColor: open ? "#ee2b8c" : "transparent",
+                    borderRadius: 0,
+                    transition: "all 0.2s",
+                    "&:hover": { borderColor: "#ee2b8c" },
+                  }}
                 >
                   <Avatar
-                    alt="User Name"
+                    alt={user?.name || "User"}
                     src="/static/images/avatar/1.jpg"
-                    sx={{ width: 32, height: 32 }} // Bisa atur size disini
+                    sx={{ width: 32, height: 32, borderRadius: 0 }}
                   />
                 </IconButton>
               </Tooltip>
 
-              {/* Dropdown Menu */}
+              {/* Dropdown Menu — Neon Hype Style */}
               <Menu
                 anchorEl={anchorEl}
                 id="account-menu"
                 open={open}
                 onClose={handleClose}
-                onClick={handleClose}
                 PaperProps={{
                   elevation: 0,
                   sx: {
                     overflow: "visible",
-                    filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                    bgcolor: isDark ? "#0a0a0a" : "#ffffff",
+                    color: isDark ? "#fff" : "#111",
+                    border: "2px solid #ee2b8c",
+                    borderRadius: 0,
+                    boxShadow: "6px 6px 0px 0px #ee2b8c",
                     mt: 1.5,
-                    "& .MuiAvatar-root": {
-                      width: 32,
-                      height: 32,
-                      ml: -0.5,
-                      mr: 1,
+                    minWidth: 260,
+                    "& .MuiMenuItem-root": {
+                      borderRadius: 0,
+                      fontSize: 12,
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      color: isDark ? "#ccc" : "#555",
+                      py: 1.2,
+                      "&:hover": {
+                        bgcolor: isDark ? "rgba(238, 43, 140, 0.1)" : "rgba(238, 43, 140, 0.06)",
+                        color: "#ee2b8c",
+                      },
+                    },
+                    "& .MuiListItemIcon-root": {
+                      color: isDark ? "#888" : "#999",
+                      minWidth: 36,
+                    },
+                    "& .MuiMenuItem-root:hover .MuiListItemIcon-root": {
+                      color: "#ee2b8c",
+                    },
+                    "& .MuiDivider-root": {
+                      borderColor: isDark ? "#222" : "#eee",
+                      my: 0.5,
                     },
                     "&:before": {
                       content: '""',
@@ -170,8 +213,11 @@ const MainNavbar: React.FC = () => {
                       right: 14,
                       width: 10,
                       height: 10,
-                      bgcolor: "background.paper",
-                      transform: "translateY(-50%) rotate(45deg)",
+                      bgcolor: isDark ? "#0a0a0a" : "#ffffff",
+                      border: "2px solid #ee2b8c",
+                      borderBottom: "none",
+                      borderLeft: "none",
+                      transform: "translateY(-50%) rotate(-45deg)",
                       zIndex: 0,
                     },
                   },
@@ -179,6 +225,121 @@ const MainNavbar: React.FC = () => {
                 transformOrigin={{ horizontal: "right", vertical: "top" }}
                 anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
               >
+                {/* User Profile Header */}
+                <div
+                  style={{
+                    padding: "14px 16px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
+                    borderBottom: isDark ? "1px dashed #333" : "1px dashed #ddd",
+                  }}
+                >
+                  <Avatar
+                    alt={user?.name || "User"}
+                    src="/static/images/avatar/1.jpg"
+                    sx={{
+                      width: 42,
+                      height: 42,
+                      borderRadius: 0,
+                      border: "2px solid #ee2b8c",
+                      boxShadow: "3px 3px 0px 0px #ee2b8c",
+                    }}
+                  />
+                  <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+                    <span
+                      style={{
+                        fontWeight: 900,
+                        fontSize: 14,
+                        lineHeight: 1.3,
+                        color: isDark ? "#fff" : "#111",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.02em",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {user?.name || "User"}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: 10,
+                        color: "#888",
+                        fontWeight: 600,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {user?.email || ""}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Organizer Store Section */}
+                {isOrganizer && user?.organizer && (
+                  <MenuItem
+                    component="a"
+                    href="/dashboard"
+                    onClick={handleClose}
+                    sx={{
+                      py: "12px !important",
+                      px: "16px !important",
+                      bgcolor: "rgba(168, 85, 247, 0.08) !important",
+                      borderBottom: isDark ? "1px dashed #333" : "1px dashed #ddd",
+                      gap: 1.5,
+                      "&:hover": {
+                        bgcolor: "rgba(168, 85, 247, 0.18) !important",
+                        color: "#A855F7 !important",
+                      },
+                    }}
+                  >
+                    <Avatar
+                      src={user.organizer.logoUrl || undefined}
+                      sx={{
+                        width: 34,
+                        height: 34,
+                        borderRadius: 0,
+                        bgcolor: "#A855F7",
+                        fontSize: 15,
+                        fontWeight: 900,
+                        border: "2px solid #A855F7",
+                        boxShadow: "3px 3px 0px 0px #7C3AED",
+                      }}
+                    >
+                      {user.organizer.name.charAt(0).toUpperCase()}
+                    </Avatar>
+                    <div style={{ display: "flex", flexDirection: "column", minWidth: 0, flex: 1 }}>
+                      <span
+                        style={{
+                          fontSize: 9,
+                          fontWeight: 800,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.1em",
+                          color: "#A855F7",
+                        }}
+                      >
+                        ⚡ My Event Organizer
+                      </span>
+                      <span
+                        style={{
+                          fontWeight: 800,
+                          fontSize: 13,
+                          color: isDark ? "#fff" : "#111",
+                          textTransform: "none",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {user.organizer.name}
+                      </span>
+                    </div>
+                    <span style={{ fontSize: 10, color: "#555" }}>→</span>
+                  </MenuItem>
+                )}
+
                 <MenuItem
                   onClick={handleClose}
                   component="a"
@@ -197,9 +358,41 @@ const MainNavbar: React.FC = () => {
                   Settings
                 </MenuItem>
 
+                {!isOrganizer && (
+                  <MenuItem
+                    onClick={handleClose}
+                    component="a"
+                    href="/become-organizer"
+                    sx={{
+                      color: "#A855F7 !important",
+                      "&:hover": {
+                        bgcolor: "rgba(168, 85, 247, 0.12) !important",
+                      },
+                    }}
+                  >
+                    <ListItemIcon>
+                      <Campaign fontSize="small" sx={{ color: "#A855F7 !important" }} />
+                    </ListItemIcon>
+                    Become Organizer
+                  </MenuItem>
+                )}
+
                 <Divider />
 
-                <MenuItem onClick={handleLogout}>
+                <MenuItem
+                  onClick={handleLogout}
+                  sx={{
+                    "&:hover": {
+                      color: "#ef4444 !important",
+                    },
+                    "& .MuiListItemIcon-root": {
+                      color: "#666",
+                    },
+                    "&:hover .MuiListItemIcon-root": {
+                      color: "#ef4444 !important",
+                    },
+                  }}
+                >
                   <ListItemIcon>
                     <Logout fontSize="small" />
                   </ListItemIcon>
@@ -237,8 +430,68 @@ const MainNavbar: React.FC = () => {
 
       {/* Mobile Menu Overlay */}
       {isOpen && (
-        <div className="md:hidden fixed inset-0 top-[49px] z-40 bg-white/95 dark:bg-black/95 backdrop-blur-lg">
-          <nav className="flex flex-col items-center justify-center gap-4 py-6 px-4">
+        <div className="md:hidden fixed inset-0 top-[49px] z-40 bg-white/95 dark:bg-black/95 backdrop-blur-lg overflow-y-auto">
+          <nav className="flex flex-col items-center gap-3 py-6 px-5">
+
+            {/* User Profile Card (authenticated) */}
+            {isAuthenticated && (
+              <div className="w-full max-w-[280px] border-2 border-[#ee2b8c] dark:border-[#FF00FF] p-4 mb-2 shadow-[4px_4px_0px_0px_#ee2b8c] dark:shadow-[4px_4px_0px_0px_#FF00FF] bg-white dark:bg-[#0a0a0a]">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-11 h-11 border-2 border-[#ee2b8c] dark:border-[#FF00FF] shadow-[3px_3px_0px_0px_#ee2b8c] dark:shadow-[3px_3px_0px_0px_#FF00FF] overflow-hidden flex-shrink-0">
+                    <img
+                      src="/static/images/avatar/1.jpg"
+                      alt={user?.name || "User"}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = "none";
+                      }}
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-black text-sm uppercase tracking-wide text-gray-900 dark:text-white truncate">
+                      {user?.name || "User"}
+                    </p>
+                    <p className="text-[10px] font-semibold text-gray-500 dark:text-gray-500 truncate">
+                      {user?.email || ""}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Organizer Store Card */}
+                {isOrganizer && user?.organizer && (
+                  <Link
+                    href="/dashboard"
+                    onClick={close}
+                    className="flex items-center gap-3 p-2.5 bg-purple-50 dark:bg-[#A855F7]/10 border border-dashed border-[#A855F7]/40 hover:border-[#A855F7] transition-all group"
+                  >
+                    <div className="w-9 h-9 bg-[#A855F7] border-2 border-[#A855F7] shadow-[2px_2px_0px_0px_#7C3AED] flex items-center justify-center flex-shrink-0 overflow-hidden">
+                      {user.organizer.logoUrl ? (
+                        <img
+                          src={user.organizer.logoUrl}
+                          alt={user.organizer.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-white font-black text-sm">
+                          {user.organizer.name.charAt(0).toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[9px] font-extrabold uppercase tracking-widest text-[#A855F7]">
+                        ⚡ My Event Organizer
+                      </p>
+                      <p className="text-xs font-bold text-gray-800 dark:text-white truncate group-hover:text-[#A855F7] transition-colors">
+                        {user.organizer.name}
+                      </p>
+                    </div>
+                    <span className="text-gray-400 text-xs">→</span>
+                  </Link>
+                )}
+              </div>
+            )}
+
+            {/* Navigation Links */}
             <Link
               href="/events"
               onClick={close}
@@ -261,25 +514,73 @@ const MainNavbar: React.FC = () => {
               Community
             </Link>
 
-            <div className="flex flex-col gap-2 mt-4 w-full max-w-[200px]">
-              <Link
-                href="/login"
-                onClick={close}
-                className="w-full text-center py-2.5 border-2 border-gray-800 dark:border-white text-gray-800 dark:text-white font-bold uppercase tracking-wider text-xs"
-              >
-                Log In
-              </Link>
-              <Link
-                href="/register"
-                onClick={close}
-                className="w-full text-center py-2.5 bg-[#ee2b8c] dark:bg-[#FF00FF] text-white dark:text-black font-bold uppercase tracking-wider text-xs shadow-[3px_3px_0px_0px_#d61f7a] dark:shadow-[3px_3px_0px_0px_#B026FF]"
-              >
-                Sign Up
-              </Link>
-            </div>
+            {/* Authenticated Action Links */}
+            {isAuthenticated && (
+              <div className="w-full max-w-[280px] flex flex-col gap-1.5 mt-3 border-t-2 border-dashed border-gray-200 dark:border-gray-800 pt-4">
+                <Link
+                  href="/user-referral"
+                  onClick={close}
+                  className="flex items-center gap-3 px-3 py-2.5 text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 hover:text-[#ee2b8c] dark:hover:text-[#ee2b8c] hover:bg-[#ee2b8c]/5 transition-all"
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                  Profile
+                </Link>
+                <Link
+                  href="/settings"
+                  onClick={close}
+                  className="flex items-center gap-3 px-3 py-2.5 text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 hover:text-[#ee2b8c] dark:hover:text-[#ee2b8c] hover:bg-[#ee2b8c]/5 transition-all"
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                  Settings
+                </Link>
+
+                {!isOrganizer && (
+                  <Link
+                    href="/become-organizer"
+                    onClick={close}
+                    className="flex items-center gap-3 px-3 py-2.5 text-xs font-bold uppercase tracking-wider text-[#A855F7] hover:bg-[#A855F7]/10 transition-all"
+                  >
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18 11v2h-2v-2h2zm-4 2v-2H6v2h8zM4 5h16v14H4V5zm0-2c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2H4z"/></svg>
+                    Become Organizer
+                  </Link>
+                )}
+
+                <button
+                  onClick={() => {
+                    close();
+                    handleLogout();
+                  }}
+                  className="flex items-center gap-3 px-3 py-2.5 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-500/5 transition-all mt-1 border-t border-dashed border-gray-200 dark:border-gray-800 pt-3 w-full"
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                  Logout
+                </button>
+              </div>
+            )}
+
+            {/* Guest Login/SignUp */}
+            {!isAuthenticated && (
+              <div className="flex flex-col gap-2 mt-4 w-full max-w-[200px]">
+                <Link
+                  href="/login"
+                  onClick={close}
+                  className="w-full text-center py-2.5 border-2 border-gray-800 dark:border-white text-gray-800 dark:text-white font-bold uppercase tracking-wider text-xs"
+                >
+                  Log In
+                </Link>
+                <Link
+                  href="/register"
+                  onClick={close}
+                  className="w-full text-center py-2.5 bg-[#ee2b8c] dark:bg-[#FF00FF] text-white dark:text-black font-bold uppercase tracking-wider text-xs shadow-[3px_3px_0px_0px_#d61f7a] dark:shadow-[3px_3px_0px_0px_#B026FF]"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
           </nav>
         </div>
       )}
+
     </>
   );
 };

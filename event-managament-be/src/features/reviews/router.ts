@@ -19,8 +19,8 @@ export class ReviewsRouter {
     this.router.delete("/:id", this.reviewsController.delete);
 
     this.router.get(
-      "/ticket/:ticketId",
-      this.reviewsController.getReviewsByTicket,
+      "/event/:id",
+      this.reviewsController.getReviewsByEvent,
     );
   };
 

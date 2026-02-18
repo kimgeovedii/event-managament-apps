@@ -1,25 +1,106 @@
-﻿export class OrdersRepository {
-  public create = async (data: any): Promise<any> => {
-    throw new Error("Method not implemented.");
+﻿import { prisma } from "src/config/prisma.js";
+import { Prisma } from "@prisma/client";
+
+export interface IOrdersRepositoryProps {
+  invoice: string;
+  totalPrice: number;
+  pointUsed: number;
+  customerId: string; 
+  eventId: string;
+  paymentMethod: string; 
+  voucherId?: string;
+  items: {
+    ticketTypeId: string; 
+    qty: number;
+    subTotal: number;
+    pricePerUnit?: number; 
+    totalPrice?: number;
+  }[];
+}
+
+export class OrdersRepository {
+  public create = async (
+    data: IOrdersRepositoryProps,
+    tx?: Prisma.TransactionClient,
+  ): Promise<any> => {
+    const client = tx || prisma;
+    return await client.transaction.create({
+      data: {
+        invoice: data.invoice,
+        totalFinalPrice: data.totalPrice, 
+        totalOriginalPrice: data.totalPrice + (data.pointUsed || 0), 
+        pointsUsed: data.pointUsed,
+        userId: data.customerId, 
+        eventId: data.eventId,
+        paymentMethod: data.paymentMethod, 
+        userCouponId: data.voucherId,
+        items: {
+          create: data.items.map((item) => ({
+            ticketType: { connect: { id: item.ticketTypeId } }, 
+            quantity: item.qty,
+            totalPrice: item.subTotal,
+            pricePerUnit: item.pricePerUnit || (item.qty > 0 ? item.subTotal / item.qty : 0),
+          })),
+        },
+      } as any,
+      include: {
+        items: true,
+      },
+    });
   };
 
-  public findMany = async (filters: any): Promise<any[]> => {
-    throw new Error("Method not implemented.");
+  public findMany = async (
+    filters: any,
+    skip?: number,
+    take?: number,
+  ): Promise<{ data: any[]; total: number }> => {
+    const [data, total] = await prisma.$transaction([
+      prisma.transaction.findMany({
+        where: filters,
+        include: {
+          user: true,
+          event: true,
+          items: {
+            include: {
+              ticketType: true,
+            },
+          },
+        },
+        skip,
+        take,
+        orderBy: { transactionDate: "desc" },
+      }),
+      prisma.transaction.count({ where: filters }),
+    ]);
+
+    return { data, total };
   };
 
-  public findById = async (id: number): Promise<any> => {
-    throw new Error("Method not implemented.");
+  public findById = async (id: string): Promise<any> => {
+    return await prisma.transaction.findUnique({
+      where: { id },
+      include: {
+        user: true,
+        event: true,
+        items: {
+          include: {
+            ticketType: true,
+          },
+        },
+      },
+    });
   };
 
-  public update = async (id: number, data: any): Promise<any> => {
-    throw new Error("Method not implemented.");
+  public update = async (id: string, data: any): Promise<any> => {
+    return await prisma.transaction.update({
+      where: { id },
+      data,
+    });
   };
 
-  public delete = async (id: number): Promise<any> => {
-    throw new Error("Method not implemented.");
-  };
-
-  public updateStatus = async (id: number, status: string): Promise<any> => {
-    throw new Error("Method not implemented.");
+  public delete = async (id: string): Promise<any> => {
+    return await prisma.transaction.delete({
+      where: { id },
+    });
   };
 }

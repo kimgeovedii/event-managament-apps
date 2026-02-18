@@ -1,5 +1,3 @@
-// User Referral Types
-
 export interface UserProfile {
   id: string;
   name: string;
@@ -14,7 +12,7 @@ export interface PointsBalance {
   current: number;
   nextTier: string;
   nextTierProgress: number;
-  expiresIn: string;
+  expiresIn: string | null;
 }
 
 export interface ActivityItem {

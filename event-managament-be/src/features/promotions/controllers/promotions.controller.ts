@@ -1,12 +1,24 @@
 ﻿import { Request, Response, NextFunction } from "express";
+import { PromotionsService } from "../services/promotions.service.js";
 
 export class PromotionsController {
+  private promotionsService: PromotionsService;
+
+  constructor() {
+    this.promotionsService = new PromotionsService();
+  }
+
   public create = async (
     req: Request,
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
-    throw new Error("Method not implemented.");
+    try {
+      const promotion = await this.promotionsService.create(req.body);
+      res.status(201).send(promotion);
+    } catch (error) {
+      next(error);
+    }
   };
 
   public findAll = async (
@@ -14,7 +26,22 @@ export class PromotionsController {
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
-    throw new Error("Method not implemented.");
+    try {
+      const page = parseInt(req.params.page as string) || 1;
+      const limit = parseInt(req.params.limit as string) || 10;
+
+      const { page: _p, limit: _l, ...filters } = req.query;
+
+      const { data, meta } = await this.promotionsService.findAll(
+        filters,
+        page,
+        limit,
+      );
+
+      res.status(200).send({ data, meta });
+    } catch (error) {
+      next(error);
+    }
   };
 
   public findOne = async (
@@ -22,7 +49,15 @@ export class PromotionsController {
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
-    throw new Error("Method not implemented.");
+    try {
+      const promotion = await this.promotionsService.findOne(
+        req.params.id as string,
+      );
+
+      res.status(200).send(promotion);
+    } catch (error) {
+      next(error);
+    }
   };
 
   public update = async (
@@ -30,7 +65,16 @@ export class PromotionsController {
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
-    throw new Error("Method not implemented.");
+    try {
+      const promotion = await this.promotionsService.update(
+        req.params.id as string,
+        req.body,
+      );
+
+      res.status(200).send(promotion);
+    } catch (error) {
+      next(error);
+    }
   };
 
   public delete = async (
@@ -38,7 +82,13 @@ export class PromotionsController {
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
-    throw new Error("Method not implemented.");
+    try {
+      await this.promotionsService.delete(req.params.id as string);
+
+      res.status(204).send("Promotion deleted");
+    } catch (error) {
+      next(error);
+    }
   };
 
   public validateVoucher = async (
@@ -46,6 +96,9 @@ export class PromotionsController {
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
-    throw new Error("Method not implemented.");
+    try {
+    } catch (error) {
+      next(error);
+    }
   };
 }
