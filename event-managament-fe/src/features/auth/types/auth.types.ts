@@ -1,7 +1,10 @@
 export interface SignUp {
+  name: string;
   email: string;
   password: string;
   referralCode?: string;
+  terms?: boolean;
+  role: "CUSTOMER" | "ORGANIZER";
 }
 
 export interface SignIn {
@@ -13,7 +16,7 @@ export interface AuthUser {
   id: string;
   name: string;
   email: string;
-  role: string;
+  roles: string[];
 }
 
 export interface AuthState {

@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useMobileMenu } from "@/features/home/hooks";
-import { useStoreLogin } from "@/features/auth/store/useStoreLogin";
+import { useStoreLogin } from "@/features/auth/store/useAuthStore";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 

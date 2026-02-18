@@ -3,6 +3,7 @@ export interface RegisterRequest {
   email: string;
   referralCode?: string;
   password: string;
+  role?: string;
 }
 
 export interface LoginRequest {
@@ -20,6 +21,6 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: string;
+  roles: string[];
   referralCode?: string;
 }

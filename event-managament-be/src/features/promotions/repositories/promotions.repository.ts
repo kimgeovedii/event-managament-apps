@@ -19,8 +19,12 @@ export class PromotionsRepository {
       prisma.promotion.findMany({
         where: filters,
         include: {
-          ticket: true,
-          voucher: true,
+          organizer: true,
+          events: {
+              include: {
+                  event: true
+              }
+          }
         },
         skip,
         take,
@@ -38,8 +42,12 @@ export class PromotionsRepository {
     return await prisma.promotion.findUnique({
       where: { id },
       include: {
-        ticket: true,
-        voucher: true,
+        organizer: true,
+        events: {
+            include: {
+                event: true
+            }
+        }
       },
     });
   };

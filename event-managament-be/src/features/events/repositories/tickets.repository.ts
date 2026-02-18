@@ -7,7 +7,7 @@ export class TicketsRepository {
     tx?: Prisma.TransactionClient,
   ): Promise<any> => {
     const client = tx || prisma;
-    return await client.ticket.create({
+    return await client.event.create({
       data,
     });
   };
@@ -18,32 +18,56 @@ export class TicketsRepository {
     take?: number,
   ): Promise<{ data: any[]; total: number }> => {
     const [data, total] = await prisma.$transaction([
-      prisma.ticket.findMany({
+      prisma.event.findMany({
         where: filters,
         include: {
           category: true,
-          organization: true,
+          organizer: true,
         },
         skip,
         take,
         orderBy: { createdAt: "desc" },
       }),
-      prisma.ticket.count({ where: filters }),
+      prisma.event.count({ where: filters }),
     ]);
 
     return { data, total };
   };
 
   public findById = async (id: any): Promise<any> => {
-    return await prisma.ticket.findUnique({
+    return await prisma.event.findUnique({
       where: { id },
       include: {
         category: true,
-        organization: true,
-        allotments: true,
+        organizer: true,
+        ticketTypes: true,
+        promotions: {
+            include: {
+                promotion: true
+            }
+        }
       },
     });
   };
+
+  public findTicketTypeById = async (id: string, tx?: Prisma.TransactionClient): Promise<any> => {
+    const client = tx || prisma;
+    return await client.ticketType.findUnique({
+      where: { id },
+    });
+  };
+
+  public updateTicketQuota = async (id: string, qty: number, tx?: Prisma.TransactionClient) => {
+      const client = tx || prisma;
+      return await client.ticketType.update({
+          where: { id },
+          data: {
+              quota: {
+                  decrement: qty
+              }
+          }
+      })
+  }
 
   public update = async (
     id: string,
@@ -51,14 +75,14 @@ export class TicketsRepository {
     tx?: Prisma.TransactionClient,
   ): Promise<any> => {
     const client = tx || prisma;
-    return await client.ticket.update({
+    return await client.event.update({
       where: { id },
       data,
     });
   };
 
   public delete = async (id: any): Promise<any> => {
-    return await prisma.ticket.delete({
+    return await prisma.event.delete({
       where: { id },
     });
   };

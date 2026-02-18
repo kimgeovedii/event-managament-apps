@@ -1,4 +1,7 @@
-﻿export class UsersRepository {
+﻿import { User } from "@prisma/client";
+import { prisma } from "src/config/prisma.js";
+
+export class UsersRepository {
   public create = async (data: any): Promise<any> => {
     throw new Error("Method not implemented.");
   };
@@ -7,8 +10,10 @@
     throw new Error("Method not implemented.");
   };
 
-  public findById = async (id: number): Promise<any> => {
-    throw new Error("Method not implemented.");
+  public findById = async (id: string): Promise<User | null> => {
+    return await prisma.user.findUnique({
+      where: { id: id },
+    });
   };
 
   public update = async (id: number, data: any): Promise<any> => {

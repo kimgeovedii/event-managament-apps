@@ -23,9 +23,19 @@ export class ReviewsService {
       throw new Error("Transaction item not found");
     }
 
-    if (item.reviews) {
-      throw new Error("Review already exist");
+    // New schema: Review links to Event and User.
+    // We get Event from item.ticketType.event
+    // We get User from item.transaction.user
+    const eventId = item.ticketType?.event?.id;
+    const userId = item.transaction?.user?.id;
+
+    if (!eventId || !userId) {
+        throw new Error("Invalid transaction item data for review");
     }
+
+    // Optional: Check if review already exists for this user and event
+    // const existingReviews = await this.reviewsRepository.findMany({ userId, eventId });
+    // if (existingReviews.total > 0) { throw new Error("Review already exists"); }
 
     if (data.rating < 1 || data.rating > 5) {
       throw new Error("Rating must be between 1 and 5");
@@ -33,8 +43,9 @@ export class ReviewsService {
 
     return await this.reviewsRepository.create({
       rating: data.rating,
-      feedback: data.feedback,
-      transactionItemId: data.transactionItemId,
+      comment: data.feedback, // mapped feedback to comment
+      userId: userId,
+      eventId: eventId
     });
   };
 
@@ -85,16 +96,16 @@ export class ReviewsService {
     return await this.reviewsRepository.delete(id);
   };
 
-  public findByTicket = async (
-    ticketId: string,
+  public findByEvent = async (
+    eventId: string,
     page: number,
     limit: number,
   ): Promise<{ data: any[]; meta: any }> => {
     const skip = (page - 1) * limit;
     const take = limit;
 
-    const { data, total } = await this.reviewsRepository.findManyByTicket(
-      ticketId,
+    const { data, total } = await this.reviewsRepository.findManyByEvent(
+      eventId,
       skip,
       take,
     );

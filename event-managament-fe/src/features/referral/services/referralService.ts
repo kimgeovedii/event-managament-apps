@@ -1,12 +1,7 @@
-// User Referral Service
-// Replace dummy data imports with real API calls when ready
-
 import { UserReferralData } from "../types";
-import { userReferralData } from "@/features/data-dummy";
-
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+import apiFetch from "../../../services/apiFetch";
 
 export async function fetchUserReferralData(): Promise<UserReferralData> {
-  await delay(100);
-  return userReferralData;
+  const response = await apiFetch.get("/referrals");
+  return response.data;
 }

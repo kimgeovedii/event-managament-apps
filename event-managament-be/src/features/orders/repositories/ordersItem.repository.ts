@@ -5,8 +5,12 @@ export class OrdersItemRepository {
     return await prisma.transactionItem.findUnique({
       where: { id },
       include: {
-        ticket: true,
-        review: true,
+        ticketType: {
+            include: {
+                event: true
+            }
+        },
+        transaction: true,
       },
     });
   };

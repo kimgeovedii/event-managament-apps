@@ -1,11 +1,12 @@
 ﻿import { prisma } from "src/config/prisma.js";
 import { OrdersRepository } from "../repositories/orders.repository.js";
-import { TicketsRepository } from "src/features/tickets/repositories/tickets.repository.js";
+import { TicketsRepository } from "src/features/events/repositories/tickets.repository.js";
 
 export interface IOrdersServiceProps {
   customerId: string;
   pointUsed?: number;
   voucherId?: string;
+  paymentMethod: string;
   items: {
     ticketId: string;
     qty: number;
@@ -22,41 +23,42 @@ export class OrdersService {
   }
 
   public create = async (data: IOrdersServiceProps): Promise<any> => {
-    return await prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx: any) => {
+      let eventId: string | null = null;
       let totalPrice = 0;
       const orderItems: any[] = [];
 
       for (let item of data.items) {
-        const ticket = await this.ticketsRepository.findById(item.ticketId);
+        const ticket = await this.ticketsRepository.findTicketTypeById(item.ticketId, tx);
         if (!ticket) {
           throw new Error(`Ticket with id ${item.ticketId} not found`);
         }
 
-        const allotment = await tx.allotment.findUnique({
-          where: { ticketId: item.ticketId },
-        });
+        if (eventId === null) {
+            eventId = ticket.eventId;
+        } else if (eventId !== ticket.eventId) {
+            throw new Error("Cannot mix tickets from different events in one order");
+        }
 
-        if (!allotment || allotment.remainingQuota < item.qty) {
+        if (ticket.quota < item.qty) {
           throw new Error(`Insufficient quota for ticket id ${item.ticketId}`);
         }
 
-        const subTotal = ticket.price * item.qty;
+        const subTotal = Number(ticket.price) * item.qty;
         totalPrice += subTotal;
 
         orderItems.push({
-          ticketId: item.ticketId,
+          ticketTypeId: item.ticketId, 
           qty: item.qty,
-          subTotal,
+          pricePerUnit: Number(ticket.price), 
+          subTotal: subTotal, 
         });
 
-        await tx.allotment.update({
-          where: { ticketId: item.ticketId },
-          data: {
-            remainingQuota: {
-              decrement: item.qty,
-            },
-          },
-        });
+        await this.ticketsRepository.updateTicketQuota(item.ticketId, item.qty, tx);
+      }
+
+      if (!eventId) {
+          throw new Error("No valid event found for tickets");
       }
 
       const finalPrice = totalPrice - (data.pointUsed || 0);
@@ -74,6 +76,8 @@ export class OrdersService {
         totalPrice: finalPrice,
         pointUsed: data.pointUsed || 0,
         customerId: data.customerId,
+        eventId, 
+        paymentMethod: data.paymentMethod,
         voucherId: data.voucherId,
         items: orderItems,
       };
