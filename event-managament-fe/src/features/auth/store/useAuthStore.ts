@@ -31,7 +31,6 @@ export const useStoreLogin = create<AuthState>()(
           return true;
         } catch (error: any) {
           console.error("Login failed", error);
-          // Handle specific backend error format { error: { message: "..." } }
           const errorMessage =
             error.response?.data?.message || // Standard Axios error structure
             error.error?.message || // Backend custom structure { error: { message: "" } } via apiFetch interceptor

@@ -7,7 +7,7 @@ interface PointsBalanceCardProps {
 }
 
 const PointsBalanceCard: React.FC<PointsBalanceCardProps> = ({ balance }) => (
-  <div className="relative overflow-hidden bg-gradient-to-br from-[#a855f7] to-[#3b82f6] border-2 md:border-4 border-zinc-800 shadow-[2px_2px_0px_0px_#333333] md:shadow-[4px_4px_0px_0px_#333333] p-4 md:p-8 flex flex-col justify-between min-h-[240px] md:min-h-[360px] group">
+  <div className="relative overflow-hidden bg-gradient-to-br from-[#a855f7] to-[#3b82f6] border-2 md:border-4 border-zinc-800 shadow-[2px_2px_0px_0px_#333333] md:shadow-[4px_4px_0px_0px_#333333] p-4 md:p-8 flex flex-col justify-between min-h-[240px] md:min-h-full group">
     {/* Background Effects */}
     <div className="absolute top-0 right-0 w-20 h-20 md:w-32 md:h-32 bg-[#00FFFF] rounded-full mix-blend-overlay filter blur-3xl opacity-30 group-hover:scale-150 transition-transform duration-700" />
     <div className="absolute bottom-0 left-0 w-24 h-24 md:w-40 md:h-40 bg-[#FF00FF] rounded-full mix-blend-overlay filter blur-3xl opacity-30 group-hover:scale-150 transition-transform duration-700" />

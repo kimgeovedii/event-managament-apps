@@ -40,7 +40,7 @@ const YourStashCard: React.FC<YourStashCardProps> = ({
   }, [handleScroll]);
 
   return (
-    <div className="bg-gray-50 dark:bg-zinc-900/40 border-2 border-gray-200 dark:border-zinc-800 p-3 md:p-6 shadow-[2px_2px_0px_0px_#ccc] dark:shadow-[2px_2px_0px_0px_#333333] md:shadow-[4px_4px_0px_0px_#ccc] md:dark:shadow-[4px_4px_0px_0px_#333333] flex flex-col gap-2 md:gap-4">
+    <div className="bg-gray-50 dark:bg-zinc-900/40 border-2 border-gray-200 dark:border-zinc-800 p-3 md:p-6 shadow-[2px_2px_0px_0px_#ccc] dark:shadow-[2px_2px_0px_0px_#333333] md:shadow-[4px_4px_0px_0px_#ccc] md:dark:shadow-[4px_4px_0px_0px_#333333] flex flex-col gap-2 md:gap-4 h-full">
       <div className="flex justify-between items-center mb-1 md:mb-2">
         <h3 className="text-lg md:text-xl font-black uppercase italic tracking-tighter flex items-center gap-1.5 md:gap-2 text-gray-900 dark:text-white">
           <span className="text-[#ee2b8c] dark:text-[#FF00FF]"><LocalActivityIcon /></span>
@@ -50,7 +50,7 @@ const YourStashCard: React.FC<YourStashCardProps> = ({
       </div>
       <div 
         ref={scrollRef}
-        className="space-y-2 md:space-y-3 max-h-[300px] md:max-h-[400px] overflow-y-auto pr-1 scrollbar-thin"
+        className="space-y-2 md:space-y-3 max-h-[300px] md:max-h-[400px] overflow-y-auto pr-1 scrollbar-thin flex-1"
       >
         {displayedCoupons.map((coupon) => (
           <CouponCard key={coupon.id} coupon={coupon} />

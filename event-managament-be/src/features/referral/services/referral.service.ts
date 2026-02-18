@@ -39,10 +39,10 @@ export class ReferralService {
         })),
         ...user.referralsReceived.map((ref: any) => ({
              id: ref.id,
-            type: "referral" as const,
+            type: "coupon" as const,
             title: "Referred by friend",
-            description: `You were referred`, 
-            points: 10000, 
+            description: `You received a 10% discount coupon`, 
+            points: 0, 
             timeAgo: ref.createdAt.toISOString(),
             iconColor: "text-blue-500",
         }))
