@@ -78,6 +78,25 @@ export class AuthService {
         );
       }
 
+      // If registering as ORGANIZER, create the Organizer profile + set as OWNER
+      if (data.role === "ORGANIZER" && data.organizerName) {
+        const organizer = await tx.organizer.create({
+          data: {
+            ownerId: newUser.id,
+            name: data.organizerName.trim(),
+            description: data.organizerDescription?.trim() || null,
+          },
+        });
+
+        await tx.organizerTeam.create({
+          data: {
+            organizerId: organizer.id,
+            userId: newUser.id,
+            role: "OWNER",
+          },
+        });
+      }
+
       return newUser;
     });
   };
@@ -96,12 +115,22 @@ export class AuthService {
     const roles = user.roles.map((r: any) => r.role);
     const token = await this.generateTokens({ ...user, roles });
 
+    // Fetch organizer profile if user has ORGANIZER role
+    let organizer = null;
+    if (roles.includes("ORGANIZER")) {
+      organizer = await prisma.organizer.findUnique({
+        where: { ownerId: user.id },
+        select: { id: true, name: true, description: true, logoUrl: true },
+      });
+    }
+
     return {
       user: {
         id: user.id,
         name: user.name,
         email: user.email,
         roles,
+        organizer,
       },
       ...token,
     };
@@ -115,12 +144,22 @@ export class AuthService {
 
     const roles = user.roles.map((r: any) => r.role);
 
+    // Fetch organizer profile if user has ORGANIZER role
+    let organizer = null;
+    if (roles.includes("ORGANIZER")) {
+      organizer = await prisma.organizer.findUnique({
+        where: { ownerId: id },
+        select: { id: true, name: true, description: true, logoUrl: true },
+      });
+    }
+
     return {
       id: user.id,
       name: user.name,
       email: user.email,
       referralCode: user.referralCode,
       roles,
+      organizer,
     };
   };
   public generateTokens = async (user: any): Promise<any> => {

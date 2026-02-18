@@ -1,11 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-/**
- * Decodes a JWT payload without verification (edge runtime compatible).
- * Actual signature verification happens on the backend API.
- * This is used for client-side route protection only.
- */
 function decodeJwtPayload(token: string): Record<string, unknown> | null {
   try {
     const parts = token.split(".");

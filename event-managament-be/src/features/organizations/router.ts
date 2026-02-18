@@ -1,5 +1,6 @@
 ﻿import { Router } from "express";
 import { OrganizationsController } from "./controllers/organizations.controller.js";
+import { verifyToken } from "../../middlewares/verifyToken.js";
 
 export class OrganizationsRouter {
   private router: Router;
@@ -12,15 +13,36 @@ export class OrganizationsRouter {
   }
 
   private setupRoutes = (): void => {
-    this.router.post("/", this.organizationsController.create);
-    this.router.get("/", this.organizationsController.findAll);
-    this.router.get("/:id", this.organizationsController.findOne);
-    this.router.patch("/:id", this.organizationsController.update);
-    this.router.delete("/:id", this.organizationsController.delete);
+    // Create organizer (requires auth)
+    this.router.post("/", verifyToken, this.organizationsController.create);
 
-    this.router.post("/:id/members", this.organizationsController.addTeamMember);
+    // List all organizers
+    this.router.get("/", this.organizationsController.findAll);
+
+    // Get single organizer
+    this.router.get("/:id", this.organizationsController.findOne);
+
+    // Update organizer (requires auth)
+    this.router.patch("/:id", verifyToken, this.organizationsController.update);
+
+    // Delete organizer (requires auth)
+    this.router.delete(
+      "/:id",
+      verifyToken,
+      this.organizationsController.delete,
+    );
+
+    // Add team member — invite by email (requires auth, OWNER/ADMIN check in service)
+    this.router.post(
+      "/:id/members",
+      verifyToken,
+      this.organizationsController.addTeamMember,
+    );
+
+    // Remove team member (requires auth)
     this.router.delete(
       "/:id/members/:userId",
+      verifyToken,
       this.organizationsController.removeTeamMember,
     );
   };
