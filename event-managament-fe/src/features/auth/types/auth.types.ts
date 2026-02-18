@@ -5,6 +5,8 @@ export interface SignUp {
   referralCode?: string;
   terms?: boolean;
   role: "CUSTOMER" | "ORGANIZER";
+  organizerName?: string;
+  organizerDescription?: string;
 }
 
 export interface SignIn {
@@ -17,6 +19,12 @@ export interface AuthUser {
   name: string;
   email: string;
   roles: string[];
+  organizer?: {
+    id: string;
+    name: string;
+    description?: string;
+    logoUrl?: string;
+  } | null;
 }
 
 export interface AuthState {

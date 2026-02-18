@@ -56,7 +56,7 @@ const PointsBalanceCard: React.FC<PointsBalanceCardProps> = ({ balance }) => (
       </div>
       <p className="mt-2 md:mt-3 text-[10px] md:text-xs font-bold text-gray-300 flex items-center gap-1 uppercase">
         <ScheduleIcon />
-        Expires in {balance.expiresIn}
+        {balance.expiresIn ? `Expires in ${balance.expiresIn}` : 'No active points'}
       </p>
     </div>
   </div>

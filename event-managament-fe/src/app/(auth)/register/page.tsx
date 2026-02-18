@@ -1,5 +1,10 @@
+import { Suspense } from "react";
 import RegisterView from "@/features/auth/components/RegisterView";
 
 export default function RegisterPage() {
-  return <RegisterView />;
+  return (
+    <Suspense>
+      <RegisterView />
+    </Suspense>
+  );
 }

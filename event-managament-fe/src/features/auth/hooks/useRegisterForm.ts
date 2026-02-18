@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useStoreLogin } from "../store/useAuthStore";
 import { SignUp } from "../types/auth.types";
 
@@ -9,6 +9,7 @@ export type RegisterFormValues = SignUp;
 
 export const useRegisterForm = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { signUp } = useStoreLogin();
@@ -18,6 +19,10 @@ export const useRegisterForm = () => {
     severity: "success" as "success" | "error",
   });
 
+  const roleParam = searchParams.get("role");
+  const initialRole: "CUSTOMER" | "ORGANIZER" =
+    roleParam === "ORGANIZER" ? "ORGANIZER" : "CUSTOMER";
+
   const formik = useFormik<SignUp>({
     initialValues: {
       name: "",
@@ -25,7 +30,9 @@ export const useRegisterForm = () => {
       password: "",
       referralCode: "",
       terms: false,
-      role: "CUSTOMER",
+      role: initialRole,
+      organizerName: "",
+      organizerDescription: "",
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Full name is required"),
@@ -36,6 +43,11 @@ export const useRegisterForm = () => {
         .min(8, "Password must be at least 8 characters")
         .required("Password is required"),
       terms: Yup.boolean().oneOf([true], "You must accept Terms & Conditions"),
+      organizerName: Yup.string().when("role", {
+        is: "ORGANIZER",
+        then: (schema) => schema.required("Organizer name is required"),
+        otherwise: (schema) => schema.optional(),
+      }),
     }),
     onSubmit: async (values) => {
       setIsLoading(true);

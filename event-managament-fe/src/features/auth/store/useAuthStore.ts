@@ -89,7 +89,8 @@ export const useStoreLogin = create<AuthState>()(
             set({ user: null, accessToken: null, isAuthenticated: false });
             return null;
           }
-          const user = await getMe();
+          const res = await getMe();
+          const user = res.data;
           set({ user, isAuthenticated: true });
           return user;
         } catch (error) {

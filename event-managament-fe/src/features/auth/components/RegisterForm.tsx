@@ -189,6 +189,61 @@ const RegisterForm: React.FC = () => {
           </div>
         </label>
 
+        {/* Organizer Fields — shown only when ORGANIZER tab is selected */}
+        {formik.values.role === "ORGANIZER" && (
+          <div className="flex flex-col gap-4 p-4 bg-[#A855F7]/5 dark:bg-[#A855F7]/10 border-2 border-dashed border-[#A855F7]/50">
+            <span className="text-[10px] font-black uppercase tracking-widest text-[#A855F7]">
+              Event Organizer Details
+            </span>
+
+            {/* Organizer Name */}
+            <label className="flex flex-col gap-1.5">
+              <span className="text-black dark:text-white text-xs font-black uppercase tracking-wider">
+                Organizer Name
+              </span>
+              <input
+                className="w-full h-11 px-3 bg-white dark:bg-black border-2 border-gray-200 dark:border-zinc-800 focus:border-[#A855F7] focus:outline-none text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-zinc-600 transition-all font-bold text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] focus:shadow-[4px_4px_0px_0px_#A855F7] disabled:opacity-50 disabled:cursor-not-allowed"
+                id="organizerName"
+                placeholder="e.g. NEON PULSE PRODUCTIONS"
+                type="text"
+                name="organizerName"
+                value={formik.values.organizerName}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                disabled={isLoading}
+              />
+              {formik.touched.organizerName && formik.errors.organizerName && (
+                <span className="text-red-500 font-bold uppercase text-[10px] px-1">
+                  {formik.errors.organizerName}
+                </span>
+              )}
+            </label>
+
+            {/* Organizer Description */}
+            <label className="flex flex-col gap-1.5">
+              <div className="flex justify-between items-center">
+                <span className="text-black dark:text-white text-xs font-black uppercase tracking-wider">
+                  Description
+                </span>
+                <span className="font-bold text-gray-400 text-[10px] uppercase">
+                  Optional
+                </span>
+              </div>
+              <textarea
+                className="w-full px-3 py-2 bg-white dark:bg-black border-2 border-gray-200 dark:border-zinc-800 focus:border-[#A855F7] focus:outline-none text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-zinc-600 transition-all font-bold text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] focus:shadow-[4px_4px_0px_0px_#A855F7] resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+                id="organizerDescription"
+                placeholder="Tell people about your events..."
+                name="organizerDescription"
+                rows={3}
+                value={formik.values.organizerDescription}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                disabled={isLoading}
+              />
+            </label>
+          </div>
+        )}
+
         {/* Terms Checkbox */}
         <label className="flex items-start gap-3 mt-1 cursor-pointer group select-none">
           <div className="relative flex items-center justify-center mt-0.5">
