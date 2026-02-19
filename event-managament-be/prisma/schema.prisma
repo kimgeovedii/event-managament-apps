@@ -131,9 +131,12 @@ model Event {
 }
 
 model Category {
-  id     String  @id @default(uuid())
-  name   String  @unique
-  events Event[]
+  id        String  @id @default(uuid())
+  name      String  @unique
+  icon      String?
+  color     String?
+  thumbnail String?
+  events    Event[]
 
   @@map("categories")
 }

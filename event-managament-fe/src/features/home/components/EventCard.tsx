@@ -2,10 +2,8 @@
 
 import React from "react";
 import Image from "next/image";
-import type { Event } from "@/data";
 import { useEventFavorite } from "../hooks";
 
-// Icons
 const CalendarIcon = () => (
   <svg className="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 24 24">
     <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/>
@@ -48,17 +46,43 @@ const colorClasses = {
 };
 
 interface EventCardProps {
-  event: Event;
+  event: any;
 }
 
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
-  const colors = colorClasses[event.category.color];
-  const { isFavorite, toggleFavorite } = useEventFavorite(event.isFavorite);
+  const categoryColor = event?.category?.color || "pink";
+  const colors = colorClasses[categoryColor as keyof typeof colorClasses] || colorClasses.pink;
+  const { isFavorite, toggleFavorite } = useEventFavorite(Boolean(event.isFavorite));
+
+  const displayTitle = event.title || event.name || "Untitled";
+
+  const start = event.startDate ? new Date(event.startDate) : event.startDateObj || null;
+
+  const displayDate = event.date || (start ? start.toLocaleDateString("id-ID", { weekday: "short", month: "short", day: "numeric" }) : "");
+  const displayTime = event.time || (start ? start.toLocaleTimeString("id-ID", { hour: "numeric", minute: "numeric", hour12: false }) : "");
+
+  const displayLocation = event.location?.name || event.location || "";
+
+  const currency = event.currency || "IDR";
+
+  const resolvedPrice = (() => {
+    if (typeof event.price === "number") return event.price;
+    if (event.ticketTypes && Array.isArray(event.ticketTypes)) {
+      const prices = event.ticketTypes.map((t: any) => (typeof t.price === "string" ? Number(t.price) : Number(t.price || 0)));
+      return prices.length ? Math.min(...prices) : 0;
+    }
+    if (typeof event.price === "string") return Number(event.price) || 0;
+    return 0;
+  })();
+
+  const isFree = event.isFree ?? resolvedPrice === 0;
 
   const formatPrice = (price: number, currency: string) => {
-    if (event.isFree) return "FREE";
+    if (isFree) return "FREE";
     return `${currency} ${(price / 1000).toFixed(0)}K`;
   };
+
+  const imageSrc = event.image || event.imageUrl || event.category?.thumbnail || event.category?.icon || "/placeholder.jpg";
 
   return (
     <div
@@ -67,16 +91,16 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
       {/* Image */}
       <div className="relative h-28 sm:h-36 md:h-48 lg:h-56 overflow-hidden">
         <Image
-          alt={event.title}
+          alt={displayTitle}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 filter grayscale-0 dark:grayscale group-hover:grayscale-0"
-          src={event.image}
+          src={imageSrc}
           fill
         />
         {/* Category Badge */}
         <div
           className={`absolute top-2 right-2 md:top-3 md:right-3 z-20 ${colors.badge} px-2 py-0.5 md:px-3 md:py-1 text-[9px] md:text-xs font-black uppercase tracking-wider transform rotate-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] border border-black/20 dark:border-black`}
         >
-          {event.category.name}
+          {event.category?.name || event.categoryName || "Category"}
         </div>
         
         {/* Gradient Overlay */}
@@ -87,13 +111,13 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
       <div className="p-3 md:p-4 flex flex-col flex-grow bg-white dark:bg-[#111]">
         {/* Title */}
         <h3 className="font-display font-bold text-xs sm:text-sm md:text-base lg:text-lg text-gray-900 dark:text-white leading-tight group-hover:text-[#00bcd4] dark:group-hover:text-[#00FFFF] transition-colors uppercase mb-1 md:mb-2 line-clamp-2">
-          {event.title}
+          {displayTitle}
         </h3>
 
         {/* Date */}
         <p className="text-[9px] md:text-xs font-bold text-[#9c27b0] dark:text-[#B026FF] uppercase tracking-widest mb-1 md:mb-2 flex items-center gap-1">
           <CalendarIcon />
-          <span className="truncate">{event.date} • {event.time}</span>
+          <span className="truncate">{displayDate} • {displayTime}</span>
         </p>
 
         {/* Location */}
@@ -101,9 +125,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
           <span className="text-[#00bcd4] dark:text-[#00FFFF] flex-shrink-0">
             <LocationIcon />
           </span>
-          <span className="truncate">
-            {event.location.name}
-          </span>
+          <span className="truncate">{displayLocation}</span>
         </div>
 
         {/* Footer */}
@@ -113,7 +135,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
               event.isFree ? "text-green-500 dark:text-green-400" : "text-[#00bcd4] dark:text-[#00FFFF]"
             }`}
           >
-            {formatPrice(event.price, event.currency)}
+            {formatPrice(resolvedPrice, currency)}
           </span>
           <button
             onClick={toggleFavorite}

@@ -1,16 +1,22 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import EventCard from "./EventCard";
 import { useEvents } from "../hooks/useEvents";
-import { useSearchParams } from "next/navigation";
 import PaginationBar from "./PaginationBar";
 
 const EventsGridSection: React.FC = () => {
   // const events = mockEvents.data;
-  const { events, meta, isLoading, error } = useEvents();
-  const searchParams = useSearchParams();
-  const page = Number(searchParams.get("page")) || 1;
+  const [page, setPage] = useState<number>(1);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const sp = new URLSearchParams(window.location.search);
+    const p = Number(sp.get("page")) || 1;
+    setPage(p);
+  }, []);
+
+  const { events, meta, isLoading, error } = useEvents(page);
 
   if (isLoading) {
     return (
