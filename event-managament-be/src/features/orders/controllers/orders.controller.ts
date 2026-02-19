@@ -94,6 +94,15 @@ export class OrdersController {
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
-    throw new Error("Method not implemented.");
+    try {
+      const orderId = req.params.id as string;
+      const paymentData = req.body;
+
+      const result = await this.ordersService.pay(orderId, paymentData);
+
+      res.status(200).send(result);
+    } catch (error) {
+      next(error);
+    }
   };
 }

@@ -23,6 +23,7 @@ export class TicketsRepository {
         include: {
           category: true,
           organizer: true,
+          ticketTypes: true,
         },
         skip,
         take,
@@ -42,32 +43,39 @@ export class TicketsRepository {
         organizer: true,
         ticketTypes: true,
         promotions: {
-            include: {
-                promotion: true
-            }
-        }
+          include: {
+            promotion: true,
+          },
+        },
       },
     });
   };
 
-  public findTicketTypeById = async (id: string, tx?: Prisma.TransactionClient): Promise<any> => {
+  public findTicketTypeById = async (
+    id: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<any> => {
     const client = tx || prisma;
     return await client.ticketType.findUnique({
       where: { id },
     });
   };
 
-  public updateTicketQuota = async (id: string, qty: number, tx?: Prisma.TransactionClient) => {
-      const client = tx || prisma;
-      return await client.ticketType.update({
-          where: { id },
-          data: {
-              quota: {
-                  decrement: qty
-              }
-          }
-      })
-  }
+  public updateTicketQuota = async (
+    id: string,
+    qty: number,
+    tx?: Prisma.TransactionClient,
+  ) => {
+    const client = tx || prisma;
+    return await client.ticketType.update({
+      where: { id },
+      data: {
+        quota: {
+          decrement: qty,
+        },
+      },
+    });
+  };
 
   public update = async (
     id: string,

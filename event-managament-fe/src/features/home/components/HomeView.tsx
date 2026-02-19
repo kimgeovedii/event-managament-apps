@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { Suspense } from "react";
 import HeroSection from "./HeroSection";
 import MarqueeSection from "./MarqueeSection";
 import PromoCardsSection from "./PromoCardsSection";
@@ -28,7 +30,9 @@ const HomeView: React.FC = () => {
         <FilterBar />
 
         {/* Events Grid */}
-        <EventsGridSection />
+        <Suspense fallback={<div className="py-8 md:py-16 px-4 md:px-6 lg:px-10 max-w-[1400px] mx-auto w-full text-center">Loading events...</div>}>
+          <EventsGridSection />
+        </Suspense>
 
         {/* Newsletter */}
         <NewsletterSection />

@@ -8,27 +8,27 @@ datasource db {
 }
 
 model User {
-  id             String   @id @default(uuid())
-  name           String
-  email          String   @unique
-  password       String
-  referralCode   String   @unique @map("referral_code")
-  avatarUrl      String?  @map("avatar_url")
-  isVerified     Boolean  @default(false) @map("is_verified")
+  id           String     @id @default(uuid())
+  name         String
+  email        String     @unique
+  password     String
+  referralCode String     @unique @map("referral_code")
+  avatarUrl    String?    @map("avatar_url")
+  isVerified   Boolean    @default(false) @map("is_verified")
   // roles via UserRole join table
-  roles          UserRole[]
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  roles        UserRole[]
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
 
   // Relations
-  organizer           Organizer? // 1 user can own 1 organizer profile (optional)
-  organizerTeams      OrganizerTeam[]
-  referralsSent       Referral[]      @relation("ReferralFrom")
-  referralsReceived   Referral[]      @relation("ReferralTo")
-  points              Point[]
-  coupons             UserCoupon[]
-  transactions        Transaction[]
-  reviews             Review[]
+  organizer         Organizer? // 1 user can own 1 organizer profile (optional)
+  organizerTeams    OrganizerTeam[]
+  referralsSent     Referral[]      @relation("ReferralFrom")
+  referralsReceived Referral[]      @relation("ReferralTo")
+  points            Point[]
+  coupons           UserCoupon[]
+  transactions      Transaction[]
+  reviews           Review[]
 
   @@map("users")
 }
@@ -131,9 +131,12 @@ model Event {
 }
 
 model Category {
-  id     String  @id @default(uuid())
-  name   String  @unique
-  events Event[]
+  id        String  @id @default(uuid())
+  name      String  @unique
+  icon      String?
+  color     String?
+  thumbnail String?
+  events    Event[]
 
   @@map("categories")
 }
@@ -187,6 +190,7 @@ model PromotionEvent {
 
 model Transaction {
   id                 String            @id @default(uuid())
+  invoice            String            @unique
   userId             String            @map("user_id")
   eventId            String            @map("event_id")
   totalOriginalPrice Decimal           @map("total_original_price")
