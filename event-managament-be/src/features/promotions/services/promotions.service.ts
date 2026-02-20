@@ -2,6 +2,7 @@
 import { PromotionsRepository } from "../repositories/promotions.repository.js";
 import { Prisma } from "@prisma/client";
 import { TicketsRepository } from "src/features/events/repositories/tickets.repository.js";
+import { OrdersRepository } from "src/features/orders/repositories/orders.repository.js";
 
 export class PromotionsService {
   private promotionsRepository: PromotionsRepository;
@@ -14,19 +15,13 @@ export class PromotionsService {
 
   public create = async (data: any): Promise<any> => {
     return await prisma.$transaction(async (tx) => {
-      // Assuming data.eventId is provided instead of ticketId, logic allows linking to Event.
-      // If data has ticketId, we should probably check if it was meant to be eventId.
-      // For now, I'll check for eventId.
-      const eventId = data.eventId || data.ticketId; 
+      const eventId = data.eventId || data.ticketId;
       const event = await this.ticketsRepository.findById(eventId);
 
       if (!event) {
         throw new Error(`Event with id ${eventId} not found`);
       }
 
-      // promotionsRepository.create expects data. 
-      // We might need to adjust data to match PromotionCreateInput which might require organizerId, etc.
-      // But for now, we pass data hoping it matches or repo handles it.
       return await this.promotionsRepository.create(data, tx);
     });
   };
@@ -74,7 +69,63 @@ export class PromotionsService {
     return this.promotionsRepository.delete(id);
   };
 
-  public validate = async (code: string, userId: number): Promise<any> => {
-    throw new Error("Method not implemented.");
+  public validate = async (
+    code: string,
+    userId?: string,
+    eventId?: string,
+  ): Promise<any> => {
+    const promotion = await this.promotionsRepository.findByCode(code);
+
+    if (!promotion) {
+      throw new Error("Promotion not founf");
+    }
+
+    const now = new Date();
+    const start = new Date(promotion.startDate);
+    const end = new Date(promotion.endDate);
+
+    if (now < start || now > end) {
+      throw new Error("Promotion is not active");
+    }
+
+    if (eventId) {
+      const applies = (promotion.events || []).some((pe: any) => {
+        return (
+          (pe.eventId && pe.eventId === eventId) ||
+          (pe.event && pe.event.id === eventId)
+        );
+      });
+
+      if (!applies) {
+        throw new Error("Promotion does not apply to this event");
+      }
+    }
+
+    if (
+      promotion.maxUsage !== null &&
+      promotion.maxUsage !== undefined &&
+      promotion._count &&
+      promotion._count.transactions >= promotion.maxUsage
+    ) {
+      throw new Error("Promotion usage limit exceeded");
+    }
+
+    if (userId) {
+      const existing = await prisma.transaction.findFirst({
+        where: {
+          userId,
+          promotionId: promotion.id,
+        },
+      });
+
+      if (existing) {
+        throw new Error("User has already used this promotion");
+      }
+    }
+
+    return {
+      valid: true,
+      promotion,
+    };
   };
 }

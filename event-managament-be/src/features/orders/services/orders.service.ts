@@ -29,15 +29,20 @@ export class OrdersService {
       const orderItems: any[] = [];
 
       for (let item of data.items) {
-        const ticket = await this.ticketsRepository.findTicketTypeById(item.ticketId, tx);
+        const ticket = await this.ticketsRepository.findTicketTypeById(
+          item.ticketId,
+          tx,
+        );
         if (!ticket) {
           throw new Error(`Ticket with id ${item.ticketId} not found`);
         }
 
         if (eventId === null) {
-            eventId = ticket.eventId;
+          eventId = ticket.eventId;
         } else if (eventId !== ticket.eventId) {
-            throw new Error("Cannot mix tickets from different events in one order");
+          throw new Error(
+            "Cannot mix tickets from different events in one order",
+          );
         }
 
         if (ticket.quota < item.qty) {
@@ -48,17 +53,21 @@ export class OrdersService {
         totalPrice += subTotal;
 
         orderItems.push({
-          ticketTypeId: item.ticketId, 
+          ticketTypeId: item.ticketId,
           qty: item.qty,
-          pricePerUnit: Number(ticket.price), 
-          subTotal: subTotal, 
+          pricePerUnit: Number(ticket.price),
+          subTotal: subTotal,
         });
 
-        await this.ticketsRepository.updateTicketQuota(item.ticketId, item.qty, tx);
+        await this.ticketsRepository.updateTicketQuota(
+          item.ticketId,
+          item.qty,
+          tx,
+        );
       }
 
       if (!eventId) {
-          throw new Error("No valid event found for tickets");
+        throw new Error("No valid event found for tickets");
       }
 
       const finalPrice = totalPrice - (data.pointUsed || 0);
@@ -76,7 +85,7 @@ export class OrdersService {
         totalPrice: finalPrice,
         pointUsed: data.pointUsed || 0,
         customerId: data.customerId,
-        eventId, 
+        eventId,
         paymentMethod: data.paymentMethod,
         voucherId: data.voucherId,
         items: orderItems,
@@ -129,7 +138,21 @@ export class OrdersService {
     return this.ordersRepository.delete(id);
   };
 
-  public pay = async (orderId: number, paymentData: any): Promise<any> => {
-    throw new Error("Method not implemented.");
+  public pay = async (orderId: string, paymentData: any): Promise<any> => {
+    const order = await this.ordersRepository.findById(orderId);
+
+    if (!order) {
+      throw new Error("Order not found");
+    }
+
+    const updateData: any = {
+      status: "PAID",
+    };
+
+    if (paymentData && paymentData.method) {
+      updateData.paymentMethod = paymentData.method;
+    }
+
+    return await this.ordersRepository.update(orderId, updateData);
   };
 }
