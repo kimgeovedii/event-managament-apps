@@ -1,5 +1,6 @@
 "use client";
 
+import { useStoreLogin } from "@/features/auth/store/useAuthStore";
 import React from "react";
 
 interface DashboardHeaderProps {
@@ -26,6 +27,17 @@ const NotificationIcon = () => (
 );
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onMenuClick }) => {
+  const { user } = useStoreLogin();
+
+  const getInitials = (name?: string) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .substring(0, 2)
+      .toUpperCase();
+  };
   return (
     <header className="h-14 md:h-16 bg-white dark:bg-[#221019] border-b border-[#f4f0f2] dark:border-[#3a1d2e] flex items-center justify-between px-3 md:px-6 lg:px-8 flex-shrink-0 z-20">
       <div className="flex items-center gap-2 md:gap-4">
@@ -58,11 +70,15 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onMenuClick }) => {
         {/* Profile */}
         <div className="flex items-center gap-2 md:gap-3 pl-3 md:pl-6 border-l border-[#f4f0f2] dark:border-[#3a1d2e]">
           <div className="text-right hidden md:block">
-            <p className="text-xs md:text-sm font-bold text-[#181114] dark:text-white">Alex Morgan</p>
-            <p className="text-[10px] md:text-xs text-[#896175]">Super Organizer</p>
+            <p className="text-xs md:text-sm font-bold text-[#181114] dark:text-white">{user?.organizer?.name}</p>
+            <p className="text-[10px] md:text-xs text-[#896175]">{user?.name}</p>
           </div>
-          <div className="size-8 md:size-10 rounded-full bg-[#ee2b8c] flex items-center justify-center text-white font-bold text-xs md:text-sm">
-            AM
+          <div className="size-8 md:size-10 rounded-full bg-[#ee2b8c] flex items-center justify-center text-white font-bold text-xs md:text-sm overflow-hidden border-2 border-transparent hover:border-white/20 transition-colors">
+            {user?.organizer?.logoUrl ? (
+              <img src={user.organizer.logoUrl} alt="Logo" className="w-full h-full object-cover" />
+            ) : (
+              getInitials(user?.organizer?.name || user?.name)
+            )}
           </div>
         </div>
       </div>

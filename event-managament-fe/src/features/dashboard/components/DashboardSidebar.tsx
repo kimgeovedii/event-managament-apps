@@ -53,11 +53,18 @@ const CloseIcon = () => (
   </svg>
 );
 
+const ProfileIcon = () => (
+  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"/>
+  </svg>
+);
+
 const navItems = [
   { id: "dashboard", label: "Dashboard", href: "/dashboard", icon: DashboardIcon },
   { id: "events", label: "My Events", href: "/dashboard/events", icon: EventIcon },
   { id: "transactions", label: "Transactions", href: "/dashboard/transactions", icon: TransactionIcon },
   { id: "reports", label: "Reports", href: "/dashboard/reports", icon: ChartIcon },
+  { id: "profile", label: "Profile", href: "/dashboard/profile", icon: ProfileIcon },
   { id: "settings", label: "Settings", href: "/dashboard/settings", icon: SettingsIcon },
 ];
 
@@ -107,18 +114,20 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ isOpen = false, onC
 
       {/* Pro Plan Card */}
       <div className="p-4 border-t border-[#f4f0f2] dark:border-[#3a1d2e]">
-        <div className="bg-gradient-to-br from-[#ee2b8c]/10 to-[#8b5cf6]/10 rounded-2xl p-4 relative overflow-hidden group cursor-pointer hover:shadow-md transition-all">
-          <div className="relative z-10">
-            <p className="text-xs font-bold text-[#ee2b8c] mb-1">PRO PLAN</p>
-            <p className="text-sm font-semibold text-[#181114] dark:text-white">Unlock analytics</p>
-            <div className="mt-3 text-xs font-bold text-[#8b5cf6] flex items-center gap-1 group-hover:gap-2 transition-all">
-              Upgrade now <ArrowIcon />
+        <Link href="/">
+          <div className="bg-gradient-to-br from-[#10b981]/10 to-[#3b82f6]/10 rounded-2xl p-4 relative overflow-hidden group cursor-pointer hover:shadow-md transition-all">
+            <div className="relative z-10">
+              <p className="text-xs font-bold text-[#10b981] mb-1">BACK TO MAIN</p>
+              <p className="text-sm font-semibold text-[#181114] dark:text-white">Go to Home</p>
+              <div className="mt-3 text-xs font-bold text-[#3b82f6] flex items-center gap-1 group-hover:gap-2 transition-all">
+                Browse Events <ArrowIcon />
+              </div>
+            </div>
+            <div className="absolute -bottom-4 -right-4 text-[#10b981]/10 rotate-12">
+              <RocketIcon />
             </div>
           </div>
-          <div className="absolute -bottom-4 -right-4 text-[#ee2b8c]/10 rotate-12">
-            <RocketIcon />
-          </div>
-        </div>
+        </Link>
       </div>
     </>
   );

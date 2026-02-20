@@ -53,12 +53,15 @@ export class OrganizationsService {
     return await this.repository.update(id, data);
   };
 
-  public delete = async (id: string): Promise<any> => {
+  public delete = async (id: string, requestingUserId: string): Promise<any> => {
     const organizer = await this.repository.findById(id);
     if (!organizer) {
       throw { status: 404, message: "Organizer not found" };
     }
-    return await this.repository.delete(id);
+    if (organizer.ownerId !== requestingUserId) {
+      throw { status: 403, message: "Only the OWNER can delete the organizer" };
+    }
+    return await this.repository.delete(id, organizer.ownerId);
   };
 
   /**
@@ -148,5 +151,46 @@ export class OrganizationsService {
     }
 
     return await this.repository.deleteMember(organizerId, targetUserId);
+  };
+
+  /**
+   * Update a team member's role in an organizer.
+   * Cannot edit the OWNER's role. Target user cannot become an OWNER.
+   */
+  public updateMemberRole = async (
+    organizerId: string,
+    requestingUserId: string,
+    targetUserId: string,
+    role: "ADMIN" | "MEMBER",
+  ): Promise<any> => {
+    // Check requesting user is OWNER or ADMIN
+    const requesterTeam = await this.repository.getTeamRole(
+      organizerId,
+      requestingUserId,
+    );
+    if (!requesterTeam || !["OWNER", "ADMIN"].includes(requesterTeam.role)) {
+      throw {
+        status: 403,
+        message: "Only OWNER or ADMIN can edit team members' roles",
+      };
+    }
+
+    // Cannot edit the OWNER
+    const targetTeam = await this.repository.getTeamRole(
+      organizerId,
+      targetUserId,
+    );
+    if (!targetTeam) {
+      throw { status: 404, message: "Team member not found" };
+    }
+    if (targetTeam.role === "OWNER") {
+      throw { status: 400, message: "Cannot edit the organizer owner's role" };
+    }
+
+    if (!["ADMIN", "MEMBER"].includes(role)) {
+      throw { status: 400, message: "Invalid role provided. Must be ADMIN or MEMBER." };
+    }
+
+    return await this.repository.updateMemberRole(organizerId, targetUserId, role);
   };
 }
