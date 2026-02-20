@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import DashboardSidebar from "./DashboardSidebar";
-import DashboardHeader from "./DashboardHeader";
+import DashboardSidebar from "../../../components/layouts/dashboard/DashboardSidebar";
+import DashboardHeader from "../../../components/layouts/dashboard/DashboardHeader";
 import StatsSection from "./StatsSection";
 import SalesChart from "./SalesChart";
 import ActiveEventsList from "./ActiveEventsList";

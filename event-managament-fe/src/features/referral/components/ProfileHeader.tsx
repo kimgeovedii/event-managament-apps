@@ -6,21 +6,44 @@ import { UserProfile } from "../types";
 interface ProfileHeaderProps {
   profile: UserProfile;
   onCopyCode: () => void;
+  onAvatarChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isUploadingAvatar?: boolean;
+  uploadProgress?: number;
 }
 
-const ProfileHeader: React.FC<ProfileHeaderProps> = ({ profile, onCopyCode }) => (
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({ profile, onCopyCode, onAvatarChange, isUploadingAvatar, uploadProgress }) => (
   <section className="flex flex-col gap-4 md:gap-8 items-center md:flex-row md:items-end md:justify-between border-b-2 border-gray-200 dark:border-zinc-800 pb-4 md:pb-8 border-dashed">
     <div className="flex flex-col items-center gap-4 md:flex-row md:items-end md:gap-6 w-full md:w-auto">
       {/* Avatar */}
-      <div className="relative group cursor-pointer">
-        <div 
-          className="size-24 md:size-40 rounded-none border-2 md:border-4 border-gray-300 dark:border-white/20 bg-cover bg-center shadow-[2px_2px_0px_0px_#ccc] dark:shadow-[2px_2px_0px_0px_#333333] md:shadow-[4px_4px_0px_0px_#ccc] md:dark:shadow-[4px_4px_0px_0px_#333333] group-hover:shadow-[4px_4px_0px_0px_#FF00FF] md:group-hover:shadow-[6px_6px_0px_0px_#FF00FF] transition-all bg-gray-100 dark:bg-zinc-900"
-          style={{ backgroundImage: `url("${profile.avatar}")` }}
-        />
-        <div className="absolute -bottom-2 -right-2 md:-bottom-3 md:-right-3 bg-[#00FFFF] text-black p-1.5 md:p-2 border-2 border-black shadow-[1px_1px_0px_0px_#333333] md:shadow-[2px_2px_0px_0px_#333333] group-hover:rotate-12 transition-transform">
-          <EditIcon />
+        <div className="relative group cursor-pointer">
+          <div 
+            className="size-24 md:size-40 rounded-none border-2 md:border-4 border-gray-300 dark:border-white/20 bg-cover bg-center shadow-[2px_2px_0px_0px_#ccc] dark:shadow-[2px_2px_0px_0px_#333333] md:shadow-[4px_4px_0px_0px_#ccc] md:dark:shadow-[4px_4px_0px_0px_#333333] transition-all bg-gray-100 dark:bg-zinc-900 relative"
+            style={{ backgroundImage: `url("${profile.avatar}")` }}
+          >
+            {isUploadingAvatar && (
+              <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center backdrop-blur-sm">
+                <span className="text-white font-black text-xl md:text-3xl drop-shadow-md">
+                  {uploadProgress || 0}%
+                </span>
+                <span className="text-white/80 text-[10px] md:text-xs font-bold uppercase mt-1">Uploading</span>
+              </div>
+            )}
+          </div>
+          <label className={`absolute -bottom-2 -right-2 md:-bottom-3 md:-right-3 ${isUploadingAvatar ? 'bg-gray-400' : 'bg-[#00FFFF] hover:rotate-12'} text-black p-1.5 md:p-2 border-2 border-black shadow-[1px_1px_0px_0px_#333333] md:shadow-[2px_2px_0px_0px_#333333] transition-transform cursor-pointer`}>
+            {isUploadingAvatar ? (
+               <span className="material-symbols-outlined animate-spin text-sm">refresh</span>
+            ) : (
+               <EditIcon />
+            )}
+            <input 
+              type="file" 
+              accept="image/png, image/jpeg, image/jpg, image/webp" 
+              className="hidden" 
+              onChange={onAvatarChange} 
+              disabled={isUploadingAvatar}
+            />
+          </label>
         </div>
-      </div>
 
       {/* Profile Info */}
       <div className="flex flex-col items-center md:items-start text-center md:text-left gap-1">

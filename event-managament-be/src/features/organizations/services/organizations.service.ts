@@ -1,4 +1,5 @@
 ﻿import { OrganizationsRepository } from "../repositories/organizations.repository.js";
+import { deleteCloudinaryImage } from "../../../utils/cloudinary.js";
 
 export class OrganizationsService {
   private repository: OrganizationsRepository;
@@ -62,6 +63,26 @@ export class OrganizationsService {
       throw { status: 403, message: "Only the OWNER can delete the organizer" };
     }
     return await this.repository.delete(id, organizer.ownerId);
+  };
+
+  public updateLogo = async (id: string, requestingUserId: string, fileUrl: string | undefined): Promise<any> => {
+    if (!fileUrl) {
+      throw { status: 400, message: "No image file provided" };
+    }
+    const organizer = await this.repository.findById(id);
+    if (!organizer) {
+      throw { status: 404, message: "Organizer not found" };
+    }
+    if (organizer.ownerId !== requestingUserId) {
+      throw { status: 403, message: "Only the OWNER can update the logo" };
+    }
+
+    // Delete old logo from Cloudinary if it exists
+    if (organizer.logoUrl) {
+      await deleteCloudinaryImage(organizer.logoUrl);
+    }
+
+    return await this.repository.updateLogo(id, fileUrl);
   };
 
   /**

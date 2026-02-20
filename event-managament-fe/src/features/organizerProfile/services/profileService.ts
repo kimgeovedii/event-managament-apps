@@ -17,3 +17,17 @@ export const deleteOrganizerProfile = async (id: string) => {
   const response = await apiFetch.delete(`/organizations/${id}`);
   return response.data;
 };
+
+export const updateOrganizerLogo = async (
+  id: string, 
+  formData: FormData,
+  onUploadProgress?: (progressEvent: any) => void
+) => {
+  const response = await apiFetch.patch(`/organizations/${id}/logo`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    onUploadProgress,
+  });
+  return response.data;
+};

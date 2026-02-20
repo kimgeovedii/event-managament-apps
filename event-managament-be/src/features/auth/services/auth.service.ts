@@ -152,6 +152,7 @@ export class AuthService {
     return {
       user: {
         id: user.id,
+        avatarUrl:user.avatarUrl,
         name: user.name,
         email: user.email,
         roles,
@@ -205,6 +206,7 @@ export class AuthService {
 
     return {
       id: user.id,
+      avatarUrl:user.avatarUrl,
       name: user.name,
       email: user.email,
       referralCode: user.referralCode,

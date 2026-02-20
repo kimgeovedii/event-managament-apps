@@ -90,6 +90,13 @@ export class OrganizationsRepository {
     });
   };
 
+  public updateLogo = async (id: string, logoUrl: string): Promise<any> => {
+    return await prisma.organizer.update({
+      where: { id },
+      data: { logoUrl },
+    });
+  };
+
   public delete = async (id: string, ownerId: string): Promise<any> => {
     return await prisma.$transaction(async (tx) => {
       // 1. Remove all team members
