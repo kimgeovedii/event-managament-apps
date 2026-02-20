@@ -45,6 +45,13 @@ export class OrganizationsRouter {
       verifyToken,
       this.organizationsController.removeTeamMember,
     );
+
+    // Update team member role (requires auth)
+    this.router.patch(
+      "/:id/members/:userId",
+      verifyToken,
+      this.organizationsController.updateTeamMemberRole,
+    );
   };
 
   public getRouter = (): Router => {

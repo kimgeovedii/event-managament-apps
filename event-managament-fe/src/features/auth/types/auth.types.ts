@@ -24,6 +24,12 @@ export interface AuthUser {
     name: string;
     description?: string;
     logoUrl?: string;
+    createdAt:string;
+    isVerified:boolean;
+    teams?:{
+      userId:string;
+      role:string
+    }
   } | null;
 }
 

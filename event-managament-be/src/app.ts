@@ -25,7 +25,10 @@ class App {
 
   private configureMiddlewares = (): void => {
     this.app.use(cors({
-      origin:"http://localhost:3000",
+    origin: [
+      "http://localhost:3000", 
+      "https://hype-event-alpha.vercel.app"
+    ],
       credentials:true
     }));
     this.app.use(express.json());

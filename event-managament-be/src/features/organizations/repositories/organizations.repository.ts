@@ -90,9 +90,25 @@ export class OrganizationsRepository {
     });
   };
 
-  public delete = async (id: string): Promise<any> => {
-    return await prisma.organizer.delete({
-      where: { id },
+  public delete = async (id: string, ownerId: string): Promise<any> => {
+    return await prisma.$transaction(async (tx) => {
+      // 1. Remove all team members
+      await tx.organizerTeam.deleteMany({
+        where: { organizerId: id },
+      });
+
+      // 2. Remove the ORGANIZER role from the owner
+      await tx.userRole.deleteMany({
+        where: {
+          userId: ownerId,
+          role: "ORGANIZER",
+        },
+      });
+
+      // 3. Delete the Organizer
+      return await tx.organizer.delete({
+        where: { id },
+      });
     });
   };
 
@@ -172,6 +188,25 @@ export class OrganizationsRepository {
     if (!member) return null;
     return await prisma.organizerTeam.delete({
       where: { id: member.id },
+    });
+  };
+
+  /**
+   * Update the role of a team member within an organizer
+   */
+  public updateMemberRole = async (
+    organizerId: string,
+    userId: string,
+    role: "ADMIN" | "MEMBER",
+  ): Promise<any> => {
+    const member = await prisma.organizerTeam.findFirst({
+      where: { organizerId, userId },
+    });
+    if (!member) return null;
+
+    return await prisma.organizerTeam.update({
+      where: { id: member.id },
+      data: { role },
     });
   };
 

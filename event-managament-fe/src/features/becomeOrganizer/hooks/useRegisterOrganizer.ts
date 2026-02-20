@@ -6,6 +6,7 @@ import * as Yup from "yup";
 import { useRouter } from "next/navigation";
 import { createOrganizer, inviteTeamMember } from "../services/organizerService";
 import { useStoreLogin } from "../../auth/store/useAuthStore";
+import Cookies from "js-cookie";
 
 export interface TeamMemberInput {
   email: string;
@@ -41,6 +42,11 @@ export const useRegisterOrganizer = () => {
           name: values.name,
           description: values.description || undefined,
         });
+
+        if (result.tokens) {
+          Cookies.set("token", result.tokens.accessToken);
+          Cookies.set("refreshToken", result.tokens.refreshToken);
+        }
 
         // Invite team members if any
         if (teamEmails.length > 0 && result.data?.id) {
