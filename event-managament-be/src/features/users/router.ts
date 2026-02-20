@@ -1,7 +1,7 @@
 ﻿import { Router } from "express";
 import { UsersController } from "./controllers/users.controller.js";
 import { verifyToken } from "../../middlewares/verifyToken.js";
-import { uploadAvatarCloudinary } from "../../config/cloudinary.js";
+import { uploadcloudinaryImage } from "../../utils/cloudinary.js";
 
 export class UsersRouter {
   private router: Router;
@@ -21,7 +21,7 @@ export class UsersRouter {
     this.router.patch(
       "/:id/avatar",
       verifyToken,
-      uploadAvatarCloudinary.single("image"),
+      uploadcloudinaryImage("user_profile").single("image"),
       this.usersController.updateAvatar
     );
     this.router.delete("/:id", this.usersController.delete);

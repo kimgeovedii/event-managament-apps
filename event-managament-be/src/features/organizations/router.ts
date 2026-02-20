@@ -1,7 +1,7 @@
 ﻿import { Router } from "express";
 import { OrganizationsController } from "./controllers/organizations.controller.js";
 import { verifyToken } from "../../middlewares/verifyToken.js";
-import { uploadLogoCloudinary } from "../../config/cloudinary.js";
+import { uploadcloudinaryImage } from "../../utils/cloudinary.js";
 
 export class OrganizationsRouter {
   private router: Router;
@@ -30,7 +30,7 @@ export class OrganizationsRouter {
     this.router.patch(
       "/:id/logo",
       verifyToken,
-      uploadLogoCloudinary.single("image"),
+      uploadcloudinaryImage("organizer-profile").single("image"),
       this.organizationsController.updateLogo
     );
 

@@ -3,8 +3,8 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import DashboardSidebar from "@/features/dashboard/components/DashboardSidebar";
-import DashboardHeader from "@/features/dashboard/components/DashboardHeader";
+import DashboardSidebar from "@/components/layouts/dashboard/DashboardSidebar";
+import DashboardHeader from "@/components/layouts/dashboard/DashboardHeader";
 import { useSidebar } from "@/features/dashboard/hooks";
 import { FloatingThemeToggle } from "@/features/theme";
 import { useAddTeamMember } from "../hooks/useAddTeamMember";
