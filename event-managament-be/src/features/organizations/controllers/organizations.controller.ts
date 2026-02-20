@@ -106,6 +106,31 @@ export class OrganizationsController {
     }
   };
 
+  public updateLogo = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const organizerId = req.params.id as string;
+      const requestingUserId = req.user!.id;
+      const imageUrl = req.file?.path;
+
+      const updatedOrganizer = await this.service.updateLogo(organizerId, requestingUserId, imageUrl);
+
+      res.status(200).json({
+        message: "Organizer logo updated successfully",
+        data: { logoUrl: updatedOrganizer.logoUrl },
+      });
+    } catch (error: any) {
+      if (error.status) {
+        res.status(error.status).json({ message: error.message });
+      } else {
+        next(error);
+      }
+    }
+  };
+
   /**
    * DELETE /api/organizations/:id
    */

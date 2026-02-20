@@ -9,10 +9,23 @@ import DashboardHeader from "@/features/dashboard/components/DashboardHeader";
 import { useSidebar } from "@/features/dashboard/hooks";
 import { FloatingThemeToggle } from "@/features/theme";
 import { Snackbar, Alert } from "@mui/material";
+import { ImageCropperModal } from "@/components/ImageCropperModal";
 
 const EditOrganizerProfileView: React.FC = () => {
   const { isOpen, toggle, close } = useSidebar();
-  const { formik, isLoading, toast, handleCloseToast } = useEditOrganizerProfile();
+  const { 
+    formik, 
+    isLoading, 
+    toast, 
+    logoPreview, 
+    imageToCrop,
+    isCropperOpen,
+    uploadProgress,
+    handleLogoChange, 
+    handleCropComplete,
+    handleCropperClose,
+    handleCloseToast 
+  } = useEditOrganizerProfile();
 
   return (
     <div className="bg-gray-50 dark:bg-[#1a0c13] text-[#181114] dark:text-white font-[family-name:var(--font-display)] min-h-screen flex overflow-hidden">
@@ -39,6 +52,39 @@ const EditOrganizerProfileView: React.FC = () => {
 
             <div className="bg-white dark:bg-[#221019] border border-gray-200 dark:border-[#3a1d2e] rounded-xl p-6 md:p-8 shadow-sm">
               <form onSubmit={formik.handleSubmit} className="space-y-6">
+                {/* Logo Upload Section */}
+                <div className="flex flex-col items-center gap-4 py-4">
+                  <div className="relative group">
+                    <div className="size-28 rounded-xl border-2 border-dashed border-gray-300 dark:border-[#3a1d2e] overflow-hidden bg-gray-50 dark:bg-black/20 flex flex-col items-center justify-center transition-all group-hover:border-[#4F46E5] dark:group-hover:border-indigo-500 relative">
+                      {logoPreview ? (
+                        <img src={logoPreview} alt="Logo Preview" className="w-full h-full object-contain" />
+                      ) : (
+                        <span className="text-gray-400 font-medium text-sm flex flex-col items-center gap-2">
+                          <span className="material-symbols-outlined text-3xl">add_photo_alternate</span>
+                        </span>
+                      )}
+
+                      {isLoading && uploadProgress > 0 && (
+                        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center backdrop-blur-sm z-10">
+                          <span className="text-white font-black text-2xl drop-shadow-md">
+                            {uploadProgress}%
+                          </span>
+                          <span className="text-white/80 text-[10px] font-bold uppercase mt-1">Uploading</span>
+                        </div>
+                      )}
+                    </div>
+                    <label className="absolute inset-0 bg-black/60 text-white flex flex-col items-center justify-center rounded-xl opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity z-20">
+                      <span className="material-symbols-outlined mb-1">upload</span>
+                      <span className="text-xs font-semibold">Change Logo</span>
+                      <input type="file" accept="image/png, image/jpeg, image/jpg, image/webp" className="hidden" onChange={handleLogoChange} />
+                    </label>
+                  </div>
+                  <p className="text-xs text-center text-gray-500 dark:text-gray-400">
+                    Recommended: Square 500x500px • Max 2MB <br />
+                    (JPEG, PNG, WEBP)
+                  </p>
+                </div>
+
                 {/* Form Fields Section */}
                 <div className="space-y-4">
                   <div>
@@ -133,6 +179,15 @@ const EditOrganizerProfileView: React.FC = () => {
           {toast.message}
         </Alert>
       </Snackbar>
+
+      <ImageCropperModal
+        open={isCropperOpen}
+        imageSrc={imageToCrop}
+        onClose={handleCropperClose}
+        onCropComplete={handleCropComplete}
+        title="Crop Organizer Logo"
+        aspectRatio={1} // Square crop
+      />
     </div>
   );
 };

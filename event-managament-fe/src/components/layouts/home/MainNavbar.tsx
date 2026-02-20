@@ -158,7 +158,7 @@ const MainNavbar: React.FC = () => {
                 >
                   <Avatar
                     alt={user?.name || "User"}
-                    src="/static/images/avatar/1.jpg"
+                    src={user?.avatarUrl}
                     sx={{ width: 32, height: 32, borderRadius: 0 }}
                   />
                 </IconButton>
@@ -237,7 +237,7 @@ const MainNavbar: React.FC = () => {
                 >
                   <Avatar
                     alt={user?.name || "User"}
-                    src="/static/images/avatar/1.jpg"
+                    src={user?.avatarUrl}
                     sx={{
                       width: 42,
                       height: 42,
@@ -439,7 +439,7 @@ const MainNavbar: React.FC = () => {
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-11 h-11 border-2 border-[#ee2b8c] dark:border-[#FF00FF] shadow-[3px_3px_0px_0px_#ee2b8c] dark:shadow-[3px_3px_0px_0px_#FF00FF] overflow-hidden flex-shrink-0">
                     <img
-                      src="/static/images/avatar/1.jpg"
+                      src={user?.avatarUrl}
                       alt={user?.name || "User"}
                       className="w-full h-full object-cover"
                       onError={(e) => {
