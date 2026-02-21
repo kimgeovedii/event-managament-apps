@@ -23,9 +23,6 @@ export class ReviewsService {
       throw new Error("Transaction item not found");
     }
 
-    // New schema: Review links to Event and User.
-    // We get Event from item.ticketType.event
-    // We get User from item.transaction.user
     const eventId = item.ticketType?.event?.id;
     const userId = item.transaction?.user?.id;
 
@@ -33,17 +30,13 @@ export class ReviewsService {
         throw new Error("Invalid transaction item data for review");
     }
 
-    // Optional: Check if review already exists for this user and event
-    // const existingReviews = await this.reviewsRepository.findMany({ userId, eventId });
-    // if (existingReviews.total > 0) { throw new Error("Review already exists"); }
-
     if (data.rating < 1 || data.rating > 5) {
       throw new Error("Rating must be between 1 and 5");
     }
 
     return await this.reviewsRepository.create({
       rating: data.rating,
-      comment: data.feedback, // mapped feedback to comment
+      comment: data.feedback,
       userId: userId,
       eventId: eventId
     });

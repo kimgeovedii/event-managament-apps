@@ -49,7 +49,25 @@ interface UseEventsReturn {
   refetch: () => void;
 }
 
-export const useEvents = (page = 1, limit = 6): UseEventsReturn => {
+interface UseEventsOptions {
+  page?: number;
+  limit?: number;
+  categoryId?: string;
+  location?: string;
+}
+
+export const useEvents = (
+  options: UseEventsOptions | number = 1,
+  limit = 6,
+): UseEventsReturn => {
+  const opts: UseEventsOptions =
+    typeof options === "number" ? { page: options, limit } : options;
+
+  const page = opts.page ?? 1;
+  const _limit = opts.limit ?? limit;
+  const categoryId = opts.categoryId;
+  const location = opts.location;
+
   const [events, setEvents] = useState<Ticket[]>([]);
   const [meta, setMeta] = useState<Meta | null>(null);
   const [isLoading, setIsLoading] = useState<Boolean>(true);
@@ -60,9 +78,13 @@ export const useEvents = (page = 1, limit = 6): UseEventsReturn => {
     setError(null);
 
     try {
-      const response = await apiFetch.get(
-        `/tickets?page=${page}&limit=${limit}`,
-      );
+      const params = new URLSearchParams();
+      params.set("page", String(page));
+      params.set("limit", String(_limit));
+      if (categoryId) params.set("categoryId", categoryId);
+      if (location) params.set("location", location);
+
+      const response = await apiFetch.get(`/tickets?${params.toString()}`);
       const { data, meta } = response.data;
 
       const mappedEvents: Ticket[] = (data as Ticket[]).map((ticket) => {
@@ -90,7 +112,7 @@ export const useEvents = (page = 1, limit = 6): UseEventsReturn => {
 
   useEffect(() => {
     fetchEvents();
-  }, [page, limit]);
+  }, [page, _limit, categoryId, location]);
 
   return { events, meta, isLoading, error, refetch: fetchEvents };
 };

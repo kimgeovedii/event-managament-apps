@@ -21,7 +21,7 @@ export class ReviewsRepository {
       prisma.review.findMany({
         where: filters,
         include: {
-          user: true, // Assuming we want user details
+          user: true,
           event: true,
         },
         skip,
