@@ -135,8 +135,14 @@ const MainNavbar: React.FC = () => {
         <div className="hidden md:flex items-center gap-4 lg:gap-8">
           <nav className="flex items-center gap-4 lg:gap-8 font-display tracking-wide uppercase text-[10px] lg:text-xs font-bold">
             <Link
-              href="/events"
+              href="/"
               className="text-[#ee2b8c] dark:text-[#00FFFF] hover:drop-shadow-[0_0_5px_currentColor] transition-all"
+            >
+              Home
+            </Link>
+            <Link
+              href="/events"
+              className="text-gray-600 dark:text-gray-300 hover:text-[#ee2b8c] dark:hover:text-[#FF00FF] transition-colors"
             >
               Events
             </Link>

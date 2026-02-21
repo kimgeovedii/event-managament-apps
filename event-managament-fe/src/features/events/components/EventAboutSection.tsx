@@ -13,13 +13,10 @@ const EventAboutSection: React.FC<EventAboutSectionProps> = ({ event }) => {
     <div className="space-y-12 font-display">
       <div className="border-b-4 border-black">
         <nav className="flex gap-6 md:gap-12">
-          <button className="border-b-4 md:border-b-8 border-neon-cyan pb-2 md:pb-4 text-sm md:text-xl font-black uppercase text-foreground">
+          <button className="border-b-2 md:border-b-6 border-neon-cyan pb-2 md:pb-2 text-sm md:text-lg font-black uppercase text-foreground">
             About
           </button>
-          <button className="pb-2 md:pb-4 text-sm md:text-xl font-bold uppercase text-gray-500 hover:text-foreground transition-colors">
-            Lineup
-          </button>
-          <button className="pb-2 md:pb-4 text-sm md:text-xl font-bold uppercase text-gray-500 hover:text-foreground transition-colors">
+          <button className="pb-2 md:pb-4 text-sm md:text-lg font-bold uppercase text-gray-500 hover:text-foreground transition-colors">
             Reviews
           </button>
         </nav>
