@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { ActiveEvent } from "../types";
+import { useOrgRole } from "@/hooks/useOrgRole";
 
 // Icons
 const AddIcon = () => (
@@ -29,6 +30,9 @@ interface ActiveEventsListProps {
 }
 
 const ActiveEventsList: React.FC<ActiveEventsListProps> = ({ events, loading = false }) => {
+  const role = useOrgRole();
+  const canCreate = role === "OWNER" || role === "ADMIN";
+
   return (
     <div className="bg-white dark:bg-[#221019] p-4 md:p-6 rounded-[24px] md:rounded-[32px] border border-[#f4f0f2] dark:border-[#3a1d2e] shadow-sm flex flex-col h-full">
       <div className="flex items-center justify-between mb-4 md:mb-6">
@@ -85,9 +89,11 @@ const ActiveEventsList: React.FC<ActiveEventsListProps> = ({ events, loading = f
         )}
       </div>
 
-      <button className="w-full mt-3 md:mt-4 py-2.5 md:py-3 border border-dashed border-[#ee2b8c]/40 text-[#ee2b8c] font-bold rounded-lg md:rounded-xl hover:bg-[#ee2b8c]/5 transition-colors flex items-center justify-center gap-1.5 md:gap-2 text-xs md:text-sm">
-        <AddIcon /> Create New Event
-      </button>
+      {canCreate && (
+        <button className="w-full mt-3 md:mt-4 py-2.5 md:py-3 border border-dashed border-[#ee2b8c]/40 text-[#ee2b8c] font-bold rounded-lg md:rounded-xl hover:bg-[#ee2b8c]/5 transition-colors flex items-center justify-center gap-1.5 md:gap-2 text-xs md:text-sm">
+          <AddIcon /> Create New Event
+        </button>
+      )}
     </div>
   );
 };

@@ -2,7 +2,7 @@ import apiFetch from "@/services/apiFetch";
 
 export const addTeamMember = async (
   organizerId: string,
-  data: { email: string; role: "ADMIN" | "MEMBER" },
+  data: { email: string; role: "ADMIN" | "MARKETING" },
 ) => {
   const response = await apiFetch.post(
     `/organizations/${organizerId}/members`,
@@ -14,7 +14,7 @@ export const addTeamMember = async (
 export const updateTeamRole = async (
   organizerId: string,
   userId: string,
-  role: "ADMIN" | "MEMBER",
+  role: "ADMIN" | "MARKETING",
 ) => {
   const response = await apiFetch.patch(
     `/organizations/${organizerId}/members/${userId}`,

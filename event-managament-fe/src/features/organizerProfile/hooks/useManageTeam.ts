@@ -12,7 +12,7 @@ export const useManageTeam = (
   // Modal states
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editRoleModalOpen, setEditRoleModalOpen] = useState(false);
-  const [newRole, setNewRole] = useState<"ADMIN" | "MEMBER">("MEMBER");
+  const [newRole, setNewRole] = useState<"ADMIN" | "MARKETING">("MARKETING");
   const [isLoadingAction, setIsLoadingAction] = useState(false);
 
   // Toast state
@@ -39,7 +39,7 @@ export const useManageTeam = (
   };
 
   const onOpenEditRoleModal = () => {
-    setNewRole(selectedMember?.role || "MEMBER");
+    setNewRole(selectedMember?.role || "MARKETING");
     setEditRoleModalOpen(true);
     handleCloseMenu();
   };

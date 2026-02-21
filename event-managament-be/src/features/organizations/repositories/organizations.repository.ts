@@ -1,4 +1,5 @@
 ﻿import { prisma } from "../../../config/prisma.js";
+import { OrgRole } from "@prisma/client";
 
 export class OrganizationsRepository {
   /**
@@ -126,7 +127,7 @@ export class OrganizationsRepository {
   public addMember = async (data: {
     organizerId: string;
     userId: string;
-    role?: "ADMIN" | "MEMBER";
+    role?: OrgRole;
   }): Promise<any> => {
     return await prisma.$transaction(async (tx) => {
       // 1. Add to OrganizerTeam
@@ -134,7 +135,7 @@ export class OrganizationsRepository {
         data: {
           organizerId: data.organizerId,
           userId: data.userId,
-          role: data.role || "MEMBER",
+          role: data.role || "MARKETING",
         },
       });
 
@@ -204,7 +205,7 @@ export class OrganizationsRepository {
   public updateMemberRole = async (
     organizerId: string,
     userId: string,
-    role: "ADMIN" | "MEMBER",
+    role: OrgRole,
   ): Promise<any> => {
     const member = await prisma.organizerTeam.findFirst({
       where: { organizerId, userId },
