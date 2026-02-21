@@ -15,7 +15,13 @@ const HomeView: React.FC = () => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col w-full overflow-x-hidden">
         {/* Hero Section */}
-        <HeroSection />
+        <Suspense
+          fallback={
+            <div className="h-[500px] w-full bg-gray-50 dark:bg-[#050505] animate-pulse" />
+          }
+        >
+          <HeroSection />
+        </Suspense>
 
         {/* Marquee + Promo Cards */}
         <section className="py-8 md:py-12 bg-gray-50 dark:bg-[#0a0a0a] border-b border-gray-200 dark:border-[#222]">
