@@ -118,15 +118,41 @@ export class AuthService {
     // Fetch organizer profile if user has ORGANIZER role
     let organizer = null;
     if (roles.includes("ORGANIZER")) {
-      organizer = await prisma.organizer.findUnique({
-        where: { ownerId: user.id },
-        select: { id: true, name: true, description: true, logoUrl: true },
+      organizer = await prisma.organizer.findFirst({
+        where: { 
+          teams: {
+            some: {
+              userId: user.id
+            }
+          }
+        },
+        select: { 
+          id: true, 
+          name: true, 
+          description: true, 
+          logoUrl: true,
+          createdAt:true,
+          isVerified:true,
+          owner:true,
+          teams: {
+            select: {
+              role: true,
+              user: {
+                select: {
+                  id: true,
+                  name: true
+                }
+              }
+            }
+          } 
+        },
       });
     }
 
     return {
       user: {
         id: user.id,
+        avatarUrl:user.avatarUrl,
         name: user.name,
         email: user.email,
         roles,
@@ -147,14 +173,40 @@ export class AuthService {
     // Fetch organizer profile if user has ORGANIZER role
     let organizer = null;
     if (roles.includes("ORGANIZER")) {
-      organizer = await prisma.organizer.findUnique({
-        where: { ownerId: id },
-        select: { id: true, name: true, description: true, logoUrl: true },
+      organizer = await prisma.organizer.findFirst({
+        where: { 
+          teams: {
+            some: {
+              userId: id
+            }
+          }
+        },
+        select: { 
+          id: true, 
+          name: true, 
+          description: true, 
+          logoUrl: true,
+          isVerified: true,
+          createdAt: true,
+          owner: true,
+          teams: {
+            select: {
+              role: true,
+              user: {
+                select: {
+                  id: true,
+                  name: true
+                }
+              }
+            }
+          }
+        },
       });
     }
 
     return {
       id: user.id,
+      avatarUrl:user.avatarUrl,
       name: user.name,
       email: user.email,
       referralCode: user.referralCode,

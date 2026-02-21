@@ -1,6 +1,7 @@
 ﻿import { Router } from "express";
 import { OrganizationsController } from "./controllers/organizations.controller.js";
 import { verifyToken } from "../../middlewares/verifyToken.js";
+import { uploadcloudinaryImage } from "../../utils/cloudinary.js";
 
 export class OrganizationsRouter {
   private router: Router;
@@ -25,6 +26,14 @@ export class OrganizationsRouter {
     // Update organizer (requires auth)
     this.router.patch("/:id", verifyToken, this.organizationsController.update);
 
+    // Update organizer logo
+    this.router.patch(
+      "/:id/logo",
+      verifyToken,
+      uploadcloudinaryImage("organizer-profile").single("image"),
+      this.organizationsController.updateLogo
+    );
+
     // Delete organizer (requires auth)
     this.router.delete(
       "/:id",
@@ -44,6 +53,13 @@ export class OrganizationsRouter {
       "/:id/members/:userId",
       verifyToken,
       this.organizationsController.removeTeamMember,
+    );
+
+    // Update team member role (requires auth)
+    this.router.patch(
+      "/:id/members/:userId",
+      verifyToken,
+      this.organizationsController.updateTeamMemberRole,
     );
   };
 
