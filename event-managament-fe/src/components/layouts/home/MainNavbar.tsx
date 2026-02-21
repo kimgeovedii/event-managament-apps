@@ -21,6 +21,7 @@ import Logout from "@mui/icons-material/Logout";
 import Person from "@mui/icons-material/Person";
 import Settings from "@mui/icons-material/Settings";
 import Campaign from "@mui/icons-material/Campaign";
+import NotificationBell from "../../../features/notifications/components/NotificationBell";
 
 // Hamburger Icon
 const MenuIcon = () => (
@@ -139,7 +140,10 @@ const MainNavbar: React.FC = () => {
           </nav>
 
           {isAuthenticated ? (
-            <>
+            <div className="flex items-center gap-2 lg:gap-4">
+              {/* Notification Bell */}
+              <NotificationBell />
+              
               {/* Avatar Button */}
               <Tooltip title="Account settings">
                 <IconButton
@@ -399,7 +403,7 @@ const MainNavbar: React.FC = () => {
                   Logout
                 </MenuItem>
               </Menu>
-            </>
+            </div>
           ) : (
             <div className="flex items-center gap-2 lg:gap-3">
               <Link
@@ -418,14 +422,17 @@ const MainNavbar: React.FC = () => {
           )}
         </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          onClick={toggle}
-          className="md:hidden text-gray-800 dark:text-white p-1.5 hover:text-[#ee2b8c] dark:hover:text-[#FF00FF] transition-colors"
-          aria-label="Toggle menu"
-        >
-          {isOpen ? <CloseIcon /> : <MenuIcon />}
-        </button>
+        {/* Mobile Actions */}
+        <div className="md:hidden flex items-center gap-1.5">
+          {isAuthenticated && <NotificationBell />}
+          <button
+            onClick={toggle}
+            className="text-gray-800 dark:text-white p-1.5 hover:text-[#ee2b8c] dark:hover:text-[#FF00FF] transition-colors"
+            aria-label="Toggle menu"
+          >
+            {isOpen ? <CloseIcon /> : <MenuIcon />}
+          </button>
+        </div>
       </header>
 
       {/* Mobile Menu Overlay */}

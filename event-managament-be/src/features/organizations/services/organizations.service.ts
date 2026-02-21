@@ -1,5 +1,5 @@
 ﻿import { OrganizationsRepository } from "../repositories/organizations.repository.js";
-import { deleteCloudinaryImage } from "../../../utils/cloudinary.js";
+import { deleteCloudinaryImage } from "../../uploadCloudinary/utils/uploadImage.js";
 
 export class OrganizationsService {
   private repository: OrganizationsRepository;
