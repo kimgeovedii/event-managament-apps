@@ -11,6 +11,7 @@ import { ReviewsRouter } from "./features/reviews/router.js";
 import { DashboardRouter } from "./features/dashboard/router.js";
 import { ReferralRouter } from "./features/referral/router.js";
 import { NotificationRouter } from "./features/notifications/router.js";
+import { CartRouter } from "./features/cart/router.js";
 
 class App {
   private app: Application;
@@ -59,6 +60,7 @@ class App {
     this.app.use("/api/dashboard", new DashboardRouter().getRouter());
     this.app.use("/api/referrals", new ReferralRouter().getRouter());
     this.app.use("/api/notifications", new NotificationRouter().getRouter());
+    this.app.use("/api/cart", new CartRouter().getRouter());
   };
 
   private configureErrorHandling = (): void => {
