@@ -22,8 +22,19 @@ export class TicketsService {
     const skip = (page - 1) * limit;
     const take = limit;
 
+    const where: any = {};
+    if (filters.categoryId) {
+      where.categoryId = filters.categoryId;
+    }
+    if (filters.location) {
+      where.location = { contains: filters.location, mode: "insensitive" };
+    }
+    if (filters.name) {
+      where.name = { contains: filters.name, mode: "insensitive" };
+    }
+
     const { data, total } = await this.ticketsRepository.findMany(
-      filters,
+      where,
       skip,
       take,
     );
