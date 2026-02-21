@@ -4,9 +4,9 @@ import React, { Suspense } from "react";
 import HeroSection from "./HeroSection";
 import MarqueeSection from "./MarqueeSection";
 import PromoCardsSection from "./PromoCardsSection";
-import CategorySection from "./CategorySection";
+import CategorySection from "../../events/components/CategoryEventSection";
 import FilterBar from "./FilterBar";
-import EventsGridSection from "./EventsGridSection";
+import EventsGridSection from "../../events/components/EventsGridSection";
 import NewsletterSection from "./NewsletterSection";
 
 const HomeView: React.FC = () => {

@@ -30,6 +30,7 @@ model User {
   transactions      Transaction[]
   reviews           Review[]
   notifications     UserNotification[]
+  cart              Cart?
 
   @@map("users")
 }
@@ -182,6 +183,7 @@ model TicketType {
 
   event            Event             @relation(fields: [eventId], references: [id])
   transactionItems TransactionItem[]
+  cartItems        CartItem[]
 
   @@map("ticket_types")
 }
@@ -301,4 +303,30 @@ enum TransactionStatus {
   PAID
   CANCELED
   REFUNDED
+}
+
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String     @unique @map("user_id")
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+
+  user  User       @relation(fields: [userId], references: [id])
+  items CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id           String   @id @default(uuid())
+  cartId       String   @map("cart_id")
+  ticketTypeId String   @map("ticket_type_id")
+  quantity     Int
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  cart       Cart       @relation(fields: [cartId], references: [id])
+  ticketType TicketType @relation(fields: [ticketTypeId], references: [id])
+
+  @@map("cart_items")
 }

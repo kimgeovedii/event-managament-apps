@@ -2,52 +2,15 @@
 
 import React, { useEffect, useState } from "react";
 import { useFilterBar } from "../hooks";
-import apiFetch from "@/services/apiFetch";
+import { categoryService } from "../../events/services/categoryService";
+import { Category } from "../../events/types/event.types";
 import * as OutlineIcons from "@heroicons/react/24/outline";
 import * as SolidIcons from "@heroicons/react/24/solid";
-
-interface Category {
-  id: string;
-  name: string;
-  icon?: string | null;
-  color?: string | null;
-}
-
-interface Category {
-  id: string;
-  name: string;
-  icon?: string | null;
-  color?: string | null;
-}
-
-const DynamicHeroIcon: React.FC<{
-  icon?: string | null;
-  className?: string;
-}> = ({ icon, className = "w-4 h-4" }) => {
-  if (!icon) {
-    return <OutlineIcons.Squares2X2Icon className={className} />;
-  }
-
-  let componentName = icon;
-  if (!componentName.endsWith("Icon")) {
-    componentName =
-      icon
-        .split("-")
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-        .join("") + "Icon";
-  }
-
-  const IconComponent =
-    OutlineIcons[componentName as keyof typeof OutlineIcons] ||
-    OutlineIcons.Squares2X2Icon;
-
-  return <IconComponent className={className} />;
-};
+import { CategoryIcon } from "../../events/utils/iconMapping";
+import { getContrastColor } from "@/utils/colorUtils";
 
 const ChevronIcon = () => <OutlineIcons.ChevronDownIcon className="w-4 h-4" />;
-
 const XIcon = () => <OutlineIcons.XMarkIcon className="w-3.5 h-3.5" />;
-
 const MapIcon = () => <SolidIcons.MapPinIcon className="w-3.5 h-3.5" />;
 
 const LOCATIONS = [
@@ -77,12 +40,8 @@ const FilterBar: React.FC = () => {
   const [loadingCats, setLoadingCats] = useState(true);
 
   useEffect(() => {
-    apiFetch
-      .get("/tickets/categories")
-      .then((res) => {
-        setCategories(res.data?.data ?? []);
-      })
-      .catch(() => setCategories([]))
+    categoryService.getCategories()
+      .then(setCategories)
       .finally(() => setLoadingCats(false));
   }, []);
 
@@ -92,17 +51,21 @@ const FilterBar: React.FC = () => {
     <section className="sticky top-[57px] md:top-[73px] z-40 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-gray-200 dark:border-[#333] py-3 md:py-4 px-4 md:px-6 lg:px-10">
       <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-6">
         {/* Category Buttons */}
-        <div className="flex items-center gap-2 md:gap-3 overflow-x-auto pb-1 md:pb-0 w-full md:w-auto no-scrollbar scroll-smooth">
+        <div className="flex items-center gap-2 md:gap-3 overflow-x-auto pb-3 md:pb-2 w-full md:w-auto custom-horizontal-scrollbar scroll-smooth">
           {/* All Button */}
           <button
             onClick={() => setCategory("all")}
             className={`flex items-center gap-1.5 md:gap-2 px-3 md:px-5 py-2 md:py-2.5 text-[10px] md:text-sm font-bold uppercase tracking-wider whitespace-nowrap transition-all border-2 ${
               activeCategory === "all"
-                ? "bg-[#ee2b8c] dark:bg-[#FF00FF] text-white dark:text-black border-[#d61f7a] dark:border-black shadow-[3px_3px_0px_0px_#d61f7a] dark:shadow-[3px_3px_0px_0px_#fff]"
-                : "bg-gray-100 dark:bg-[#111] text-gray-700 dark:text-white border-gray-300 dark:border-[#333] hover:border-[#ee2b8c] dark:hover:border-[#FF00FF] hover:text-[#ee2b8c] dark:hover:text-[#FF00FF] shadow-[2px_2px_0px_0px_#e5e5e5] dark:shadow-[2px_2px_0px_0px_#333]"
+                ? "border-black dark:border-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_#fff]"
+                : "bg-gray-100 dark:bg-[#111] text-gray-700 dark:text-white border-gray-300 dark:border-[#333] hover:border-black dark:hover:border-white shadow-[2px_2px_0px_0px_#e5e5e5] dark:shadow-[2px_2px_0px_0px_#333]"
             }`}
+            style={{
+              backgroundColor: activeCategory === "all" ? "#ee2b8c" : undefined,
+              color: activeCategory === "all" ? "white" : undefined,
+            }}
           >
-            <OutlineIcons.GlobeAltIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
+            <CategoryIcon iconName="all" className="w-3.5 h-3.5 md:w-4 md:h-4" outline={activeCategory !== "all"} />
             <span>All</span>
           </button>
 
@@ -116,29 +79,8 @@ const FilterBar: React.FC = () => {
               ))
             : categories.map((x) => {
                 const isActive = activeCategory === x.id;
-
-                let iconColorClass = "opacity-70";
-                if (!isActive && x.color) {
-                  switch (x.color) {
-                    case "pink":
-                      iconColorClass = "text-[#ee2b8c] dark:text-[#FF00FF]";
-                      break;
-                    case "cyan":
-                      iconColorClass = "text-[#00bcd4] dark:text-[#00FFFF]";
-                      break;
-                    case "purple":
-                      iconColorClass = "text-[#9c27b0] dark:text-[#B026FF]";
-                      break;
-                    case "green":
-                      iconColorClass = "text-green-500 dark:text-green-400";
-                      break;
-                    case "lime":
-                      iconColorClass = "text-lime-500 dark:text-[#CCFF00]";
-                      break;
-                  }
-                } else if (isActive) {
-                  iconColorClass = "";
-                }
+                const catColor = x.color || "#ee2b8c";
+                const contrastColor = getContrastColor(catColor);
 
                 return (
                   <button
@@ -146,13 +88,19 @@ const FilterBar: React.FC = () => {
                     onClick={() => setCategory(x.id)}
                     className={`flex items-center gap-1.5 md:gap-2 px-3 md:px-5 py-2 md:py-2.5 text-[10px] md:text-sm font-bold uppercase tracking-wider whitespace-nowrap transition-all border-2 ${
                       isActive
-                        ? "bg-[#ee2b8c] dark:bg-[#FF00FF] text-white dark:text-black border-[#d61f7a] dark:border-black shadow-[3px_3px_0px_0px_#d61f7a] dark:shadow-[3px_3px_0px_0px_#fff] -rotate-1"
-                        : "bg-gray-100 dark:bg-[#111] text-gray-700 dark:text-white border-gray-300 dark:border-[#333] hover:border-[#ee2b8c] dark:hover:border-[#FF00FF] hover:text-[#ee2b8c] dark:hover:text-[#FF00FF] shadow-[2px_2px_0px_0px_#e5e5e5] dark:shadow-[2px_2px_0px_0px_#333]"
+                        ? "border-black dark:border-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_#fff] -rotate-1"
+                        : "bg-gray-100 dark:bg-[#111] text-gray-700 dark:text-white border-gray-300 dark:border-[#333] hover:border-black dark:hover:border-white shadow-[2px_2px_0px_0px_#e5e5e5] dark:shadow-[2px_2px_0px_0px_#333]"
                     }`}
+                    style={{
+                      backgroundColor: isActive ? catColor : undefined,
+                      color: isActive ? contrastColor : undefined,
+                    }}
                   >
-                    <DynamicHeroIcon
-                      icon={x.icon}
-                      className={`w-3.5 h-3.5 md:w-4 md:h-4 ${iconColorClass}`}
+                    <CategoryIcon
+                      iconName={x.icon}
+                      className="w-3.5 h-3.5 md:w-4 md:h-4"
+                      style={{ color: !isActive ? catColor : undefined }}
+                      outline={!isActive}
                     />
                     <span className="hidden sm:inline">{x.name}</span>
                   </button>

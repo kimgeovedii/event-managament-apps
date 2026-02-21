@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { useMobileMenu } from "@/features/home/hooks";
+import { useMobileMenu } from "./useMobileMenu";
 import { useStoreLogin } from "@/features/auth/store/useAuthStore";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -22,6 +22,10 @@ import Person from "@mui/icons-material/Person";
 import Settings from "@mui/icons-material/Settings";
 import Campaign from "@mui/icons-material/Campaign";
 import NotificationBell from "../../../features/notifications/components/NotificationBell";
+import { useCartStore } from "@/features/cart/store/useCartStore";
+import CartDrawer from "@/features/cart/components/CartDrawer";
+import { ShoppingCartIcon } from "@heroicons/react/24/outline";
+import Badge from "@mui/material/Badge";
 
 // Hamburger Icon
 const MenuIcon = () => (
@@ -61,7 +65,6 @@ const MainNavbar: React.FC = () => {
   const router = useRouter();
   const { isOpen, toggle, close } = useMobileMenu();
   const { isAuthenticated, signOut, user } = useStoreLogin();
-
   const isOrganizer = user?.roles?.includes("ORGANIZER") ?? false;
 
   // Detect Tailwind dark mode
@@ -93,6 +96,18 @@ const MainNavbar: React.FC = () => {
     await signOut();
     router.push("/login");
   };
+
+  // Cart State
+  const [cartOpen, setCartOpen] = useState(false);
+  const { cart, fetchCart } = useCartStore();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchCart();
+    }
+  }, [isAuthenticated, fetchCart]);
+
+  const cartItemsCount = cart?.items.reduce((acc, item) => acc + item.quantity, 0) || 0;
   return (
     <>
       <header className="flex items-center justify-between whitespace-nowrap border-b border-gray-200 dark:border-[#333] px-3 md:px-6 lg:px-10 py-2 md:py-3 bg-white/80 dark:bg-black/80 backdrop-blur-md sticky top-0 z-50">
@@ -141,6 +156,33 @@ const MainNavbar: React.FC = () => {
 
           {isAuthenticated ? (
             <div className="flex items-center gap-2 lg:gap-4">
+              {/* Cart Icon */}
+              <Tooltip title="View Cart">
+                <IconButton 
+                  onClick={() => setCartOpen(true)}
+                  sx={{ 
+                    color: isDark ? "#fff" : "#1a1a1a",
+                    "&:hover": { color: "#ee2b8c" }
+                  }}
+                >
+                  <Badge 
+                    badgeContent={cartItemsCount} 
+                    color="primary"
+                    sx={{
+                      "& .MuiBadge-badge": {
+                        bgcolor: "#ee2b8c",
+                        color: "white",
+                        fontWeight: "bold",
+                        borderRadius: 0,
+                        border: "1px solid black"
+                      }
+                    }}
+                  >
+                    <ShoppingCartIcon className="size-6" />
+                  </Badge>
+                </IconButton>
+              </Tooltip>
+
               {/* Notification Bell */}
               <NotificationBell />
               
@@ -424,7 +466,20 @@ const MainNavbar: React.FC = () => {
 
         {/* Mobile Actions */}
         <div className="md:hidden flex items-center gap-1.5">
-          {isAuthenticated && <NotificationBell />}
+          {isAuthenticated && (
+            <>
+              <IconButton 
+                size="small"
+                onClick={() => setCartOpen(true)}
+                sx={{ color: isDark ? "#fff" : "#1a1a1a" }}
+              >
+                <Badge badgeContent={cartItemsCount} color="primary" sx={{ "& .MuiBadge-badge": { borderRadius: 0 } }}>
+                  <ShoppingCartIcon className="size-5" />
+                </Badge>
+              </IconButton>
+              <NotificationBell />
+            </>
+          )}
           <button
             onClick={toggle}
             className="text-gray-800 dark:text-white p-1.5 hover:text-[#ee2b8c] dark:hover:text-[#FF00FF] transition-colors"
@@ -588,6 +643,8 @@ const MainNavbar: React.FC = () => {
         </div>
       )}
 
+      {/* Cart Drawer */}
+      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </>
   );
 };
