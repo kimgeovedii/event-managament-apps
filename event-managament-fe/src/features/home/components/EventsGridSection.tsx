@@ -11,11 +11,13 @@ const EventsGridSection: React.FC = () => {
   const page = Number(searchParams.get("page")) || 1;
   const categoryId = searchParams.get("categoryId") || undefined;
   const location = searchParams.get("location") || undefined;
+  const search = searchParams.get("search") || undefined;
 
   const { events, meta, isLoading, error } = useEvents({
     page,
     categoryId,
     location,
+    search,
   });
 
   if (isLoading) {
@@ -62,7 +64,10 @@ const EventsGridSection: React.FC = () => {
   }
 
   return (
-    <section className="bg-white dark:bg-[#0a0a0a] w-full border-t border-gray-200 dark:border-[#222]">
+    <section
+      id="events-grid"
+      className="bg-white dark:bg-[#0a0a0a] w-full border-t border-gray-200 dark:border-[#222]"
+    >
       <div className="py-8 md:py-16 px-4 md:px-6 lg:px-10 max-w-[1400px] mx-auto w-full">
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 lg:gap-8">
           {events.map((event: any | any[]) => (
