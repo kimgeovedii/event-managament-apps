@@ -27,10 +27,22 @@ const HomeView: React.FC = () => {
         <CategorySection />
 
         {/* Filter Bar */}
-        <FilterBar />
+        <Suspense
+          fallback={
+            <div className="h-14 border-b border-gray-200 dark:border-[#333] bg-white/80 dark:bg-black/80" />
+          }
+        >
+          <FilterBar />
+        </Suspense>
 
         {/* Events Grid */}
-        <Suspense fallback={<div className="py-8 md:py-16 px-4 md:px-6 lg:px-10 max-w-[1400px] mx-auto w-full text-center">Loading events...</div>}>
+        <Suspense
+          fallback={
+            <div className="py-8 md:py-16 px-4 md:px-6 lg:px-10 max-w-[1400px] mx-auto w-full text-center">
+              Loading events...
+            </div>
+          }
+        >
           <EventsGridSection />
         </Suspense>
 
