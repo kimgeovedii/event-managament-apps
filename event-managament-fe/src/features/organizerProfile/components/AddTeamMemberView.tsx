@@ -79,7 +79,7 @@ const AddTeamMemberView: React.FC = () => {
                         className="w-full appearance-none bg-gray-50 dark:bg-[#1a0c13] border border-gray-200 dark:border-[#3a1d2e] rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5] dark:focus:ring-indigo-500 focus:border-transparent transition-all"
                         {...formik.getFieldProps("role")}
                       >
-                        <option value="MEMBER">Member (Limited Access)</option>
+                        <option value="MARKETING">Marketing (Limited Access)</option>
                         <option value="ADMIN">
                           Admin (Can Add/Remove Members)
                         </option>

@@ -5,6 +5,6 @@ export const addTeamMemberSchema = Yup.object().shape({
     .email("Invalid email address")
     .required("Email is required"),
   role: Yup.string()
-    .oneOf(["ADMIN", "MEMBER"], "Invalid role selected")
+    .oneOf(["ADMIN", "MARKETING"], "Invalid role selected")
     .required("Role is required"),
 });

@@ -1,6 +1,9 @@
 ﻿import { Router } from "express";
 import { TicketsController } from "./controllers/tickets.controller.js";
 import { CategoriesController } from "./controllers/categories.controllers.js";
+import { verifyToken } from "../../middlewares/verifyToken.js";
+import { requireOrgRole } from "../../middlewares/requireOrgRole.js";
+import { requireRole } from "../../middlewares/requireRole.js";
 
 export class TicketsRouter {
   private router: Router;
@@ -16,11 +19,36 @@ export class TicketsRouter {
 
   private setupRoutes = (): void => {
     this.router.get("/categories", this.categoriesController.findAll);
-    this.router.post("/", this.ticketsController.create);
+    
+    // Create event/ticket (Requires OWNER, ADMIN)
+    this.router.post(
+      "/", 
+      verifyToken, 
+      requireRole("ORGANIZER"), 
+      requireOrgRole(["ADMIN"], "organizer"), // Check body.organizerId
+      this.ticketsController.create
+    );
+
     this.router.get("/", this.ticketsController.findAll);
     this.router.get("/:id", this.ticketsController.findOne);
-    this.router.patch("/:id", this.ticketsController.update);
-    this.router.delete("/:id", this.ticketsController.delete);
+
+    // Update event/ticket (Requires OWNER, ADMIN)
+    this.router.patch(
+      "/:id", 
+      verifyToken, 
+      requireRole("ORGANIZER"), 
+      requireOrgRole(["ADMIN"], "event"), 
+      this.ticketsController.update
+    );
+
+    // Delete event/ticket (Requires OWNER, ADMIN)
+    this.router.delete(
+      "/:id", 
+      verifyToken, 
+      requireRole("ORGANIZER"), 
+      requireOrgRole(["ADMIN"], "event"), 
+      this.ticketsController.delete
+    );
   };
 
   public getRouter = (): Router => {

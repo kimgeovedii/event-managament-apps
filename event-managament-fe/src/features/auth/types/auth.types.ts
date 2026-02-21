@@ -27,10 +27,13 @@ export interface AuthUser {
     logoUrl?: string;
     createdAt:string;
     isVerified:boolean;
-    teams?:{
-      userId:string;
-      role:string
-    }
+    teams?: {
+      role: string;
+      user: {
+        id: string;
+        name: string;
+      };
+    }[];
   } | null;
 }
 

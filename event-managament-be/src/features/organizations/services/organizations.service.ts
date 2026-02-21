@@ -1,5 +1,6 @@
 ﻿import { OrganizationsRepository } from "../repositories/organizations.repository.js";
 import { deleteCloudinaryImage } from "../../uploadCloudinary/utils/uploadImage.js";
+import { OrgRole } from "@prisma/client";
 
 export class OrganizationsService {
   private repository: OrganizationsRepository;
@@ -92,7 +93,7 @@ export class OrganizationsService {
   public addMember = async (
     organizerId: string,
     requestingUserId: string,
-    data: { email: string; role?: "ADMIN" | "MEMBER" },
+    data: { email: string; role?: OrgRole },
   ): Promise<any> => {
     // 1. Check organizer exists
     const organizer = await this.repository.findById(organizerId);
@@ -134,7 +135,7 @@ export class OrganizationsService {
     return await this.repository.addMember({
       organizerId,
       userId: userToInvite.id,
-      role: data.role || "MEMBER",
+      role: data.role || "MARKETING",
     });
   };
 
@@ -182,7 +183,7 @@ export class OrganizationsService {
     organizerId: string,
     requestingUserId: string,
     targetUserId: string,
-    role: "ADMIN" | "MEMBER",
+    role: OrgRole,
   ): Promise<any> => {
     // Check requesting user is OWNER or ADMIN
     const requesterTeam = await this.repository.getTeamRole(
@@ -208,8 +209,8 @@ export class OrganizationsService {
       throw { status: 400, message: "Cannot edit the organizer owner's role" };
     }
 
-    if (!["ADMIN", "MEMBER"].includes(role)) {
-      throw { status: 400, message: "Invalid role provided. Must be ADMIN or MEMBER." };
+    if (!["ADMIN", "MARKETING"].includes(role)) {
+      throw { status: 400, message: "Invalid role provided. Must be ADMIN or MARKETING." };
     }
 
     return await this.repository.updateMemberRole(organizerId, targetUserId, role);

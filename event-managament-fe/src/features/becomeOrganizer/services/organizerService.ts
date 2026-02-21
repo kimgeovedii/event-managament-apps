@@ -10,7 +10,7 @@ export const createOrganizer = async (data: {
 
 export const inviteTeamMember = async (
   organizerId: string,
-  data: { email: string; role?: "ADMIN" | "MEMBER" },
+  data: { email: string; role?: "ADMIN" | "MARKETING" },
 ) => {
   const response = await apiFetch.post(
     `/organizations/${organizerId}/members`,

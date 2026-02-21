@@ -1,6 +1,7 @@
 ﻿import { Request, Response, NextFunction } from "express";
 import { OrganizationsService } from "../services/organizations.service.js";
 import { AuthService } from "../../auth/services/auth.service.js";
+import { OrgRole } from "@prisma/client";
 
 export class OrganizationsController {
   private service: OrganizationsService;
@@ -155,7 +156,7 @@ export class OrganizationsController {
   /**
    * POST /api/organizations/:id/members
    * Invite a user to the organizer team by email.
-   * Body: { email: string, role?: "ADMIN" | "MEMBER" }
+   * Body: { email: string, role?: "ADMIN" | "MARKETING" }
    */
   public addTeamMember = async (
     req: Request,

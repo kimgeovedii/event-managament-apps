@@ -2,6 +2,8 @@
 import { OrganizationsController } from "./controllers/organizations.controller.js";
 import { verifyToken } from "../../middlewares/verifyToken.js";
 import { uploadcloudinaryImage } from "../uploadCloudinary/utils/uploadImage.js";
+import { requireOrgRole } from "../../middlewares/requireOrgRole.js";
+import { requireRole } from "../../middlewares/requireRole.js";
 
 export class OrganizationsRouter {
   private router: Router;
@@ -41,24 +43,30 @@ export class OrganizationsRouter {
       this.organizationsController.delete,
     );
 
-    // Add team member — invite by email (requires auth, OWNER/ADMIN check in service)
+    // Add team member — invite by email (Requires OWNER, ADMIN)
     this.router.post(
       "/:id/members",
       verifyToken,
+      requireRole("ORGANIZER"),
+      requireOrgRole(["ADMIN"], "organizer"),
       this.organizationsController.addTeamMember,
     );
 
-    // Remove team member (requires auth)
+    // Remove team member (Requires OWNER, ADMIN)
     this.router.delete(
       "/:id/members/:userId",
       verifyToken,
+      requireRole("ORGANIZER"),
+      requireOrgRole(["ADMIN"], "organizer"),
       this.organizationsController.removeTeamMember,
     );
 
-    // Update team member role (requires auth)
+    // Update team member role (Requires OWNER, ADMIN)
     this.router.patch(
       "/:id/members/:userId",
       verifyToken,
+      requireRole("ORGANIZER"),
+      requireOrgRole(["ADMIN"], "organizer"),
       this.organizationsController.updateTeamMemberRole,
     );
   };
