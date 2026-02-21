@@ -54,6 +54,7 @@ interface UseEventsOptions {
   limit?: number;
   categoryId?: string;
   location?: string;
+  search?: string;
 }
 
 export const useEvents = (
@@ -67,6 +68,7 @@ export const useEvents = (
   const _limit = opts.limit ?? limit;
   const categoryId = opts.categoryId;
   const location = opts.location;
+  const search = opts.search;
 
   const [events, setEvents] = useState<Ticket[]>([]);
   const [meta, setMeta] = useState<Meta | null>(null);
@@ -83,6 +85,7 @@ export const useEvents = (
       params.set("limit", String(_limit));
       if (categoryId) params.set("categoryId", categoryId);
       if (location) params.set("location", location);
+      if (search) params.set("name", search);
 
       const response = await apiFetch.get(`/tickets?${params.toString()}`);
       const { data, meta } = response.data;
@@ -112,7 +115,7 @@ export const useEvents = (
 
   useEffect(() => {
     fetchEvents();
-  }, [page, _limit, categoryId, location]);
+  }, [page, _limit, categoryId, location, search]);
 
   return { events, meta, isLoading, error, refetch: fetchEvents };
 };

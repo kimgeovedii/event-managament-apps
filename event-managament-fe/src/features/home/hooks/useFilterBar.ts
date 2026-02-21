@@ -6,8 +6,10 @@ import { useCallback } from "react";
 interface UseFilterBarReturn {
   activeCategory: string;
   activeLocation: string;
+  activeSearch: string;
   setCategory: (categoryId: string) => void;
   setLocation: (location: string) => void;
+  setSearch: (search: string) => void;
   clearFilters: () => void;
 }
 
@@ -18,6 +20,7 @@ export const useFilterBar = (): UseFilterBarReturn => {
 
   const activeCategory = searchParams.get("categoryId") || "all";
   const activeLocation = searchParams.get("location") || "";
+  const activeSearch = searchParams.get("search") || "";
 
   const createUrl = useCallback(
     (updates: Record<string, string | null>) => {
@@ -54,6 +57,14 @@ export const useFilterBar = (): UseFilterBarReturn => {
     [router, createUrl],
   );
 
+  const setSearch = useCallback(
+    (search: string) => {
+      const url = createUrl({ search: search || null });
+      router.push(url, { scroll: false });
+    },
+    [router, createUrl],
+  );
+
   const clearFilters = useCallback(() => {
     const params = new URLSearchParams();
     params.set("page", "1");
@@ -63,8 +74,10 @@ export const useFilterBar = (): UseFilterBarReturn => {
   return {
     activeCategory,
     activeLocation,
+    activeSearch,
     setCategory,
     setLocation,
+    setSearch,
     clearFilters,
   };
 };
