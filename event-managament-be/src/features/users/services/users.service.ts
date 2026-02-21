@@ -1,6 +1,6 @@
-﻿import { UserPointRepository } from "src/features/userPoint/repositories/userPoint.repository.js";
+﻿import { UserPointRepository } from "../../userPoint/repositories/userPoint.repository.js";
 import { UsersRepository } from "../repositories/users.repository.js";
-import { deleteCloudinaryImage } from "../../../utils/cloudinary.js";
+import { deleteCloudinaryImage } from "../../uploadCloudinary/utils/uploadImage.js";
 
 export class UsersService {
   private UsersRepository = new UsersRepository();

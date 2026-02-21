@@ -29,8 +29,37 @@ model User {
   coupons           UserCoupon[]
   transactions      Transaction[]
   reviews           Review[]
+  notifications     UserNotification[]
 
   @@map("users")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  title     String
+  message   String   @db.Text
+  type      String   @default("INFO")
+  link      String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  users UserNotification[]
+
+  @@map("notifications")
+}
+
+model UserNotification {
+  id             String    @id @default(uuid())
+  userId         String    @map("user_id")
+  notificationId String    @map("notification_id")
+  isRead         Boolean   @default(false) @map("is_read")
+  readAt         DateTime? @map("read_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  user         User         @relation(fields: [userId], references: [id])
+  notification Notification @relation(fields: [notificationId], references: [id])
+
+  @@unique([userId, notificationId])
+  @@map("user_notifications")
 }
 
 model Organizer {

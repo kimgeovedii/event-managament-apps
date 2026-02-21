@@ -8,7 +8,7 @@ import PointsBalanceCard from "./PointsBalanceCard";
 import ReferralCrewCard from "./ReferralCrewCard";
 import RecentActivityCard from "./RecentActivityCard";
 import YourStashCard from "./YourStashCard";
-import { ImageCropperModal } from "@/components/ImageCropperModal";
+import { ImageCropperModal } from "@/features/imageCropper/components/ImageCropperModal";
 
 export const UserReferralView: React.FC = () => {
   const {

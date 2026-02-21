@@ -1,7 +1,7 @@
 ﻿import { Router } from "express";
 import { UsersController } from "./controllers/users.controller.js";
 import { verifyToken } from "../../middlewares/verifyToken.js";
-import { uploadcloudinaryImage } from "../../utils/cloudinary.js";
+import { uploadcloudinaryImage } from "../uploadCloudinary/utils/uploadImage.js";
 
 export class UsersRouter {
   private router: Router;

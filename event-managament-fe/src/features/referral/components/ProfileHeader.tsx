@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { EditIcon, CopyIcon, TicketIcon, GiftIcon } from "./ReferralIcons";
 import { UserProfile } from "../types";
+import { formatDate } from "../../../utils/dateUtils";
 
 interface ProfileHeaderProps {
   profile: UserProfile;
@@ -54,7 +55,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ profile, onCopyCode, onAv
           {profile.name}
         </h1>
         <p className="text-gray-500 dark:text-gray-400 font-bold text-xs md:text-base">
-          Joined {profile.memberSince} • {profile.location}
+          Joined {formatDate(profile.memberSince)} • {profile.location}
         </p>
         <div className="flex items-center gap-2 md:gap-3 mt-2 md:mt-4">
           <button 
