@@ -20,7 +20,7 @@ export const useAddTeamMember = () => {
   const formik = useFormik({
     initialValues: {
       email: "",
-      role: "MEMBER" as "ADMIN" | "MEMBER",
+      role: "MARKETING" as "ADMIN" | "MARKETING",
     },
     validationSchema: addTeamMemberSchema,
     onSubmit: async (values) => {

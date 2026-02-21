@@ -2,6 +2,7 @@
 import { OrdersController } from "./controllers/orders.controller.js";
 import { verifyToken } from "../../middlewares/verifyToken.js";
 import { requireRole } from "../../middlewares/requireRole.js";
+import { requireOrgRole } from "../../middlewares/requireOrgRole.js";
 
 export class OrdersRouter {
   private router: Router;
@@ -14,16 +15,35 @@ export class OrdersRouter {
   }
 
   private setupRoutes = (): void => {
-    // All orders routes require authentication + CUSTOMER role
-    this.router.use(verifyToken, requireRole("CUSTOMER"));
+    // All orders routes require authentication
+    this.router.use(verifyToken);
 
-    this.router.post("/", this.ordersController.create);
+    // Customer can create/view their own orders
+    this.router.post("/", requireRole("CUSTOMER"), this.ordersController.create);
+    
+    // Manage Transactions (Requires OWNER, ADMIN)
+    // For general list, we might need a separate endpoint or handle inside controller
+    // But for single order updates/delete, we can use requireOrgRole if we can map it to an organizer context
+    
     this.router.get("/", this.ordersController.findAll);
     this.router.get("/:id", this.ordersController.findOne);
-    this.router.patch("/:id", this.ordersController.update);
-    this.router.delete("/:id", this.ordersController.delete);
 
-    this.router.post("/:id/payment", this.ordersController.processPayment);
+    // Update/Delete usually for managing
+    this.router.patch(
+      "/:id", 
+      requireRole("ORGANIZER"), 
+      requireOrgRole(["ADMIN"], "order"), 
+      this.ordersController.update
+    );
+
+    this.router.delete(
+      "/:id", 
+      requireRole("ORGANIZER"), 
+      requireOrgRole(["ADMIN"], "order"), 
+      this.ordersController.delete
+    );
+
+    this.router.post("/:id/payment", requireRole("CUSTOMER"), this.ordersController.processPayment);
   };
 
   public getRouter = (): Router => {

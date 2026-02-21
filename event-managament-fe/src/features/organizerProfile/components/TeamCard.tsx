@@ -76,7 +76,7 @@ const TeamCard: React.FC<TeamCardProps> = ({ organizer, user, refetch }) => {
     return {
       id: member?.id || Math.random().toString(),
       name: member?.name || "Unknown User",
-      role: memberData.role || "MEMBER",
+      role: memberData.role || "MARKETING",
       isCurrentUser,
       ...colors,
     };
@@ -185,9 +185,9 @@ const TeamCard: React.FC<TeamCardProps> = ({ organizer, user, refetch }) => {
               fullWidth
               size="small"
               value={newRole}
-              onChange={(e) => setNewRole(e.target.value as "ADMIN" | "MEMBER")}
+              onChange={(e) => setNewRole(e.target.value as "ADMIN" | "MARKETING")}
             >
-              <option value="MEMBER">Member (Limited Access)</option>
+              <option value="MARKETING">Marketing (Limited Access)</option>
               <option value="ADMIN">Admin (Can Manage Team)</option>
             </Select>
           </div>

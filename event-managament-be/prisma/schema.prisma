@@ -85,7 +85,7 @@ model OrganizerTeam {
   id          String   @id @default(uuid())
   organizerId String   @map("organizer_id")
   userId      String   @map("user_id")
-  role        OrgRole  @default(MEMBER)
+  role        OrgRole  @default(MARKETING)
   createdAt   DateTime @default(now()) @map("created_at")
 
   organizer Organizer @relation(fields: [organizerId], references: [id])
@@ -288,7 +288,7 @@ enum Role {
 enum OrgRole {
   OWNER
   ADMIN
-  MEMBER
+  MARKETING
 }
 
 enum PointType {
