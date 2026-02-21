@@ -9,7 +9,7 @@ import DashboardHeader from "@/components/layouts/dashboard/DashboardHeader";
 import { useSidebar } from "@/features/dashboard/hooks";
 import { FloatingThemeToggle } from "@/features/theme";
 import { Snackbar, Alert } from "@mui/material";
-import { ImageCropperModal } from "@/components/ImageCropperModal";
+import { ImageCropperModal } from "@/features/imageCropper/components/ImageCropperModal";
 
 const EditOrganizerProfileView: React.FC = () => {
   const { isOpen, toggle, close } = useSidebar();

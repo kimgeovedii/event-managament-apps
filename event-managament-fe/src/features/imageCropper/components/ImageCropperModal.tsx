@@ -2,16 +2,10 @@ import React, { useState, useCallback } from "react";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Slider, Typography, Box } from "@mui/material";
-import getCroppedImg from "@/utils/cropImage";
+import {ImageCropperModalProps} from "../types"
 
-interface ImageCropperModalProps {
-  open: boolean;
-  imageSrc: string | null;
-  onClose: () => void;
-  onCropComplete: (croppedFile: File) => void;
-  title?: string;
-  aspectRatio?: number;
-}
+
+import { useImageCropper } from "../hooks/useImageCropper";
 
 export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({
   open,
@@ -21,40 +15,16 @@ export const ImageCropperModal: React.FC<ImageCropperModalProps> = ({
   title = "Crop Image",
   aspectRatio = 1,
 }) => {
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  const onCropChange = (crop: { x: number; y: number }) => {
-    setCrop(crop);
-  };
-
-  const onZoomChange = (zoom: number) => {
-    setZoom(zoom);
-  };
-
-  const handleCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  }, []);
-
-  const handleSave = async () => {
-    if (!imageSrc || !croppedAreaPixels) return;
-
-    setIsProcessing(true);
-    try {
-      const croppedFile = await getCroppedImg(imageSrc, croppedAreaPixels);
-      if (croppedFile) {
-        onCropComplete(croppedFile);
-      }
-    } catch (e) {
-      console.error(e);
-      alert("Failed to crop image.");
-    } finally {
-      setIsProcessing(false);
-      onClose();
-    }
-  };
+  const {
+    crop,
+    zoom,
+    setZoom,
+    isProcessing,
+    onCropChange,
+    onZoomChange,
+    handleCropComplete,
+    handleSave,
+  } = useImageCropper({ imageSrc, onCropComplete, onClose });
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
