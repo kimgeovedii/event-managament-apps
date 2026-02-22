@@ -49,7 +49,8 @@ export const useManageTeam = (
     setIsLoadingAction(true);
     try {
       await removeTeamMember(organizer.id, selectedMember.id);
-      setToast({ open: true, message: "Member removed successfully!", severity: "success" });
+      const successMsg = selectedMember.isCurrentUser ? "Left organization successfully!" : "Member removed successfully!";
+      setToast({ open: true, message: successMsg, severity: "success" });
       if (refetch) refetch();
     } catch (err: any) {
       setToast({ open: true, message: err.message || "Failed to remove member", severity: "error" });

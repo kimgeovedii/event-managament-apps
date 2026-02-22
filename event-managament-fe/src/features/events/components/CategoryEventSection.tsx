@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { 
   Dialog, 
@@ -21,6 +22,7 @@ import { useCategories } from "../hooks";
 
 
 const CategorySection: React.FC = () => {
+  const router = useRouter();
   const { categories, isLoading } = useCategories(5);
   const { categories: allCategories } = useCategories();
   const [open, setOpen] = useState(false);
@@ -30,6 +32,10 @@ const CategorySection: React.FC = () => {
     setOpen(true);
   };
   const handleClose = () => setOpen(false);
+
+  const handleCategoryClick = (categoryId: string) => {
+    router.push(`/events?categoryId=${categoryId}`);
+  };
 
   if (isLoading) {
     return (
@@ -70,7 +76,10 @@ const CategorySection: React.FC = () => {
       <div className="flex lg:grid lg:grid-cols-4 lg:grid-rows-2 overflow-x-auto lg:overflow-x-visible gap-4 md:gap-6 pb-8 lg:pb-0 h-auto lg:h-[400px] snap-x snap-mandatory lg:snap-none custom-horizontal-scrollbar">
         {/* First category - larger on desktop, fixed width on mobile scroll */}
         {categories[0] && (
-          <div className="flex-shrink-0 w-[280px] sm:w-[400px] lg:w-auto lg:col-span-2 lg:row-span-2 relative group overflow-hidden rounded-lg md:rounded-xl border border-gray-200 dark:border-white/10 cursor-pointer h-[200px] lg:h-full shadow-sm dark:shadow-none snap-start">
+          <div 
+            onClick={() => handleCategoryClick(categories[0].id)}
+            className="flex-shrink-0 w-[280px] sm:w-[400px] lg:w-auto lg:col-span-2 lg:row-span-2 relative group overflow-hidden rounded-lg md:rounded-xl border border-gray-200 dark:border-white/10 cursor-pointer h-[200px] lg:h-full shadow-sm dark:shadow-none snap-start"
+          >
             <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10 opacity-70 dark:opacity-90"></div>
             <Image
               alt={categories[0].name}
@@ -105,6 +114,7 @@ const CategorySection: React.FC = () => {
         {categories.slice(1).map((category) => (
           <div
             key={category.id}
+            onClick={() => handleCategoryClick(category.id)}
             className="flex-shrink-0 w-[200px] sm:w-[250px] lg:w-auto relative group overflow-hidden rounded-lg md:rounded-xl border border-gray-200 dark:border-white/10 cursor-pointer h-[200px] lg:h-auto shadow-sm dark:shadow-none snap-start"
           >
             <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10 opacity-70 dark:opacity-90"></div>
@@ -185,6 +195,7 @@ const CategorySection: React.FC = () => {
             {allCategories.map((category) => (
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={category.id}>
                 <div 
+                  onClick={() => handleCategoryClick(category.id)}
                   className="group relative h-48 md:h-56 border-2 border-black dark:border-white/10 cursor-pointer overflow-hidden transition-all duration-500 hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(0,255,255,0.4)] hover:-translate-y-1"
                   style={{ backgroundColor: category.color || "#A855F7" }}
                 >

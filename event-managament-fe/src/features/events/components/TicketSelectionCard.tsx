@@ -21,44 +21,62 @@ const TicketSelectionCard: React.FC<TicketSelectionCardProps> = ({
   const isPopular = ticket.name.toLowerCase().includes("vip");
 
   return (
-    <div className={`border-4 border-black p-4 transition-colors cursor-pointer group relative ${isPopular ? "bg-surface" : "bg-surface"} hover:bg-neon-cyan/10`}>
+    <div className={`relative p-4 rounded-xl border transition-all duration-300 backdrop-blur-md ${
+      quantity > 0 
+        ? "bg-neon-cyan/10 border-neon-cyan/50 shadow-[0_0_20px_rgba(0,255,221,0.1)]" 
+        : "bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10"
+    }`}>
       {isPopular && (
-        <div className="absolute -top-4 -right-4 bg-neon-magenta border-4 border-black px-3 py-1 font-black text-black text-[10px] md:text-xs uppercase -rotate-6 z-10 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="absolute -top-2 -right-2 bg-neon-magenta text-white px-2 py-0.5 font-black text-[8px] uppercase tracking-widest rounded-full shadow-lg border border-white/20 z-10">
           Popular
         </div>
       )}
-      <div className="flex justify-between items-start mb-3">
-        <div>
-          <h4 className="text-lg font-black uppercase text-foreground leading-tight">{ticket.name}</h4>
-          <p className="text-[10px] font-bold uppercase text-gray-500">{ticket.description || "Main Stage Entry"}</p>
+      
+      <div className="flex justify-between items-start mb-2">
+        <div className="flex-grow pr-4">
+          <h4 className="text-sm md:text-base font-black uppercase text-gray-900 dark:text-white tracking-widest leading-none mb-1">
+            {ticket.name}
+          </h4>
+          <p className="text-[9px] font-bold uppercase text-gray-500 dark:text-gray-400 tracking-tighter leading-tight line-clamp-1">
+            {ticket.description || "Main Stage Entry"}
+          </p>
         </div>
         <div className="text-right">
-          <p className="text-lg font-black text-neon-magenta whitespace-nowrap">IDR {displayPrice}k</p>
-          {quantity > 0 && (
-            <span className="bg-black text-white dark:bg-white dark:text-black text-[9px] font-black px-1.5 py-0.5 uppercase">
-              Selected
-            </span>
-          )}
+          <p className="text-sm md:text-base font-black text-neon-magenta italic tracking-tighter">
+            IDR {displayPrice}K
+          </p>
+          <span className="text-[8px] font-black uppercase text-gray-400 dark:text-gray-500 tracking-widest">
+            {ticket.quota ? `${ticket.quota} Left` : 'Available'}
+          </span>
         </div>
       </div>
-      <div className="flex justify-between items-center border-t-2 border-black pt-3">
-        <span className="text-[10px] font-black uppercase text-gray-400">
-          {ticket.quota ? `${ticket.quota} Left` : 'Available'}
-        </span>
-        <div className="flex items-center border-2 border-black bg-black">
+
+      <div className="flex justify-between items-center mt-3 pt-3 border-t border-black/5 dark:border-white/10">
+        <div className="flex items-center gap-1">
+          {quantity > 0 && (
+            <div className="flex items-center gap-1 animate-in fade-in slide-in-from-left-2 duration-300">
+              <div className="w-1.5 h-1.5 rounded-full bg-neon-cyan shadow-[0_0_8px_#00FFDD]"></div>
+              <span className="text-[9px] font-black uppercase text-neon-cyan tracking-widest">Selected</span>
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center bg-black/5 dark:bg-white/5 rounded-lg border border-black/5 dark:border-white/10 overflow-hidden">
           <button 
             type="button"
             onClick={onDecrease}
-            className="px-2 py-0.5 bg-surface text-foreground font-black hover:bg-gray-200 disabled:opacity-50 text-sm"
+            className="w-7 h-7 flex items-center justify-center text-gray-900 dark:text-white font-black hover:bg-black/10 dark:hover:bg-white/10 transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
             disabled={quantity === 0}
           >
             -
           </button>
-          <span className="px-3 py-0.5 text-white font-black w-8 text-center text-sm">{quantity}</span>
+          <div className="w-8 flex items-center justify-center bg-black/5 dark:bg-white/10">
+            <span className="text-xs font-black text-gray-900 dark:text-white">{quantity}</span>
+          </div>
           <button 
             type="button"
             onClick={onIncrease}
-            className="px-2 py-0.5 bg-surface text-foreground font-black hover:bg-neon-cyan text-sm"
+            className="w-7 h-7 flex items-center justify-center text-gray-900 dark:text-white font-black hover:bg-neon-cyan hover:text-black transition-all"
           >
             +
           </button>
