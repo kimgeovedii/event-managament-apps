@@ -14,15 +14,18 @@ const AboutOrganizerCard: React.FC<AboutOrganizerCardProps> = ({ organizer }) =>
           About Organizer
         </h3>
       </div>
-      <div className="bg-white dark:bg-[#221019] border border-gray-200 dark:border-[#3a1d2e] rounded-xl p-6 shadow-sm space-y-6">
-        <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-          {organizer?.description ||
-            "Hype Productions is an event management collective focused on creating high-energy, immersive experiences. We specialize in neon-themed music festivals, underground tech meetups, and indie rock showcases."}
-        </p>
-        <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-          Our mission is to bridge the gap between digital culture and physical experiences. With a presence in Jakarta, Bali, and Bandung, we manage a community of over 50,000 active event-goers.
-        </p>
-        <div className="grid grid-cols-2 gap-4 pt-6 border-t border-gray-200 dark:border-[#3a1d2e]">
+      <div className="bg-white dark:bg-[#221019] border border-slate-200 dark:border-[#3a1d2e] rounded-xl p-8 shadow-sm space-y-4 flex flex-col min-h-[280px]">
+        <div className="space-y-4">
+          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
+            {organizer?.description ||
+              "Hype Productions is an event management collective focused on creating high-energy, immersive experiences."}
+          </p>
+          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
+            Our mission is to bridge the gap between digital culture and physical experiences.
+          </p>
+        </div>
+        
+        <div className="mt-auto grid grid-cols-2 gap-4 pt-6 border-t border-slate-200 dark:border-[#3a1d2e]">
           <div>
             <p className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500">
               Founded

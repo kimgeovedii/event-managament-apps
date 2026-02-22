@@ -11,7 +11,7 @@ const OrganizerProfileView: React.FC = () => {
   const { isOpen, toggle, close } = useSidebar();
 
   return (
-    <div className="bg-gray-50 dark:bg-[#1a0c13] text-[#181114] dark:text-white font-[family-name:var(--font-display)] min-h-screen flex overflow-hidden">
+    <div className="bg-gray-50 dark:bg-[#181114] text-slate-900 dark:text-slate-100 font-sans min-h-screen flex overflow-hidden">
       {/* Sidebar */}
       <DashboardSidebar isOpen={isOpen} onClose={close} />
 
@@ -21,7 +21,13 @@ const OrganizerProfileView: React.FC = () => {
         <DashboardHeader onMenuClick={toggle} />
 
         {/* Main */}
-        <main className="flex-1 overflow-y-auto p-6 lg:p-10 bg-gray-50 dark:bg-[#1a0c13]">
+        <main 
+          className="flex-1 overflow-y-auto p-6 lg:p-10 bg-gray-50 dark:bg-[#181114] relative"
+          style={{
+            backgroundImage: 'radial-gradient(circle, #ee2b8c15 1px, transparent 1px)',
+            backgroundSize: '32px 32px'
+          }}
+        >
           <ProfileContent />
 
           {/* Footer */}

@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { CheckBadgeIcon } from "@heroicons/react/24/solid";
+import EditOrganizerProfileDialog from "./EditOrganizerProfileDialog";
 
 interface ProfileHeaderCardProps {
   organizer: any;
@@ -8,6 +9,8 @@ interface ProfileHeaderCardProps {
 }
 
 const ProfileHeaderCard: React.FC<ProfileHeaderCardProps> = ({ organizer, user }) => {
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
   const getInitials = (name?: string) => {
     if (!name) return "O";
     return name
@@ -19,8 +22,10 @@ const ProfileHeaderCard: React.FC<ProfileHeaderCardProps> = ({ organizer, user }
   };
 
   return (
-    <section className="bg-white dark:bg-[#221019] border border-gray-200 dark:border-[#3a1d2e] rounded-xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row gap-8 items-center md:items-start text-center md:text-left">
-      <div className="size-28 md:size-32 bg-white dark:bg-black/20 border border-gray-200 dark:border-[#3a1d2e] rounded-xl flex-shrink-0 flex items-center justify-center p-4 shadow-sm overflow-hidden">
+    <div className="bg-white dark:bg-[#221019] border border-slate-200 dark:border-[#3a1d2e] rounded-xl p-8 shadow-sm flex flex-col md:flex-row gap-8 items-center md:items-start relative overflow-hidden">
+      {/* Subtle Accent Gradient */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-[#ee2b8c]/5 blur-3xl rounded-full -mr-16 -mt-16" />
+      <div className="size-28 md:size-32 bg-white dark:bg-[#2a1621] border border-slate-200 dark:border-[#3a1d2e] rounded-xl flex-shrink-0 flex items-center justify-center p-4 shadow-sm overflow-hidden">
         {organizer?.logoUrl ? (
           <img
             alt="Organizer Logo"
@@ -38,7 +43,7 @@ const ProfileHeaderCard: React.FC<ProfileHeaderCardProps> = ({ organizer, user }
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white uppercase">
             {organizer?.name || "Organizer Name"}
           </h2>
-          <div className="flex items-center gap-1 bg-indigo-50 dark:bg-indigo-900/30 text-[#4F46E5] dark:text-indigo-400 px-2 py-0.5 rounded-full border border-indigo-100 dark:border-indigo-800">
+          <div className="flex items-center gap-1 bg-[#ee2b8c]/10 text-[#ee2b8c] px-2 py-0.5 rounded-full border border-[#ee2b8c]/20">
             <CheckBadgeIcon className="w-4 h-4" />
             <span className="text-[10px] font-bold uppercase">Verified</span>
           </div>
@@ -48,18 +53,25 @@ const ProfileHeaderCard: React.FC<ProfileHeaderCardProps> = ({ organizer, user }
             "Professional curator for premium events. Focused on high-quality event execution and community building."}
         </p>
         <div className="flex flex-wrap justify-center md:justify-start gap-3 pt-2">
-          <Link
-            href="/dashboard/profile/edit"
-            className="px-5 py-2.5 bg-[#4F46E5] text-white text-sm font-semibold rounded-lg hover:bg-[#4338CA] transition-all shadow-sm"
-          >
-            Edit Profile
-          </Link>
-          <button className="px-5 py-2.5 bg-white dark:bg-[#221019] text-gray-700 dark:text-white/80 border border-gray-200 dark:border-[#3a1d2e] text-sm font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-black/30 transition-all shadow-sm">
+          {user?.id === organizer?.ownerId && (
+            <button
+              onClick={() => setIsEditDialogOpen(true)}
+              className="px-5 py-2.5 bg-[#ee2b8c] text-white text-sm font-semibold rounded-lg hover:bg-[#d41d77] transition-all shadow-sm"
+            >
+              Edit Profile
+            </button>
+          )}
+          <button className="px-5 py-2.5 bg-white dark:bg-[#2a1621] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#3a1d2e] text-sm font-semibold rounded-lg hover:bg-slate-50 dark:hover:bg-[#351c2a] transition-all shadow-sm">
             View Public Page
           </button>
         </div>
       </div>
-    </section>
+
+      <EditOrganizerProfileDialog 
+        open={isEditDialogOpen} 
+        onClose={() => setIsEditDialogOpen(false)} 
+      />
+    </div>
   );
 };
 

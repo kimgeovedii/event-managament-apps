@@ -52,18 +52,14 @@ export const useEditOrganizerProfile = () => {
           description: values.description || undefined,
         });
 
-        // Refresh user data to get updated organizer info
-        await me();
-
         setToast({
           open: true,
-          message: "Profile updated successfully! Redirecting...",
+          message: "Profile updated successfully!",
           severity: "success",
         });
 
-        setTimeout(() => {
-          router.push("/dashboard/profile");
-        }, 1500);
+        // Refresh user data (background)
+        await me();
       } catch (error: any) {
         const message =
           error.response?.data?.message ||

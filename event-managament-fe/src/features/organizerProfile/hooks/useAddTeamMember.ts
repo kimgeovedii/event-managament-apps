@@ -40,18 +40,14 @@ export const useAddTeamMember = () => {
           role: values.role,
         });
 
-        // Optionally refresh user data if necessary to reflect owner status globally
-        await me();
-
         setToast({
           open: true,
-          message: "Team member added successfully! Redirecting...",
+          message: "Team member added successfully!",
           severity: "success",
         });
 
-        setTimeout(() => {
-          router.push("/dashboard/profile");
-        }, 1500);
+        // Optionally refresh user data if necessary to reflect owner status globally (background)
+        await me();
       } catch (error: any) {
         const message =
           error.response?.data?.message ||
