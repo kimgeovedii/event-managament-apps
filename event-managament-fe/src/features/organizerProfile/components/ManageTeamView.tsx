@@ -73,7 +73,7 @@ const ManageTeamView: React.FC = () => {
         <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
           <DashboardHeader onMenuClick={toggle} />
           <main 
-            className="flex-1 overflow-y-auto p-6 lg:p-10 relative"
+            className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10 relative"
             style={{
               backgroundImage: 'radial-gradient(circle, #ee2b8c15 1px, transparent 1px)',
               backgroundSize: '32px 32px'
@@ -143,7 +143,7 @@ const ManageTeamView: React.FC = () => {
         <DashboardHeader onMenuClick={toggle} />
 
         <main 
-          className="flex-1 overflow-y-auto p-6 lg:p-10 relative"
+          className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10 relative"
           style={{
             backgroundImage: 'radial-gradient(circle, #ee2b8c15 1px, transparent 1px)',
             backgroundSize: '32px 32px'
@@ -160,31 +160,31 @@ const ManageTeamView: React.FC = () => {
                   <ArrowLeftIcon className="size-4" />
                   Back to Profile
                 </Link>
-                <h1 className="text-3xl font-bold tracking-tight">
+                <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
                   Manage Team
                 </h1>
-                <p className="text-slate-500 dark:text-slate-400 text-sm">
+                <p className="text-slate-500 dark:text-slate-400 text-xs md:text-sm">
                   Review and manage members of your organization ({teamMembers.length} members)
                 </p>
               </div>
 
               <button
                 onClick={() => setIsAddDialogOpen(true)}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-[#ee2b8c] text-white rounded-xl font-bold shadow-lg shadow-[#ee2b8c]/20 hover:bg-[#d41d77] transition-all"
+                className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#ee2b8c] text-white rounded-xl font-bold shadow-lg shadow-[#ee2b8c]/20 hover:bg-[#d41d77] transition-all"
               >
                 <PlusIcon className="size-5" />
                 Add Member
               </button>
             </div>
   {/* Role Privilege Guide */}
-            <div className="bg-white dark:bg-[#221019] border border-slate-200 dark:border-[#3a1d2e] rounded-2xl p-8 shadow-sm">
+            <div className="bg-white dark:bg-[#221019] border border-slate-200 dark:border-[#3a1d2e] rounded-2xl p-6 md:p-8 shadow-sm">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
                   <ShieldCheckIcon className="size-6 text-indigo-600 dark:text-indigo-400" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold">Squad Role Privileges</h2>
-                  <p className="text-sm text-slate-500">Understand what each member can do in your mission</p>
+                  <h2 className="text-lg md:text-xl font-bold">Squad Role Privileges</h2>
+                  <p className="text-xs md:text-sm text-slate-500">Understand what each member can do in your mission</p>
                 </div>
               </div>
 
@@ -230,7 +230,7 @@ const ManageTeamView: React.FC = () => {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.05 }}
-                    className="group relative bg-white dark:bg-[#221019] border border-slate-200 dark:border-[#3a1d2e] p-6 rounded-2xl shadow-sm hover:shadow-md hover:border-indigo-200 dark:hover:border-[#ee2b8c50] transition-all flex flex-col"
+                    className="group relative bg-white dark:bg-[#221019] border border-slate-200 dark:border-[#3a1d2e] p-5 md:p-6 rounded-2xl shadow-sm hover:shadow-md hover:border-indigo-200 dark:hover:border-[#ee2b8c50] transition-all flex flex-col"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="size-14 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center">
