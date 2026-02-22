@@ -321,15 +321,18 @@ const ManageTeamView: React.FC = () => {
           }
         }}
       >
-        <MenuItem onClick={onOpenEditRoleModal} disabled={selectedMember?.role === "OWNER"}>
+        <MenuItem 
+          onClick={onOpenEditRoleModal} 
+          disabled={selectedMember?.role === "OWNER" || selectedMember?.isCurrentUser}
+        >
           Change Role
         </MenuItem>
         <MenuItem 
           onClick={onOpenDeleteModal}
-          disabled={selectedMember?.role === "OWNER" || selectedMember?.isCurrentUser}
+          disabled={selectedMember?.role === "OWNER"}
           className="text-red-600 hover:!bg-red-50"
         >
-          Remove Member
+          {selectedMember?.isCurrentUser ? "Leave Team" : "Remove Member"}
         </MenuItem>
       </Menu>
 
@@ -410,9 +413,19 @@ const ManageTeamView: React.FC = () => {
         </DialogTitle>
         <DialogContent className="px-6 py-4">
           <DialogContentText className="text-sm text-slate-500 leading-relaxed">
-            Are you sure you want to remove <span className="font-bold text-slate-900 dark:text-white">{selectedMember?.name}</span>? 
-            <br/><br/>
-            They will lose access to this organization and all its data. This action cannot be undone.
+            {selectedMember?.isCurrentUser ? (
+              <>
+                Are you sure you want to <span className="font-bold text-slate-900 dark:text-white">leave this team</span>?
+                <br /><br />
+                You will lose access to this organization and all its data. To rejoin, you will need to be re-invited by an Admin or Owner.
+              </>
+            ) : (
+              <>
+                Are you sure you want to remove <span className="font-bold text-slate-900 dark:text-white">{selectedMember?.name}</span>? 
+                <br/><br/>
+                They will lose access to this organization and all its data. This action cannot be undone.
+              </>
+            )}
           </DialogContentText>
         </DialogContent>
         <DialogActions className="px-6 pb-6 pt-2 gap-3">
@@ -430,7 +443,7 @@ const ManageTeamView: React.FC = () => {
             color="error"
             className="flex-1 py-2.5 font-bold rounded-xl text-sm capitalize shadow-none"
           >
-            {isLoadingAction ? "Removing..." : "Remove"}
+            {isLoadingAction ? (selectedMember?.isCurrentUser ? "Leaving..." : "Removing...") : (selectedMember?.isCurrentUser ? "Leave Team" : "Remove")}
           </Button>
         </DialogActions>
       </Dialog>

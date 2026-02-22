@@ -2,6 +2,7 @@
 import { DashboardController } from "./controllers/dashboard.controller.js";
 import { verifyToken } from "../../middlewares/verifyToken.js";
 import { requireRole } from "../../middlewares/requireRole.js";
+import { verifyOrganizerAccess } from "../../middlewares/verifyOrganizerAccess.js";
 
 export class DashboardRouter {
   private router: Router;
@@ -14,8 +15,8 @@ export class DashboardRouter {
   }
 
   private setupRoutes = (): void => {
-    // All dashboard routes require authentication + ORGANIZER role
-    this.router.use(verifyToken, requireRole("ORGANIZER"));
+    // All dashboard routes require authentication + ORGANIZER role + valid organizer profile
+    this.router.use(verifyToken, requireRole("ORGANIZER"), verifyOrganizerAccess);
 
     this.router.get("/stats", this.dashboardController.getStats);
     this.router.get("/team-info", this.dashboardController.getTeamInfo);

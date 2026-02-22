@@ -13,6 +13,7 @@ import {
 import { Menu, MenuItem, IconButton, Divider } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import OrganizerNotificationBell from "@/features/notifications/components/OrganizerNotificationBell";
 
 interface DashboardHeaderProps {
   onMenuClick: () => void;
@@ -73,10 +74,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onMenuClick }) => {
         </div>
         
         {/* Notifications */}
-        <button className="relative text-[#5f4351] hover:text-[#ee2b8c] transition-colors p-1">
-          <BellIcon className="w-5 h-5 md:w-6 md:h-6" />
-          <span className="absolute top-0 right-0 size-2 md:size-2.5 bg-[#ee2b8c] rounded-full border-2 border-white dark:border-[#221019]"></span>
-        </button>
+        <OrganizerNotificationBell />
         
         {/* Profile */}
         <div className="flex items-center gap-2 md:gap-3 pl-3 md:pl-6 border-l border-[#f4f0f2] dark:border-[#3a1d2e]">

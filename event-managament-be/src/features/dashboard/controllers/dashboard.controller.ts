@@ -1,6 +1,5 @@
 ﻿import { Request, Response, NextFunction } from "express";
 import { DashboardService } from "../services/dashboard.service.js";
-import { prisma } from "../../../config/prisma.js";
 
 export class DashboardController {
   private service: DashboardService;
@@ -9,11 +8,6 @@ export class DashboardController {
     this.service = new DashboardService();
   }
 
-  private getOrganizerId = async (userId?: string): Promise<string | null> => {
-    if (!userId) return null;
-    const org = await prisma.organizer.findUnique({ where: { ownerId: userId } });
-    return org?.id || null;
-  };
 
   public getStats = async (
     req: Request,
@@ -21,7 +15,7 @@ export class DashboardController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const organizerId = await this.getOrganizerId(req.user?.id);
+      const organizerId = req.user?.organizerId as string;
       if (!organizerId) {
         res.status(403).json({ message: "Organizer profile required" });
         return;
@@ -40,7 +34,7 @@ export class DashboardController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const organizerId = await this.getOrganizerId(req.user?.id);
+      const organizerId = req.user?.organizerId as string;
       if (!organizerId) {
         res.status(403).json({ message: "Organizer profile required" });
         return;
@@ -59,7 +53,7 @@ export class DashboardController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const organizerId = await this.getOrganizerId(req.user?.id);
+      const organizerId = req.user?.organizerId as string;
       if (!organizerId) {
         res.status(403).json({ message: "Organizer profile required" });
         return;
@@ -79,7 +73,7 @@ export class DashboardController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const organizerId = await this.getOrganizerId(req.user?.id);
+      const organizerId = req.user?.organizerId as string;
       if (!organizerId) {
         res.status(403).json({ message: "Organizer profile required" });
         return;
@@ -98,7 +92,7 @@ export class DashboardController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const organizerId = await this.getOrganizerId(req.user?.id);
+      const organizerId = req.user?.organizerId as string;
       if (!organizerId) {
         res.status(403).json({ message: "Organizer profile required" });
         return;

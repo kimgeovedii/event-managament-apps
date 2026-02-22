@@ -8,7 +8,11 @@ import { useInfiniteEvents } from "../hooks/useInfiniteEvents";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { useEventFilters, EventFiltersReturn } from "../hooks/useEventFilters";
 
-const EventInfiniteGrid: React.FC<EventFiltersReturn> = ({ searchValue, setSearchValue }) => {
+interface EventInfiniteGridProps extends EventFiltersReturn {
+  onToast: (message: string, severity: "success" | "error") => void;
+}
+
+const EventInfiniteGrid: React.FC<EventInfiniteGridProps> = ({ searchValue, setSearchValue, onToast }) => {
   const searchParams = useSearchParams();
   const observerTarget = useRef<HTMLDivElement>(null);
 
@@ -91,7 +95,7 @@ const EventInfiniteGrid: React.FC<EventFiltersReturn> = ({ searchValue, setSearc
       </div>
 
       {isLoading && events.length === 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 lg:gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-1 ">
           {[...Array(12)].map((_, i) => (
             <EventCardSkeleton key={i} />
           ))}
@@ -104,9 +108,9 @@ const EventInfiniteGrid: React.FC<EventFiltersReturn> = ({ searchValue, setSearc
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 lg:gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 ">
             {events.map((event) => (
-              <EventCard key={event.id} event={event} />
+              <EventCard key={event.id} event={event} onToast={onToast} />
             ))}
             {/* Infinite Pagination Skeletons */}
             {isFetchingNextPage && (

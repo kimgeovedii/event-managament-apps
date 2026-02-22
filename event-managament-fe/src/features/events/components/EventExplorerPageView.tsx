@@ -13,12 +13,24 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useThemeStore } from "@/features/theme/stores/themeStore";
 import { useEventFilters } from "../hooks/useEventFilters";
+import { Snackbar, Alert } from "@mui/material";
 
 const EventExplorerPageView: React.FC = () => {
   const filters = useEventFilters();
   const [isFilterOpen, setIsFilterOpen] = React.useState(false);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const { resolvedTheme, toggleTheme } = useThemeStore();
+
+  // Single Toast State
+  const [toast, setToast] = React.useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "error",
+  });
+
+  const handleShowToast = (message: string, severity: "success" | "error") => {
+    setToast({ open: true, message, severity });
+  };
 
   const actions = [
     { 
@@ -92,7 +104,7 @@ const EventExplorerPageView: React.FC = () => {
 
         {/* Grid Content */}
         <div className="flex-1 min-w-0">
-          <EventInfiniteGrid {...filters} />
+          <EventInfiniteGrid {...filters} onToast={handleShowToast} />
         </div>
 
         {/* Custom Mobile Page Controls - Hidden on Desktop */}
@@ -146,6 +158,33 @@ const EventExplorerPageView: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Global Explorer Toast */}
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={4000}
+        onClose={() => setToast(prev => ({ ...prev, open: false }))}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setToast(prev => ({ ...prev, open: false }))}
+          severity={toast.severity}
+          variant="filled"
+          sx={{
+            width: "100%",
+            borderRadius: 0,
+            border: "3px solid black",
+            boxShadow: "6px 6px 0px 0px rgba(0,0,0,1)",
+            fontWeight: "900",
+            textTransform: "uppercase",
+            fontSize: "12px",
+            bgcolor: toast.severity === "success" ? "#00FFDD !important" : "#FF0055 !important",
+            color: toast.severity === "success" ? "black !important" : "white !important",
+          }}
+        >
+          {toast.message}
+        </Alert>
+      </Snackbar>
     </main>
   );
 };
