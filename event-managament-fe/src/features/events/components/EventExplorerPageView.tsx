@@ -12,8 +12,10 @@ import {
 } from "@heroicons/react/24/outline";
 import { SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
 import { useThemeStore } from "@/features/theme/stores/themeStore";
+import { useEventFilters } from "../hooks/useEventFilters";
 
 const EventExplorerPageView: React.FC = () => {
+  const filters = useEventFilters();
   const [isFilterOpen, setIsFilterOpen] = React.useState(false);
   const { resolvedTheme, toggleTheme } = useThemeStore();
 
@@ -51,7 +53,7 @@ const EventExplorerPageView: React.FC = () => {
           onClick={() => setIsFilterOpen(false)}
         >
           <div 
-            className={`absolute right-0 top-0 h-full w-[85%] sm:w-80 bg-background border-l-2 border-neon-cyan/30 p-6 overflow-y-auto transition-transform duration-300 transform ${isFilterOpen ? "translate-x-0" : "translate-x-full"}`}
+            className={`absolute right-0 top-0 h-full w-full bg-background border-l-2 border-neon-cyan/30 p-6 overflow-y-auto transition-transform duration-300 transform ${isFilterOpen ? "translate-x-0" : "translate-x-full"}`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-8">
@@ -60,18 +62,18 @@ const EventExplorerPageView: React.FC = () => {
                 <XMarkIcon className="size-6" />
               </button>
             </div>
-            <EventFilters />
+            <EventFilters {...filters} />
           </div>
         </div>
 
         {/* Desktop Filter Aside */}
         <div className="hidden lg:block">
-          <EventFilters />
+          <EventFilters {...filters} />
         </div>
 
         {/* Grid Content */}
         <div className="flex-1 min-w-0">
-          <EventInfiniteGrid />
+          <EventInfiniteGrid {...filters} />
         </div>
 
         {/* Mobile Page Controls (SpeedDial) - Hidden on Desktop */}
