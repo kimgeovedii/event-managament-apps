@@ -4,7 +4,7 @@ import morgan from "morgan";
 import { AuthRouter } from "./features/auth/router.js";
 import { UsersRouter } from "./features/users/router.js";
 import { OrganizationsRouter } from "./features/organizations/router.js";
-import { TicketsRouter } from "./features/events/router.js";
+import { EventsRouter } from "./features/events/router.js";
 import { OrdersRouter } from "./features/orders/router.js";
 import { PromotionsRouter } from "./features/promotions/router.js";
 import { ReviewsRouter } from "./features/reviews/router.js";
@@ -53,7 +53,7 @@ class App {
     this.app.use("/api/auth", new AuthRouter().getRouter());
     this.app.use("/api/users", new UsersRouter().getRouter());
     this.app.use("/api/organizations", new OrganizationsRouter().getRouter());
-    this.app.use("/api/tickets", new TicketsRouter().getRouter());
+    this.app.use("/api/events", new EventsRouter().getRouter());
     this.app.use("/api/orders", new OrdersRouter().getRouter());
     this.app.use("/api/promotions", new PromotionsRouter().getRouter());
     this.app.use("/api/reviews", new ReviewsRouter().getRouter());

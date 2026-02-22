@@ -1,22 +1,22 @@
 ﻿import { prisma } from "src/config/prisma.js";
 import { PromotionsRepository } from "../repositories/promotions.repository.js";
 import { Prisma } from "@prisma/client";
-import { TicketsRepository } from "src/features/events/repositories/tickets.repository.js";
+import { EventsRepository } from "src/features/events/repositories/events.repository.js";
 import { OrdersRepository } from "src/features/orders/repositories/orders.repository.js";
 
 export class PromotionsService {
   private promotionsRepository: PromotionsRepository;
-  private ticketsRepository: TicketsRepository;
+  private eventsRepository: EventsRepository;
 
   constructor() {
     this.promotionsRepository = new PromotionsRepository();
-    this.ticketsRepository = new TicketsRepository();
+    this.eventsRepository = new EventsRepository();
   }
 
   public create = async (data: any): Promise<any> => {
     return await prisma.$transaction(async (tx) => {
       const eventId = data.eventId || data.ticketId;
-      const event = await this.ticketsRepository.findById(eventId);
+      const event = await this.eventsRepository.findById(eventId);
 
       if (!event) {
         throw new Error(`Event with id ${eventId} not found`);

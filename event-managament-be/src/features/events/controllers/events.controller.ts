@@ -1,11 +1,11 @@
-import { Request, Response, NextFunction } from "express";
-import { TicketsService } from "../services/tickets.service.js";
+﻿import { Request, Response, NextFunction } from "express";
+import { EventsService } from "../services/events.service.js";
 
-export class TicketsController {
-  private ticketsService: TicketsService;
+export class EventsController {
+  private eventsService: EventsService;
 
   constructor() {
-    this.ticketsService = new TicketsService();
+    this.eventsService = new EventsService();
   }
 
   public create = async (
@@ -14,8 +14,8 @@ export class TicketsController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const ticket = await this.ticketsService.create(req.body);
-      res.status(201).send(ticket);
+      const event = await this.eventsService.create(req.body);
+      res.status(201).send(event);
     } catch (error) {
       next(error);
     }
@@ -32,7 +32,7 @@ export class TicketsController {
 
       const { page: _p, limit: _l, ...filters } = req.query;
 
-      const { data, meta } = await this.ticketsService.findAll(
+      const { data, meta } = await this.eventsService.findAll(
         filters,
         page,
         limit,
@@ -49,8 +49,8 @@ export class TicketsController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const ticket = await this.ticketsService.findOne(req.params.id as string);
-      res.status(200).send(ticket);
+      const event = await this.eventsService.findOne(req.params.id as string);
+      res.status(200).send(event);
     } catch (error) {
       next(error);
     }
@@ -62,12 +62,12 @@ export class TicketsController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const ticket = await this.ticketsService.update(
+      const event = await this.eventsService.update(
         req.params.id as string,
         req.body,
       );
 
-      res.status(200).send(ticket);
+      res.status(200).send(event);
     } catch (error) {
       next(error);
     }
@@ -79,7 +79,7 @@ export class TicketsController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const ticket = await this.ticketsService.delete(req.params.id as string);
+      const event = await this.eventsService.delete(req.params.id as string);
 
       res.status(204).send();
     } catch (error) {
