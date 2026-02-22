@@ -7,7 +7,7 @@ export interface CategoriesResponse {
 
 export const categoryRepository = {
   getCategories: async (): Promise<CategoriesResponse> => {
-    const response = await apiFetch.get("/tickets/categories");
+    const response = await apiFetch.get("/events/categories");
     return response.data;
   },
 };

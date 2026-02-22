@@ -1,4 +1,4 @@
-﻿import { TicketsRepository } from "../repositories/tickets.repository.js";
+import { TicketsRepository } from "../repositories/tickets.repository.js";
 
 export class TicketsService {
   private ticketsRepository: TicketsRepository;
@@ -8,9 +8,6 @@ export class TicketsService {
   }
 
   public create = async (data: any): Promise<any> => {
-    if (new Date(data.endDate) <= new Date(data.startDate)) {
-      throw new Error("End date must be after start date");
-    }
     return this.ticketsRepository.create(data);
   };
 
@@ -22,19 +19,8 @@ export class TicketsService {
     const skip = (page - 1) * limit;
     const take = limit;
 
-    const where: any = {};
-    if (filters.categoryId) {
-      where.categoryId = filters.categoryId;
-    }
-    if (filters.location) {
-      where.location = { contains: filters.location, mode: "insensitive" };
-    }
-    if (filters.name) {
-      where.name = { contains: filters.name, mode: "insensitive" };
-    }
-
     const { data, total } = await this.ticketsRepository.findMany(
-      where,
+      filters,
       skip,
       take,
     );
@@ -61,14 +47,6 @@ export class TicketsService {
   };
 
   public update = async (id: any, data: any): Promise<any> => {
-    if (data.startDate && data.endDate) {
-      if (
-        new Date(data.endDate as string) <= new Date(data.startDate as string)
-      ) {
-        throw new Error("End date must be after start date");
-      }
-    }
-
     return this.ticketsRepository.update(id, data);
   };
 

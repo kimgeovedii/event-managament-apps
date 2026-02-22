@@ -29,7 +29,7 @@ export class OrdersService {
       const orderItems: any[] = [];
 
       for (let item of data.items) {
-        const ticket = await this.ticketsRepository.findTicketTypeById(
+        const ticket = await this.ticketsRepository.findById(
           item.ticketId,
           tx,
         );

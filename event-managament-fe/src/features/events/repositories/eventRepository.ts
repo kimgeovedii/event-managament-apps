@@ -10,11 +10,11 @@ export const eventRepository = {
     if (options.location) params.set("location", options.location);
     if (options.search) params.set("name", options.search);
 
-    const response = await apiFetch.get(`/tickets?${params.toString()}`);
+    const response = await apiFetch.get(`/events?${params.toString()}`);
     return response.data;
   },
   getEventById: async (id: string): Promise<EventResponse> => {
-    const response = await apiFetch.get(`/tickets/${id}`);
+    const response = await apiFetch.get(`/events/${id}`);
     return response.data;
   },
 };
