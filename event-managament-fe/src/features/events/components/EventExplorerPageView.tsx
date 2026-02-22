@@ -10,27 +10,46 @@ import {
   MoonIcon,
   SparklesIcon
 } from "@heroicons/react/24/outline";
-import { SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
+import { motion, AnimatePresence } from "framer-motion";
 import { useThemeStore } from "@/features/theme/stores/themeStore";
 import { useEventFilters } from "../hooks/useEventFilters";
 
 const EventExplorerPageView: React.FC = () => {
   const filters = useEventFilters();
   const [isFilterOpen, setIsFilterOpen] = React.useState(false);
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const { resolvedTheme, toggleTheme } = useThemeStore();
 
   const actions = [
     { 
-      icon: <AdjustmentsHorizontalIcon className="size-6" />, 
+      icon: <AdjustmentsHorizontalIcon className="size-5" />, 
       name: 'Filters', 
-      onClick: () => setIsFilterOpen(true) 
+      onClick: () => {
+        setIsFilterOpen(true);
+        setIsMenuOpen(false);
+      },
+      color: 'var(--neon-cyan)'
     },
     { 
-      icon: resolvedTheme === 'dark' ? <SunIcon className="size-6" /> : <MoonIcon className="size-6" />, 
-      name: 'Toggle Theme', 
-      onClick: toggleTheme 
+      icon: resolvedTheme === 'dark' ? <SunIcon className="size-5" /> : <MoonIcon className="size-5" />, 
+      name: 'Theme', 
+      onClick: () => {
+        toggleTheme();
+        setIsMenuOpen(false);
+      },
+      color: 'var(--neon-purple)'
     },
   ];
+
+  const menuVariants = {
+    closed: { opacity: 0, scale: 0.8, transition: { staggerChildren: 0.05, staggerDirection: -1 } },
+    open: { opacity: 1, scale: 1, transition: { staggerChildren: 0.07, delayChildren: 0.1 } }
+  };
+
+  const itemVariants = {
+    closed: { opacity: 0, x: 20, scale: 0.8 },
+    open: { opacity: 1, x: 0, scale: 1 }
+  };
 
   return (
     <main className="flex-1 flex flex-col w-full max-w-[1600px] mx-auto bg-background text-foreground transition-colors duration-300 selection:bg-neon-pink selection:text-black min-h-screen">
@@ -76,45 +95,55 @@ const EventExplorerPageView: React.FC = () => {
           <EventInfiniteGrid {...filters} />
         </div>
 
-        {/* Mobile Page Controls (SpeedDial) - Hidden on Desktop */}
-        <div className="lg:hidden fixed bottom-6 right-6 z-50">
-          <SpeedDial
-            ariaLabel="Vibe Controls"
-            icon={<SpeedDialIcon icon={<SparklesIcon className="size-6" />} openIcon={<XMarkIcon className="size-6" />} />}
-            FabProps={{
-              sx: {
-                bgcolor: 'var(--neon-cyan)',
-                color: 'black',
-                boxShadow: '4px 4px 0 0 rgba(0,0,0,1)',
-                '&:hover': {
-                  bgcolor: 'var(--neon-cyan)',
-                  opacity: 0.9,
-                },
-                '& .MuiSvgIcon-root': { fontSize: '1.5rem', fontWeight: 900 }
-              }
-            }}
+        {/* Custom Mobile Page Controls - Hidden on Desktop */}
+        <div className="lg:hidden fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
+          <AnimatePresence>
+            {isMenuOpen && (
+              <motion.div 
+                initial="closed"
+                animate="open"
+                exit="closed"
+                variants={menuVariants}
+                className="flex flex-col items-end gap-3 mb-2"
+              >
+                {actions.map((action) => (
+                  <motion.button
+                    key={action.name}
+                    variants={itemVariants}
+                    onClick={action.onClick}
+                    className="flex items-center gap-3 group"
+                  >
+                    <span className="bg-black text-white dark:bg-white dark:text-black py-1.5 px-3 text-[10px] font-black uppercase tracking-widest border border-white/10 dark:border-black/10 shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(0,255,255,0.2)]">
+                      {action.name}
+                    </span>
+                    <div 
+                      className="size-12 rounded-none bg-background border-2 flex items-center justify-center shadow-[4px_4px_0_0_rgba(0,0,0,1)] transition-transform active:translate-x-0.5 active:translate-y-0.5"
+                      style={{ borderColor: action.color }}
+                    >
+                      <div className="transition-colors group-hover:text-white" style={{ color: action.color }}>
+                        {action.icon}
+                      </div>
+                    </div>
+                  </motion.button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className={`size-14 rounded-none flex items-center justify-center transition-all duration-300 border-2 shadow-[6px_6px_0_0_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 ${
+              isMenuOpen 
+                ? "bg-neon-pink border-black text-black rotate-90" 
+                : "bg-neon-cyan border-black text-black"
+            }`}
           >
-            {actions.map((action) => (
-              <SpeedDialAction
-                key={action.name}
-                icon={action.icon}
-                tooltipTitle={action.name}
-                tooltipOpen
-                onClick={action.onClick}
-                FabProps={{
-                  sx: {
-                    bgcolor: 'var(--surface)',
-                    color: 'var(--foreground)',
-                    border: '2px solid var(--neon-purple)',
-                    '&:hover': {
-                      bgcolor: 'var(--neon-purple)',
-                      color: 'white',
-                    }
-                  }
-                }}
-              />
-            ))}
-          </SpeedDial>
+            {isMenuOpen ? (
+              <XMarkIcon className="size-8" strokeWidth={3} />
+            ) : (
+              <SparklesIcon className="size-8" strokeWidth={2.5} />
+            )}
+          </button>
         </div>
       </div>
     </main>
