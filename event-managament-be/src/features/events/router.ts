@@ -25,10 +25,7 @@ export class EventsRouter {
 
     // Tickets
     this.router.get("/:eventId/tickets", this.ticketsController.findAll);
-    this.router.get(
-      "/:eventId/tickets/:ticketId",
-      this.ticketsController.findOne,
-    );
+    this.router.get("/:eventId/tickets/:id", this.ticketsController.findOne);
     this.router.post(
       "/:eventId/tickets",
       verifyToken,
@@ -37,11 +34,15 @@ export class EventsRouter {
       this.ticketsController.create,
     );
     this.router.patch(
-      "/:eventId/tickets/:ticketId",
+      "/:eventId/tickets/:id",
       verifyToken,
       this.ticketsController.update,
     );
-    this.router.delete("")
+    this.router.delete(
+      "/:eventId/tickets/:id",
+      verifyToken,
+      this.ticketsController.delete,
+    );
 
     // Create event/ticket (Requires OWNER, ADMIN)
     this.router.post(

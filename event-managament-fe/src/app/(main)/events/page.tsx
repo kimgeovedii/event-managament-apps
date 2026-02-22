@@ -1,3 +1,4 @@
+import React, { Suspense } from "react";
 import { Metadata } from "next";
 import EventExplorerPageView from "@/features/events/components/EventExplorerPageView";
 
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function EventExplorerPage() {
-  return <EventExplorerPageView />;
+  return (
+    <Suspense fallback={<div />}> 
+      <EventExplorerPageView />
+    </Suspense>
+  );
 }
