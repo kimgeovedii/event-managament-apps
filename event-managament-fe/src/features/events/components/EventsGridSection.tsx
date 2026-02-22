@@ -3,8 +3,9 @@
 import React from "react";
 import { useSearchParams } from "next/navigation";
 import EventCard from "./EventCard";
+import EventCardSkeleton from "./EventCardSkeleton";
 import { useEvents } from "../hooks/useEvents";
-import PaginationBar from "./PaginationBar";
+import PaginationBar from "../../home/components/PaginationBar";
 
 const EventsGridSection: React.FC = () => {
   const searchParams = useSearchParams();
@@ -19,16 +20,6 @@ const EventsGridSection: React.FC = () => {
     location,
     search,
   });
-
-  if (isLoading) {
-    return (
-      <section className="bg-white dark:bg-[#0a0a0a] w-full border-t border-gray-200 dark:border-[#222]">
-        <div className="py-8 md:py-16 px-4 md:px-6 lg:px-10 max-w-[1400px] mx-auto w-full text-center">
-          <p>Loading events...</p>
-        </div>
-      </section>
-    );
-  }
 
   if (error) {
     return (
@@ -70,9 +61,9 @@ const EventsGridSection: React.FC = () => {
     >
       <div className="py-8 md:py-16 px-4 md:px-6 lg:px-10 max-w-[1400px] mx-auto w-full">
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 lg:gap-8">
-          {events.map((event: any | any[]) => (
-            <EventCard key={event.id} event={event} />
-          ))}
+          {isLoading
+            ? [...Array(6)].map((_, i) => <EventCardSkeleton key={i} />)
+            : events.map((event) => <EventCard key={event.id} event={event} />)}
         </div>
 
         {meta && meta.totalPages > 1 && (

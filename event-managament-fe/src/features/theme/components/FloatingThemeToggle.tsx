@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useThemeStore } from "@/features/theme";
+import { usePathname } from "next/navigation";
 
 // Sun Icon
 const SunIcon = () => (
@@ -21,15 +22,18 @@ const MoonIcon = () => (
  * Floating theme toggle button - positioned at bottom-right corner
  */
 const FloatingThemeToggle: React.FC = () => {
+  const pathname = usePathname();
   const { resolvedTheme, toggleTheme } = useThemeStore();
   const isDark = resolvedTheme === "dark";
+  const isEventsPage = pathname?.startsWith("/events");
 
   return (
     <button
       onClick={toggleTheme}
-      className="
+      className={`
         fixed bottom-6 right-6 z-50
-        flex items-center justify-center
+        ${isEventsPage ? "hidden lg:flex" : "flex"}
+        items-center justify-center
         w-12 h-12 rounded-full
         bg-white dark:bg-[#3a1d2e]
         border border-[#e6dbe0] dark:border-[#4a2d3e]
@@ -40,7 +44,7 @@ const FloatingThemeToggle: React.FC = () => {
         hover:text-[#ee2b8c]
         transition-all duration-300
         hover:scale-110 active:scale-95
-      "
+      `}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       title={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
