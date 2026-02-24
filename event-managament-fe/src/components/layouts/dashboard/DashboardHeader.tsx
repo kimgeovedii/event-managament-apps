@@ -14,16 +14,20 @@ import { Menu, MenuItem, IconButton, Divider } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import OrganizerNotificationBell from "@/features/notifications/components/OrganizerNotificationBell";
+import { usePathname } from "next/navigation";
 
 interface DashboardHeaderProps {
   onMenuClick: () => void;
+  searchQuery?: string;
+  onSearchChange?: (val: string) => void;
 }
 
-const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onMenuClick }) => {
+const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onMenuClick, searchQuery, onSearchChange }) => {
   const { user, signOut } = useStoreLogin();
   const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const pathname = usePathname();
 
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -51,7 +55,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onMenuClick }) => {
   return (
     <header className="h-14 md:h-16 bg-white dark:bg-[#221019] border-b border-[#f4f0f2] dark:border-[#3a1d2e] flex items-center justify-between px-3 md:px-6 lg:px-8 flex-shrink-0 z-20">
       <div className="flex items-center gap-2 md:gap-4">
-        <button 
+        <button
           onClick={onMenuClick}
           className="lg:hidden p-1.5 md:p-2 -ml-1 md:-ml-2 text-[#5f4351] hover:text-[#181114] dark:hover:text-white transition-colors"
         >
@@ -59,7 +63,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onMenuClick }) => {
         </button>
         <h1 className="text-base md:text-xl font-bold text-[#181114] dark:text-white">Dashboard</h1>
       </div>
-      
+
       <div className="flex items-center gap-3 md:gap-6">
         {/* Search - hidden on mobile */}
         <div className="hidden sm:flex items-center gap-2 bg-[#f8f6f7] dark:bg-[#2a1621] px-3 md:px-4 py-1.5 md:py-2 rounded-full border border-[#e6dbe0] dark:border-[#3a1d2e]">
@@ -70,9 +74,22 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onMenuClick }) => {
             className="bg-transparent border-none p-0 text-xs md:text-sm w-28 md:w-40 focus:ring-0 focus:outline-none placeholder-[#896175] dark:text-white" 
             placeholder="Search events..." 
             type="text"
+            value={searchQuery !== undefined ? searchQuery : ""}
+            onChange={(e) => onSearchChange?.(e.target.value)}
           />
         </div>
-        
+
+        {/* Create Event Button - only explicitly on /dashboard/events */}
+        {pathname === "/dashboard/events" && (
+          <Link
+            href="/dashboard/events/create"
+            className="flex items-center gap-1 md:gap-2 bg-[#ee2b8c] text-white px-3 md:px-4 py-1.5 md:py-2 rounded-full font-bold text-[10px] md:text-sm hover:bg-[#d6197b] transition-colors shadow-sm"
+          >
+            <svg className="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+            <span className="hidden sm:inline">Create Event</span>
+          </Link>
+        )}
+
         {/* Notifications */}
         <OrganizerNotificationBell />
         

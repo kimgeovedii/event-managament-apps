@@ -23,6 +23,9 @@ export class EventsService {
     const take = limit;
 
     const where: any = {};
+    if (filters.organizerId) {
+      where.organizerId = filters.organizerId;
+    }
     if (filters.categoryId) {
       where.categoryId = filters.categoryId;
     }
