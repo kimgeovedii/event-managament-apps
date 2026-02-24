@@ -9,7 +9,7 @@ import {
 
 export const useEvents = (
   options: UseEventsOptions | number = 1,
-  limit = 6,
+  limit = 8,
 ): UseEventsReturn => {
   const opts: UseEventsOptions =
     typeof options === "number" ? { page: options, limit } : options;

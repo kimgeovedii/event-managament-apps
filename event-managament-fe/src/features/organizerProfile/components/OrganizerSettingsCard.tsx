@@ -31,7 +31,7 @@ const OrganizerSettingsCard: React.FC<OrganizerSettingsCardProps> = ({ organizer
         <h3 className="text-sm font-bold uppercase tracking-wider">Danger Zone</h3>
       </div>
 
-      <div className="bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 rounded-xl p-5 shadow-sm">
+      <div className="bg-white dark:bg-[#221019] border border-red-200 dark:border-red-900/30 rounded-2xl p-8 shadow-sm group">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h4 className="font-semibold text-red-900 dark:text-red-400">Delete Organizer Profile</h4>

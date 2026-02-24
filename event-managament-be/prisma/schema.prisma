@@ -28,9 +28,10 @@ model User {
   points            Point[]
   coupons           UserCoupon[]
   transactions      Transaction[]
-  reviews           Review[]
-  notifications     UserNotification[]
-  cart              Cart?
+  reviews                Review[]
+  notifications          UserNotification[]
+  organizerNotifications OrganizerNotificationRecipient[]
+  cart                   Cart?
 
   @@map("users")
 }
@@ -63,6 +64,36 @@ model UserNotification {
   @@map("user_notifications")
 }
 
+model OrganizerNotification {
+  id          String   @id @default(uuid())
+  organizerId String   @map("organizer_id")
+  title       String
+  message     String   @db.Text
+  type        String   @default("INFO")
+  link        String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  organizer  Organizer                        @relation(fields: [organizerId], references: [id])
+  recipients OrganizerNotificationRecipient[]
+
+  @@map("organizer_notifications")
+}
+
+model OrganizerNotificationRecipient {
+  id             String    @id @default(uuid())
+  notificationId String    @map("notification_id")
+  userId         String    @map("user_id")
+  isRead         Boolean   @default(false) @map("is_read")
+  readAt         DateTime? @map("read_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  notification OrganizerNotification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  user         User                  @relation(fields: [userId], references: [id])
+
+  @@unique([userId, notificationId])
+  @@map("organizer_notification_recipients")
+}
+
 model Organizer {
   id          String   @id @default(uuid())
   ownerId     String   @unique @map("owner_id")
@@ -74,10 +105,11 @@ model Organizer {
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   // Relations
-  owner      User            @relation(fields: [ownerId], references: [id])
-  teams      OrganizerTeam[]
-  events     Event[]
-  promotions Promotion[]
+  owner         User                    @relation(fields: [ownerId], references: [id])
+  teams         OrganizerTeam[]
+  events        Event[]
+  promotions    Promotion[]
+  notifications OrganizerNotification[]
 
   @@map("organizers")
 }

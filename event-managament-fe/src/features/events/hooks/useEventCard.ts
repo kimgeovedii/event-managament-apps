@@ -1,14 +1,9 @@
 "use client";
 
-import { useEventFavorite } from "./useEventFavorite";
 import { Event } from "../types/event.types";
 import { getContrastColor, hexToRgba } from "@/utils/colorUtils";
 
 export const useEventCard = (event: Event) => {
-  const { isFavorite, toggleFavorite } = useEventFavorite(
-    Boolean(event.isFavorite),
-  );
-
   // Process category color
   const hexColor = event?.category?.color || "#ee2b8c";
   const isHex = hexColor.startsWith("#");
@@ -79,8 +74,6 @@ export const useEventCard = (event: Event) => {
     "/placeholder.jpg";
 
   return {
-    isFavorite,
-    toggleFavorite,
     badgeColor,
     badgeTextColor,
     shadowStyle,

@@ -12,7 +12,7 @@ const EventInfoSection: React.FC<EventInfoSectionProps> = ({ event }) => {
   const startDate = event.startDate ? new Date(event.startDate) : null;
   
   const displayDate = startDate ? startDate.toLocaleDateString("en-US", {
-    month: "short",
+    month: "long",
     day: "numeric",
     year: "numeric",
   }).toUpperCase() : "TBA";
@@ -26,22 +26,51 @@ const EventInfoSection: React.FC<EventInfoSectionProps> = ({ event }) => {
   const displayLocation = typeof event.location === 'object' ? event.location.name : event.location;
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-[0.9] text-foreground">
-        {event.name}
-      </h1>
-      <div className="flex flex-wrap gap-3">
-        <div className="bg-neon-cyan border-4 border-black px-4 py-2 flex items-center gap-2 text-black">
-          <CalendarIcon className="size-5 stroke-[3px]" />
-          <span className="font-black uppercase text-base">{displayDate}</span>
+    <div className="space-y-8 py-4">
+      <div className="space-y-2">
+        <h1 className="text-4xl md:text-7xl font-black uppercase tracking-tighter leading-none text-gray-900 dark:text-white drop-shadow-xl dark:drop-shadow-2xl">
+          {event.name}
+        </h1>
+        <div className="flex items-center gap-2">
+           <div className="h-1 w-12 bg-gradient-to-r from-neon-cyan to-transparent"></div>
+           <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-neon-cyan/80">Premium Event</span>
         </div>
-        <div className="bg-surface border-4 border-black px-4 py-2 flex items-center gap-2 text-foreground">
-          <ClockIcon className="size-5 text-neon-cyan stroke-[3px]" />
-          <span className="font-black uppercase text-base">{displayTime}</span>
+      </div>
+
+      <div className="flex flex-wrap gap-3 md:gap-4">
+        {/* Glass Badge: Date */}
+        <div className="bg-black/5 dark:bg-white/5 backdrop-blur-xl border border-black/5 dark:border-white/10 px-4 md:px-6 py-2.5 md:py-3.5 flex items-center gap-3 rounded-2xl shadow-md dark:shadow-xl group/badge hover:border-neon-cyan/50 transition-colors">
+          <div className="p-2 rounded-xl bg-neon-cyan/10 text-neon-cyan drop-shadow-[0_0_8px_rgba(0,255,221,0.5)]">
+            <CalendarIcon className="size-5 md:size-6 stroke-[2.5]" />
+          </div>
+          <div>
+            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none mb-1">Date</p>
+            <span className="font-black uppercase text-xs md:text-sm text-gray-800 dark:text-white tracking-widest">{displayDate}</span>
+          </div>
         </div>
-        <div className="bg-surface border-4 border-black px-4 py-2 flex items-center gap-2 text-foreground">
-          <MapPinIcon className="size-5 text-neon-magenta stroke-[3px]" />
-          <span className="font-black uppercase text-base line-clamp-1">{displayLocation || "Venue TBA"}</span>
+
+        {/* Glass Badge: Time */}
+        <div className="bg-black/5 dark:bg-white/5 backdrop-blur-xl border border-black/5 dark:border-white/10 px-4 md:px-6 py-2.5 md:py-3.5 flex items-center gap-3 rounded-2xl shadow-md dark:shadow-xl group/badge hover:border-neon-purple/50 transition-colors">
+          <div className="p-2 rounded-xl bg-neon-purple/10 text-neon-purple drop-shadow-[0_0_8px_rgba(180,0,255,0.5)]">
+            <ClockIcon className="size-5 md:size-6 stroke-[2.5]" />
+          </div>
+          <div>
+            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none mb-1">Time</p>
+            <span className="font-black uppercase text-xs md:text-sm text-gray-800 dark:text-white tracking-widest">{displayTime}</span>
+          </div>
+        </div>
+
+        {/* Glass Badge: Location */}
+        <div className="bg-black/5 dark:bg-white/5 backdrop-blur-xl border border-black/5 dark:border-white/10 px-4 md:px-6 py-2.5 md:py-3.5 flex items-center gap-3 rounded-2xl shadow-md dark:shadow-xl group/badge hover:border-neon-magenta/50 transition-colors">
+          <div className="p-2 rounded-xl bg-neon-magenta/10 text-neon-magenta drop-shadow-[0_0_8px_rgba(255,0,85,0.5)]">
+            <MapPinIcon className="size-5 md:size-6 stroke-[2.5]" />
+          </div>
+          <div>
+            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none mb-1">Venue</p>
+            <span className="font-black uppercase text-xs md:text-sm text-gray-800 dark:text-white tracking-widest line-clamp-1 max-w-[150px] md:max-w-[250px]">
+              {displayLocation || "Venue TBA"}
+            </span>
+          </div>
         </div>
       </div>
     </div>

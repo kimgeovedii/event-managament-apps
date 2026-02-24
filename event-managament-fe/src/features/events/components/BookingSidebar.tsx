@@ -66,13 +66,18 @@ const BookingSidebar: React.FC<BookingSidebarProps> = ({ event }) => {
 
 
   return (
-    <div className="sticky  space-y-8">
-      {/* Ticket Selection Area */}
-      <div className="brutalist-card overflow-hidden">
-        <div className="p-3 bg-black text-white border-b-2 border-black">
-          <h3 className="text-lg font-black uppercase tracking-tighter">Select Tickets</h3>
+    <div className="space-y-8 animate-in fade-in slide-in-from-right-10 duration-700">
+      {/* Ticket Selection Area - Glass Container */}
+      <div className="bg-white/70 dark:bg-white/5 backdrop-blur-xl rounded-3xl border border-black/5 dark:border-white/10 shadow-xl dark:shadow-2xl overflow-hidden relative group">
+        {/* Decorative background blur */}
+        <div className="absolute -top-10 -right-10 size-32 bg-neon-cyan/5 blur-[50px] rounded-full"></div>
+        
+        <div className="p-5 border-b border-black/5 dark:border-white/10 bg-black/5 dark:bg-black/20 flex items-center justify-between">
+          <h3 className="text-sm font-black uppercase tracking-[0.2em] text-gray-900 dark:text-white">Select Tickets</h3>
+          <div className="px-2 py-0.5 rounded-full bg-neon-cyan/20 border border-neon-cyan/30 text-[9px] font-black text-neon-cyan uppercase">Live</div>
         </div>
-        <div className="p-3 space-y-3 max-h-[550px] overflow-y-auto no-scrollbar">
+        
+        <div className="p-4 space-y-3 max-h-[450px] overflow-y-auto no-scrollbar relative z-10">
           {(event.ticketTypes || []).map((ticket) => (
             <TicketSelectionCard
               key={ticket.id}
@@ -83,43 +88,78 @@ const BookingSidebar: React.FC<BookingSidebarProps> = ({ event }) => {
             />
           ))}
           {(!event.ticketTypes || event.ticketTypes.length === 0) && (
-            <p className="text-gray-500 font-bold uppercase text-center py-4">No tickets available</p>
+            <div className="py-12 text-center space-y-3">
+              <div className="inline-block p-4 rounded-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10">
+                <ShoppingCartIcon className="size-8 text-gray-400 dark:text-white/20" />
+              </div>
+              <p className="text-gray-500 font-bold uppercase text-[10px] tracking-widest">No tickets available</p>
+            </div>
           )}
         </div>
       </div>
 
-      {/* Order Summary */}
-      <div className="brutalist-card p-5 bg-surface border-4">
-        <h3 className="text-lg font-black uppercase mb-4 border-b-2 border-black pb-2 text-foreground">Order Summary</h3>
-        <div className="space-y-2 mb-6">
+      {/* Order Summary - Premium Glass Card */}
+      <div className="bg-white/80 dark:bg-gradient-to-br dark:from-white/10 dark:to-white/5 backdrop-blur-2xl rounded-3xl p-6 border border-black/5 dark:border-white/10 shadow-xl dark:shadow-[0_20px_60px_rgba(0,0,0,0.4)] relative group overflow-hidden">
+        {/* Animated Background Accent */}
+        <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-neon-cyan to-transparent opacity-50"></div>
+        
+        <div className="flex items-center justify-between mb-6 border-b border-black/5 dark:border-white/10 pb-4">
+          <h3 className="text-sm font-black uppercase tracking-[0.2em] text-gray-900 dark:text-white">Order Summary</h3>
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{selectedTickets.length} Items</span>
+        </div>
+
+        <div className="space-y-4 mb-8">
           {selectedTickets.map(t => (
-            <div key={t.id} className="flex justify-between font-bold uppercase text-foreground text-sm">
-              <span>{t.qty}x {t.name}</span>
-              <span>IDR {(Number(t.price) * t.qty / 1000000).toFixed(2)}M</span>
+            <div key={t.id} className="flex justify-between items-center group/item">
+              <div className="space-y-0.5">
+                <p className="font-black uppercase text-gray-900 dark:text-white text-xs tracking-tight">{t.name}</p>
+                <p className="text-[9px] font-bold text-neon-cyan uppercase tracking-widest">Qty: {t.qty}</p>
+              </div>
+              <span className="font-black text-sm text-gray-600 dark:text-gray-300 tracking-tighter italic">IDR {(Number(t.price) * t.qty / 1000).toFixed(0)}K</span>
             </div>
           ))}
+          
           {selectedTickets.length === 0 && (
-            <p className="text-gray-500 font-bold uppercase text-sm italic">No tickets selected</p>
+            <div className="py-2 flex items-center gap-3 text-gray-400 dark:text-gray-500">
+              <div className="w-1.5 h-1.5 rounded-full bg-black/5 dark:bg-white/10"></div>
+              <p className="font-bold uppercase text-[10px] tracking-widest leading-none">No tickets selected yet</p>
+            </div>
           )}
  
-          <div className="pt-4 border-t-2 border-black flex justify-between font-black text-2xl tracking-tighter uppercase text-foreground">
-            <span>Total</span>
-            <span>{(total / 1000000).toFixed(2)}M</span>
+          <div className="pt-6 mt-4 border-t border-black/5 dark:border-white/10 flex justify-between items-end">
+            <div>
+              <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest leading-none mb-2">Total Amount</p>
+              <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter italic drop-shadow-sm dark:drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
+                IDR {(total / 1000).toFixed(0)}K
+              </h2>
+            </div>
           </div>
         </div>
         
         <button 
           disabled={selectedTickets.length === 0 || cartLoading}
           onClick={handleAddToCart}
-          className="brutalist-button w-full py-3 text-lg bg-neon-purple text-white neon-glow-purple flex items-center justify-center gap-2 active:bg-neon-magenta disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:translate-x-0 disabled:translate-y-0"
+          className="relative w-full py-4 rounded-2xl bg-neon-cyan text-black font-black uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-3 transition-all hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(0,255,221,0.4)] active:scale-[0.98] disabled:opacity-20 disabled:grayscale disabled:cursor-not-allowed group/btn overflow-hidden"
         >
-          <ShoppingCartIcon className="size-5 text-white" />
-          {cartLoading ? "Adding..." : "Add To Cart"}
+          <ShoppingCartIcon className="size-5 transition-transform group-hover/btn:-translate-y-1" strokeWidth={2.5} />
+          {cartLoading ? "PROCESSING..." : "CONFIRM BOOKING"}
+          
+          {/* Shine effect on hover */}
+          <div className="absolute top-0 -left-full w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent group-hover/btn:animate-shine"></div>
         </button>
         
-        <div className="mt-6 flex items-center justify-center gap-2 opacity-50 font-black text-[10px] uppercase text-foreground">
-          <LockClosedIcon className="size-3" />
-          Secure via HypePay
+        <div className="mt-8 flex flex-col items-center gap-3">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10">
+            <LockClosedIcon className="size-3 text-neon-cyan" />
+            <span className="font-black text-[8px] md:text-[9px] uppercase tracking-widest text-gray-500 dark:text-gray-400">Secure Checkout via HypePay</span>
+          </div>
+          
+          <div className="flex gap-4 opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-500">
+             {/* Simple Logo Placeholder icons */}
+             <div className="w-8 h-4 bg-gray-400 dark:bg-white/20 rounded-sm"></div>
+             <div className="w-8 h-4 bg-gray-400 dark:bg-white/20 rounded-sm"></div>
+             <div className="w-8 h-4 bg-gray-400 dark:bg-white/20 rounded-sm"></div>
+          </div>
         </div>
       </div>
 
@@ -139,29 +179,27 @@ const BookingSidebar: React.FC<BookingSidebarProps> = ({ event }) => {
           variant="filled"
           sx={{
             width: "100%",
-            borderRadius: 0,
-            border: "3px solid black",
-            boxShadow: "6px 6px 0px 0px rgba(0,0,0,1)",
+            borderRadius: "16px",
+            border: "1px solid rgba(255,255,255,0.1)",
+            backdropFilter: "blur(10px)",
+            boxShadow: "0 10px 40px rgba(0,0,0,0.5)",
             fontWeight: "900",
             textTransform: "uppercase",
-            fontSize: "13px",
-            letterSpacing: "0.02em",
-            py: 1.5,
-            px: 3,
+            fontSize: "12px",
+            letterSpacing: "0.1em",
+            py: 2,
+            px: 4,
             "&.MuiAlert-filledSuccess": {
-              bgcolor: "#00FFDD",
+              bgcolor: "rgba(0, 255, 221, 0.9)",
               color: "black",
             },
             "&.MuiAlert-filledError": {
-              bgcolor: "#FF0055",
+              bgcolor: "rgba(255, 0, 85, 0.9)",
               color: "white",
             },
             "& .MuiAlert-icon": {
               color: snackbar.severity === "success" ? "black" : "white",
-              fontSize: "24px",
-            },
-            "& .MuiAlert-action": {
-              pt: 0,
+              fontSize: "20px",
             }
           }}
         >

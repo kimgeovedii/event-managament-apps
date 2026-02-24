@@ -9,10 +9,22 @@ import FilterBar from "./FilterBar";
 import EventsGridSection from "../../events/components/EventsGridSection";
 import NewsletterSection from "./NewsletterSection";
 import { useFilterBar } from "../hooks";
+import { Snackbar, Alert } from "@mui/material";
 
 const HomeViewContent: React.FC = () => {
   const { activeSearch } = useFilterBar();
   const isSearching = Boolean(activeSearch && activeSearch.trim() !== "");
+
+  // Single Toast State for Home
+  const [toast, setToast] = React.useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "error",
+  });
+
+  const handleShowToast = (message: string, severity: "success" | "error") => {
+    setToast({ open: true, message, severity });
+  };
 
   return (
     <div className="bg-white dark:bg-[#050505] text-gray-900 dark:text-white font-body min-h-screen flex flex-col selection:bg-[#ee2b8c] dark:selection:bg-[#FF00FF] selection:text-white dark:selection:text-black">
@@ -38,11 +50,41 @@ const HomeViewContent: React.FC = () => {
         <FilterBar />
 
         {/* Events Grid */}
-        <EventsGridSection />
+        <EventsGridSection onToast={handleShowToast} />
 
         {/* Newsletter */}
         <NewsletterSection />
       </main>
+
+      {/* Shared Home Snackbar */}
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={4000}
+        onClose={() => setToast(prev => ({ ...prev, open: false }))}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setToast(prev => ({ ...prev, open: false }))}
+          severity={toast.severity}
+          variant="filled"
+          sx={{
+            width: "100%",
+            borderRadius: 0,
+            border: "3px solid black",
+            boxShadow: "6px 6px 0px 0px rgba(0,0,0,1)",
+            fontWeight: "900",
+            textTransform: "uppercase",
+            fontSize: "12px",
+            bgcolor: toast.severity === "success" ? "#00FFDD" : "#FF0055",
+            color: toast.severity === "success" ? "black" : "white",
+            "& .MuiAlert-icon": {
+              color: toast.severity === "success" ? "black" : "white",
+            }
+          }}
+        >
+          {toast.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
