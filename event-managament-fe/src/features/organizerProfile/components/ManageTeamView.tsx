@@ -31,9 +31,6 @@ import {
   Alert, 
   CircularProgress 
 } from "@mui/material";
-import DashboardSidebar from "@/components/layouts/dashboard/DashboardSidebar";
-import DashboardHeader from "@/components/layouts/dashboard/DashboardHeader";
-import { useSidebar } from "@/features/dashboard/hooks";
 import { FloatingThemeToggle } from "@/features/theme";
 import { useOrganizerProfile } from "../hooks/useOrganizerProfile";
 import { useManageTeam } from "../hooks/useManageTeam";
@@ -41,7 +38,6 @@ import { getRoleColor, getInitials } from "../utils/teamUtils";
 import AddTeamMemberDialog from "./AddTeamMemberDialog";
 
 const ManageTeamView: React.FC = () => {
-  const { isOpen, toggle, close } = useSidebar();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const { data: organizer, loading, error, user, refetch } = useOrganizerProfile();
   
@@ -68,46 +64,40 @@ const ManageTeamView: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="bg-gray-50 dark:bg-[#181114] text-slate-900 dark:text-slate-100 font-sans min-h-screen flex overflow-hidden">
-        <DashboardSidebar isOpen={isOpen} onClose={close} />
-        <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
-          <DashboardHeader onMenuClick={toggle} />
-          <main 
-            className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10 relative"
-            style={{
-              backgroundImage: 'radial-gradient(circle, #ee2b8c15 1px, transparent 1px)',
-              backgroundSize: '32px 32px'
-            }}
-          >
-            <div className="max-w-6xl mx-auto space-y-8">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div className="space-y-1">
-                  <Skeleton variant="text" width={100} height={20} className="mb-2" />
-                  <Skeleton variant="text" width={250} height={40} />
-                  <Skeleton variant="text" width={180} height={20} />
-                </div>
-                <Skeleton variant="rectangular" width={140} height={44} className="rounded-xl" />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm space-y-4">
-                    <div className="flex justify-between">
-                      <Skeleton variant="rectangular" width={56} height={56} className="rounded-2xl" />
-                      <Skeleton variant="circular" width={32} height={32} />
-                    </div>
-                    <div className="space-y-2">
-                      <Skeleton variant="text" width="70%" height={24} />
-                      <Skeleton variant="text" width="40%" height={16} />
-                    </div>
-                    <Skeleton variant="rectangular" width={80} height={24} className="rounded-full" />
-                  </div>
-                ))}
-              </div>
+      <main 
+        className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10 relative"
+        style={{
+          backgroundImage: 'radial-gradient(circle, #ee2b8c15 1px, transparent 1px)',
+          backgroundSize: '32px 32px'
+        }}
+      >
+        <div className="max-w-6xl mx-auto space-y-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-1">
+              <Skeleton variant="text" width={100} height={20} className="mb-2" />
+              <Skeleton variant="text" width={250} height={40} />
+              <Skeleton variant="text" width={180} height={20} />
             </div>
-          </main>
+            <Skeleton variant="rectangular" width={140} height={44} className="rounded-xl" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm space-y-4">
+                <div className="flex justify-between">
+                  <Skeleton variant="rectangular" width={56} height={56} className="rounded-2xl" />
+                  <Skeleton variant="circular" width={32} height={32} />
+                </div>
+                <div className="space-y-2">
+                  <Skeleton variant="text" width="70%" height={24} />
+                  <Skeleton variant="text" width="40%" height={16} />
+                </div>
+                <Skeleton variant="rectangular" width={80} height={24} className="rounded-full" />
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      </main>
     );
   }
 
@@ -136,159 +126,151 @@ const ManageTeamView: React.FC = () => {
   });
 
   return (
-    <div className="bg-gray-50 dark:bg-[#181114] text-slate-900 dark:text-slate-100 font-sans min-h-screen flex overflow-hidden">
-      <DashboardSidebar isOpen={isOpen} onClose={close} />
-
-      <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
-        <DashboardHeader onMenuClick={toggle} />
-
-        <main 
-          className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10 relative"
-          style={{
-            backgroundImage: 'radial-gradient(circle, #ee2b8c15 1px, transparent 1px)',
-            backgroundSize: '32px 32px'
-          }}
-        >
-          <div className="max-w-6xl mx-auto space-y-8">
-            {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="space-y-1">
-                <Link 
-                  href="/dashboard/profile" 
-                  className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors mb-2"
-                >
-                  <ArrowLeftIcon className="size-4" />
-                  Back to Profile
-                </Link>
-                <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-                  Manage Team
-                </h1>
-                <p className="text-slate-500 dark:text-slate-400 text-xs md:text-sm">
-                  Review and manage members of your organization ({teamMembers.length} members)
-                </p>
-              </div>
-
-              <button
-                onClick={() => setIsAddDialogOpen(true)}
-                className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#ee2b8c] text-white rounded-xl font-bold shadow-lg shadow-[#ee2b8c]/20 hover:bg-[#d41d77] transition-all"
+    <>
+      <main 
+        className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10 relative"
+        style={{
+          backgroundImage: 'radial-gradient(circle, #ee2b8c15 1px, transparent 1px)',
+          backgroundSize: '32px 32px'
+        }}
+      >
+        <div className="max-w-6xl mx-auto space-y-8">
+          {/* Header Section */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-1">
+              <Link 
+                href="/dashboard/profile" 
+                className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors mb-2"
               >
-                <PlusIcon className="size-5" />
-                Add Member
-              </button>
+                <ArrowLeftIcon className="size-4" />
+                Back to Profile
+              </Link>
+              <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+                Manage Team
+              </h1>
+              <p className="text-slate-500 dark:text-slate-400 text-xs md:text-sm">
+                Review and manage members of your organization ({teamMembers.length} members)
+              </p>
             </div>
-  {/* Role Privilege Guide */}
-            <div className="bg-white dark:bg-[#221019] border border-slate-200 dark:border-[#3a1d2e] rounded-2xl p-6 md:p-8 shadow-sm">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
-                  <ShieldCheckIcon className="size-6 text-indigo-600 dark:text-indigo-400" />
-                </div>
-                <div>
-                  <h2 className="text-lg md:text-xl font-bold">Squad Role Privileges</h2>
-                  <p className="text-xs md:text-sm text-slate-500">Understand what each member can do in your mission</p>
-                </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {[
-                  {
-                    role: "OWNER",
-                    icon: <ShieldCheckIcon className="size-5" />,
-                    color: "text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400",
-                    desc: "Full legislative & executive power. Can delete the organization, manage all members, and edit core profile settings."
-                  },
-                  {
-                    role: "ADMIN",
-                    icon: <UserIcon className="size-5" />,
-                    color: "text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:text-indigo-400",
-                    desc: "The high council. Can add or remove members (except Owner), change roles, and manage event operations."
-                  },
-                  {
-                    role: "MARKETING",
-                    icon: <UserGroupIcon className="size-5" />,
-                    color: "text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-400",
-                    desc: "Operational specialists. Can view team structure and coordinate missions, but cannot change squad composition."
-                  }
-                ].map((item) => (
-                  <div key={item.role} className="space-y-3 p-4 rounded-xl border border-slate-100 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] uppercase tracking-wider ${item.color}`}>
-                      {item.icon}
-                      {item.role}
+            <button
+              onClick={() => setIsAddDialogOpen(true)}
+              className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#ee2b8c] text-white rounded-xl font-bold shadow-lg shadow-[#ee2b8c]/20 hover:bg-[#d41d77] transition-all"
+            >
+              <PlusIcon className="size-5" />
+              Add Member
+            </button>
+          </div>
+{/* Role Privilege Guide */}
+          <div className="bg-white dark:bg-[#221019] border border-slate-200 dark:border-[#3a1d2e] rounded-2xl p-6 md:p-8 shadow-sm">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
+                <ShieldCheckIcon className="size-6 text-indigo-600 dark:text-indigo-400" />
+              </div>
+              <div>
+                <h2 className="text-lg md:text-xl font-bold">Squad Role Privileges</h2>
+                <p className="text-xs md:text-sm text-slate-500">Understand what each member can do in your mission</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                {
+                  role: "OWNER",
+                  icon: <ShieldCheckIcon className="size-5" />,
+                  color: "text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400",
+                  desc: "Full legislative & executive power. Can delete the organization, manage all members, and edit core profile settings."
+                },
+                {
+                  role: "ADMIN",
+                  icon: <UserIcon className="size-5" />,
+                  color: "text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:text-indigo-400",
+                  desc: "The high council. Can add or remove members (except Owner), change roles, and manage event operations."
+                },
+                {
+                  role: "MARKETING",
+                  icon: <UserGroupIcon className="size-5" />,
+                  color: "text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-400",
+                  desc: "Operational specialists. Can view team structure and coordinate missions, but cannot change squad composition."
+                }
+              ].map((item) => (
+                <div key={item.role} className="space-y-3 p-4 rounded-xl border border-slate-100 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                  <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] uppercase tracking-wider ${item.color}`}>
+                    {item.icon}
+                    {item.role}
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                    {item.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Team Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <AnimatePresence>
+              {teamMembers.map((member: any, index: number) => (
+                <motion.div
+                  key={member.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="group relative bg-white dark:bg-[#221019] border border-slate-200 dark:border-[#3a1d2e] p-5 md:p-6 rounded-2xl shadow-sm hover:shadow-md hover:border-indigo-200 dark:hover:border-[#ee2b8c50] transition-all flex flex-col"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="size-14 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center">
+                      <span className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
+                        {getInitials(member.name)}
+                      </span>
                     </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-                      {item.desc}
+                    
+                    <IconButton 
+                      onClick={(e) => handleMenuClick(e as any, member)}
+                      className="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-all"
+                      size="small"
+                    >
+                      <EllipsisHorizontalIcon className="size-5 text-slate-500" />
+                    </IconButton>
+                  </div>
+
+                  <div className="space-y-1 mb-6 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="font-bold text-lg truncate flex items-center gap-2">
+                        {member.name}
+                      </h3>
+                      {member.isCurrentUser && (
+                        <span className="text-[10px] font-bold bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded-full border border-indigo-100 dark:border-indigo-800 uppercase tracking-wider">YOU</span>
+                      )}
+                    </div>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                      <EnvelopeIcon className="size-3.5" />
+                      {member.email}
                     </p>
                   </div>
-                ))}
-              </div>
-            </div>
-            {/* Team Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <AnimatePresence>
-                {teamMembers.map((member: any, index: number) => (
-                  <motion.div
-                    key={member.id}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="group relative bg-white dark:bg-[#221019] border border-slate-200 dark:border-[#3a1d2e] p-5 md:p-6 rounded-2xl shadow-sm hover:shadow-md hover:border-indigo-200 dark:hover:border-[#ee2b8c50] transition-all flex flex-col"
-                  >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="size-14 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center">
-                        <span className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
-                          {getInitials(member.name)}
-                        </span>
-                      </div>
-                      
-                      <IconButton 
-                        onClick={(e) => handleMenuClick(e as any, member)}
-                        className="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-all"
-                        size="small"
-                      >
-                        <EllipsisHorizontalIcon className="size-5 text-slate-500" />
-                      </IconButton>
-                    </div>
 
-                    <div className="space-y-1 mb-6 flex-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-bold text-lg truncate flex items-center gap-2">
-                          {member.name}
-                        </h3>
-                        {member.isCurrentUser && (
-                          <span className="text-[10px] font-bold bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded-full border border-indigo-100 dark:border-indigo-800 uppercase tracking-wider">YOU</span>
-                        )}
-                      </div>
-                      <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                        <EnvelopeIcon className="size-3.5" />
-                        {member.email}
-                      </p>
+                  <div className="flex items-center gap-2">
+                    <div className={`px-3 py-1 rounded-full border ${member.borderColor} ${member.textColor} ${member.bgColor} flex items-center gap-2 font-semibold text-xs`}>
+                      {member.role === "OWNER" || member.role === "ADMIN" ? (
+                        <ShieldCheckIcon className="size-3.5" />
+                      ) : (
+                        <UserIcon className="size-3.5" />
+                      )}
+                      {member.role}
                     </div>
-
-                    <div className="flex items-center gap-2">
-                      <div className={`px-3 py-1 rounded-full border ${member.borderColor} ${member.textColor} ${member.bgColor} flex items-center gap-2 font-semibold text-xs`}>
-                        {member.role === "OWNER" || member.role === "ADMIN" ? (
-                          <ShieldCheckIcon className="size-3.5" />
-                        ) : (
-                          <UserIcon className="size-3.5" />
-                        )}
-                        {member.role}
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-          
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
+        
+        </div>
 
-          <footer className="mt-20 pb-8 text-center text-slate-400 dark:text-slate-600">
-            <p className="text-xs font-medium text-slate-400 dark:text-slate-600">
-              © 2024 Event Platform Organizer. All rights reserved.
-            </p>
-          </footer>
-        </main>
-      </div>
-
-      <FloatingThemeToggle />
+        <footer className="mt-20 pb-8 text-center text-slate-400 dark:text-slate-600">
+          <p className="text-xs font-medium text-slate-400 dark:text-slate-600">
+            © 2024 Event Platform Organizer. All rights reserved.
+          </p>
+        </footer>
+      </main>
 
       {/* Menus & Dialogs */}
       <Menu
@@ -464,7 +446,7 @@ const ManageTeamView: React.FC = () => {
           {toast.message}
         </Alert>
       </Snackbar>
-    </div>
+    </>
   );
 };
 
