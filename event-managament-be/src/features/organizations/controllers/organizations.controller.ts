@@ -70,9 +70,6 @@ export class OrganizationsController {
     }
   };
 
-  /**
-   * GET /api/organizations/:id
-   */
   public findOne = async (
     req: Request,
     res: Response,
@@ -80,6 +77,27 @@ export class OrganizationsController {
   ): Promise<void> => {
     try {
       const organizer = await this.service.findOne(req.params.id as string);
+      res.status(200).json({ data: organizer });
+    } catch (error: any) {
+      if (error.status) {
+        res.status(error.status).json({ message: error.message });
+      } else {
+        next(error);
+      }
+    }
+  };
+
+  /**
+   * GET /api/organizations/public/:id
+   * Public endpoint to get an organizer's profile with their events
+   */
+  public findPublicOne = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const organizer = await this.service.findPublicOne(req.params.id as string);
       res.status(200).json({ data: organizer });
     } catch (error: any) {
       if (error.status) {
