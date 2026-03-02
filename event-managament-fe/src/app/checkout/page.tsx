@@ -191,7 +191,7 @@ export default function CheckoutPage() {
             >
               {createOrderMutation.isPending
                 ? "Processing..."
-                : "Confirm & Pay"}
+                : "Make Payment"}
             </button>
           </div>
         </div>

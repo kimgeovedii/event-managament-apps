@@ -1,6 +1,8 @@
 ﻿import { prisma } from "src/config/prisma.js";
 import { OrdersRepository } from "../repositories/orders.repository.js";
 import { TicketsRepository } from "src/features/events/repositories/tickets.repository.js";
+import { generateInvoiceHtml } from "src/services/email/templates/invoice.template.js";
+import { EmailService } from "src/services/email/email.service.js";
 
 export interface IOrdersServiceProps {
   customerId: string;
@@ -16,10 +18,12 @@ export interface IOrdersServiceProps {
 export class OrdersService {
   private ordersRepository: OrdersRepository;
   private ticketsRepository: TicketsRepository;
+  private emailService: EmailService;
 
   constructor() {
     this.ordersRepository = new OrdersRepository();
     this.ticketsRepository = new TicketsRepository();
+    this.emailService = new EmailService();
   }
 
   public create = async (data: IOrdersServiceProps): Promise<any> => {
@@ -29,10 +33,7 @@ export class OrdersService {
       const orderItems: any[] = [];
 
       for (let item of data.items) {
-        const ticket = await this.ticketsRepository.findById(
-          item.ticketId,
-          tx,
-        );
+        const ticket = await this.ticketsRepository.findById(item.ticketId, tx);
         if (!ticket) {
           throw new Error(`Ticket with id ${item.ticketId} not found`);
         }
@@ -153,6 +154,57 @@ export class OrdersService {
       updateData.paymentMethod = paymentData.method;
     }
 
-    return await this.ordersRepository.update(orderId, updateData);
+    const updatedOrder = await this.ordersRepository.update(
+      orderId,
+      updateData,
+    );
+
+    // Send Invoice Email
+    if (order.user?.email) {
+      const emailHtml = generateInvoiceHtml({
+        invoice: order.invoice,
+        transactionDate: order.transactionDate,
+        status: "PAID",
+        paymentMethod: updatedOrder.paymentMethod || order.paymentMethod,
+        totalOriginalPrice: order.totalOriginalPrice,
+        pointsUsed: order.pointsUsed,
+        totalFinalPrice: order.totalFinalPrice,
+        customerName: order.user.name,
+        eventName: order.event?.name || "Event",
+        items: order.items.map((item: any) => ({
+          ticketName: item.ticketType.name,
+          qty: item.quantity,
+          price: item.pricePerUnit || item.totalPrice / item.quantity,
+          subTotal: item.totalPrice,
+        })),
+      });
+
+      this.emailService
+        .sendEmail(
+          order.user.email,
+          `Invoice for Your Order: ${order.invoice}`,
+          emailHtml,
+        )
+        .catch((err) => {
+          console.error("Failed to send invoice email:", err);
+        });
+    }
+
+    return updatedOrder;
+  };
+
+  public updatePaymentProof = async (
+    orderId: string,
+    paymentProofUrl: string,
+  ): Promise<any> => {
+    const order = await this.ordersRepository.findById(orderId);
+
+    if (!order) {
+      throw new Error("Order not found");
+    }
+
+    return await this.ordersRepository.update(orderId, {
+      paymentProofUrl,
+    });
   };
 }
