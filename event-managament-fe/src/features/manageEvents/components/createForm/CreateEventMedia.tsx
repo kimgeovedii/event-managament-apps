@@ -174,7 +174,7 @@ const CreateEventMedia: React.FC<ICreateEventMediaProps> = ({ formik }) => {
           color="error"
           sx={{ mt: 1, display: "block" }}
         >
-          {formik.errors.imageFile}
+          {typeof formik.errors.imageFile === "string" ? formik.errors.imageFile : ""}
         </Typography>
       )}
     </Box>
