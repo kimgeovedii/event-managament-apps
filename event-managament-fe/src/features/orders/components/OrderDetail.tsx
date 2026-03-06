@@ -20,7 +20,10 @@ interface IOrderDetailProps {
   isOrganizerView?: boolean;
 }
 
-const getStatusColor = (status: string) => {
+const getStatusColor = (status: string, hasProof: boolean = false) => {
+  if (status === "PENDING" && hasProof) {
+    return "bg-neon-cyan text-black";
+  }
   switch (status) {
     case "PAID":
       return "bg-neon-cyan text-black";
@@ -102,9 +105,11 @@ const OrderDetail: React.FC<IOrderDetailProps> = ({
           </Typography>
           <Box
             component="span"
-            className={`px-3 md:px-4 py-1.5 font-black text-[8px] md:text-xs uppercase tracking-widest shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(0,240,255,0.4)] ${getStatusColor(order.status)}`}
+            className={`px-3 md:px-4 py-1.5 font-black text-[8px] md:text-xs uppercase tracking-widest shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(0,240,255,0.4)] ${getStatusColor(order.status, !!order.paymentProofUrl)}`}
           >
-            {order.status}
+            {order.status === "PENDING" && order.paymentProofUrl 
+              ? "AWAITING VALIDATION" 
+              : order.status}
           </Box>
         </Box>
       </Box>

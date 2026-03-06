@@ -1,34 +1,37 @@
-"use client";
-
 import React from "react";
-import { useRouter } from "next/navigation";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { Order } from "../types/orders.types";
-import OrderDetail from "./OrderDetail";
+import { cookies } from "next/headers";
+import { ordersService } from "../services/orders.service";
+import UserOrderDetailViewClient from "./UserOrderDetailViewClient";
 
 interface UserOrderDetailViewProps {
-  order: Order;
+  id: string;
 }
 
-export default function UserOrderDetailView({ order }: UserOrderDetailViewProps) {
-  const router = useRouter();
+export default async function UserOrderDetailView({ id }: UserOrderDetailViewProps) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
 
-  return (
-    <div className="max-w-6xl mx-auto p-3 md:p-8">
-      <button
-        onClick={() => router.push("/user/orders")}
-        className="flex items-center gap-2 mb-4 md:mb-8 text-gray-500 hover:text-neon-cyan dark:hover:text-neon-cyan transition-colors group"
-      >
-        <ArrowLeftIcon
-          className="size-4 group-hover:-translate-x-1 transition-transform"
-          strokeWidth={2.5}
-        />
-        <span className="font-black uppercase text-xs tracking-widest">
-          Back to vibes
-        </span>
-      </button>
+  try {
+    const order = await ordersService.getOrderById(id, token);
 
-      <OrderDetail order={order} />
-    </div>
-  );
+    if (!order) {
+      return (
+        <div className="flex justify-center p-12">
+          <div className="font-display font-black uppercase text-xl animate-pulse text-neon-pink">
+            Vibe not found...
+          </div>
+        </div>
+      );
+    }
+
+    return <UserOrderDetailViewClient initialOrder={order} />;
+  } catch (error) {
+    return (
+      <div className="max-w-4xl mx-auto p-8">
+        <div className="p-6 border-4 border-neon-magenta bg-neon-magenta/10 text-neon-magenta font-black uppercase text-center mb-6 shadow-[8px_8px_0_0_#000]">
+          Failed to load order. The vibe might be missing or you're uninvited.
+        </div>
+      </div>
+    );
+  }
 }
