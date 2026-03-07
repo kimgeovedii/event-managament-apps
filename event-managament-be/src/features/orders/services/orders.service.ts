@@ -1,6 +1,8 @@
 ﻿import { prisma } from "../../../config/prisma.js";
 import { OrdersRepository } from "../repositories/orders.repository.js";
 import { TicketsRepository } from "../../events/repositories/tickets.repository.js";
+import { UserPointRepository } from "../../userPoint/repositories/userPoint.repository.js";
+import { UserCouponRepository } from "../../userCoupons/repositories/voucher.repository.js";
 import { generateInvoiceHtml } from "../../../services/email/templates/invoice.template.js";
 import { EmailService } from "../../../services/email/email.service.js";
 import { snap } from "../../../config/midtrans.js";
@@ -9,29 +11,35 @@ export interface IOrdersServiceProps {
   customerId: string;
   pointUsed?: number;
   voucherId?: string;
-  promotionId?: string;
   paymentMethod: string;
   items: {
     ticketId: string;
     qty: number;
+    promotionId?: string;
   }[];
 }
 
 export class OrdersService {
   private ordersRepository: OrdersRepository;
   private ticketsRepository: TicketsRepository;
+  private userPointRepository: UserPointRepository;
+  private userCouponRepository: UserCouponRepository;
   private emailService: EmailService;
 
   constructor() {
     this.ordersRepository = new OrdersRepository();
     this.ticketsRepository = new TicketsRepository();
+    this.userPointRepository = new UserPointRepository();
+    this.userCouponRepository = new UserCouponRepository();
     this.emailService = new EmailService();
   }
 
   public create = async (data: IOrdersServiceProps): Promise<any> => {
     return await prisma.$transaction(async (tx: any) => {
-      let eventId: string | null = null;
+      let firstEventId: string | null = null;
+      let isSingleEvent = true;
       let totalPrice = 0;
+      let totalDiscount = 0;
       const orderItems: any[] = [];
 
       for (let item of data.items) {
@@ -40,26 +48,72 @@ export class OrdersService {
           throw new Error(`Ticket with id ${item.ticketId} not found`);
         }
 
-        if (eventId === null) {
-          eventId = ticket.eventId;
-        } else if (eventId !== ticket.eventId) {
-          throw new Error(
-            "Cannot mix tickets from different events in one order",
-          );
+        if (firstEventId === null) {
+          firstEventId = ticket.eventId;
+        } else if (firstEventId !== ticket.eventId) {
+          isSingleEvent = false;
         }
 
         if (ticket.quota < item.qty) {
           throw new Error(`Insufficient quota for ticket id ${item.ticketId}`);
         }
 
-        const subTotal = Number(ticket.price) * item.qty;
-        totalPrice += subTotal;
+        const subTotalOriginal = Number(ticket.price) * item.qty;
+        let itemDiscount = 0;
+
+        if (item.promotionId) {
+          const promotion = await tx.promotion.findUnique({
+            where: { id: item.promotionId },
+            include: { events: true },
+          });
+
+          if (!promotion) {
+            throw new Error(`Invalid promotion code for ticket ${item.ticketId}`);
+          }
+
+          const isEventEligible = promotion.events.some(
+            (pe: any) => pe.eventId === ticket.eventId,
+          );
+
+          if (!isEventEligible) {
+            throw new Error(`Promotion ${promotion.name} is not applicable for this event`);
+          }
+
+          if (
+            promotion.startDate > new Date() ||
+            promotion.endDate < new Date()
+          ) {
+            throw new Error(`Promotion ${promotion.name} is expired or not yet active`);
+          }
+
+          if (promotion.maxUsage !== null) {
+            const usageCount = await tx.transaction.count({
+              where: { promotionId: promotion.id },
+            });
+            const usageCountItem = await tx.transactionItem.count({
+              where: { promotionId: promotion.id },
+            });
+            if ((usageCount + usageCountItem) >= promotion.maxUsage) {
+              throw new Error(`Promotion ${promotion.name} usage limit reached`);
+            }
+          }
+
+          if (promotion.discountPercentage) {
+            itemDiscount = (subTotalOriginal * Number(promotion.discountPercentage)) / 100;
+          } else if (promotion.discountAmount) {
+            itemDiscount = Number(promotion.discountAmount);
+          }
+        }
+
+        totalPrice += subTotalOriginal;
+        totalDiscount += itemDiscount;
 
         orderItems.push({
           ticketTypeId: item.ticketId,
+          promotionId: item.promotionId,
           qty: item.qty,
           pricePerUnit: Number(ticket.price),
-          subTotal: subTotal,
+          subTotal: subTotalOriginal - itemDiscount,
         });
 
         await this.ticketsRepository.updateTicketQuota(
@@ -69,54 +123,30 @@ export class OrdersService {
         );
       }
 
-      if (!eventId) {
-        throw new Error("No valid event found for tickets");
-      }
-
-      let promoDiscount = 0;
-      if (data.promotionId) {
-        const promotion = await tx.promotion.findUnique({
-          where: { id: data.promotionId },
-          include: { events: true },
-        });
-
-        if (!promotion) {
-          throw new Error("Invalid promotion code");
-        }
-
-        const isEventEligible = promotion.events.some(
-          (pe: any) => pe.eventId === eventId,
+      if (data.pointUsed && data.pointUsed > 0) {
+        await this.userPointRepository.usePoints(
+          data.customerId,
+          data.pointUsed,
+          tx,
         );
-
-        if (!isEventEligible) {
-          throw new Error("Promotion is not applicable for this event");
-        }
-
-        if (
-          promotion.startDate > new Date() ||
-          promotion.endDate < new Date()
-        ) {
-          throw new Error("Promotion is expired or not yet active");
-        }
-
-        if (promotion.maxUsage !== null) {
-          const usageCount = await tx.transaction.count({
-            where: { promotionId: promotion.id },
-          });
-          if (usageCount >= promotion.maxUsage) {
-            throw new Error("Promotion usage limit reached");
-          }
-        }
-
-        if (promotion.discountPercentage) {
-          promoDiscount =
-            (totalPrice * Number(promotion.discountPercentage)) / 100;
-        } else if (promotion.discountAmount) {
-          promoDiscount = Number(promotion.discountAmount);
-        }
       }
 
-      let finalPrice = totalPrice - promoDiscount - (data.pointUsed || 0);
+      // Apply user coupon (referral voucher) — validate and mark used
+      let couponDiscount = 0;
+      if (data.voucherId) {
+        const coupon = await tx.userCoupon.findUnique({
+          where: { id: data.voucherId },
+        });
+        if (!coupon) throw new Error("Coupon not found");
+        if (coupon.isUsed) throw new Error("Coupon has already been used");
+        if (new Date(coupon.expiresAt) < new Date()) throw new Error("Coupon has expired");
+        if (coupon.userId !== data.customerId) throw new Error("Coupon does not belong to this user");
+
+        couponDiscount = ((totalPrice - totalDiscount - (data.pointUsed || 0)) * Number(coupon.discountPercentage)) / 100;
+        await this.userCouponRepository.useCouponInTx(data.voucherId, tx);
+      }
+
+      let finalPrice = totalPrice - totalDiscount - (data.pointUsed || 0) - couponDiscount;
 
       if (finalPrice < 0) {
         finalPrice = 0;
@@ -146,9 +176,10 @@ export class OrdersService {
       const orderData = {
         invoice,
         totalPrice: finalPrice,
+        totalOriginalPrice: totalPrice,
         pointUsed: data.pointUsed || 0,
         customerId: data.customerId,
-        eventId,
+        eventId: isSingleEvent ? firstEventId : null,
         paymentMethod: data.paymentMethod,
         voucherId: data.voucherId,
         promotionId: data.promotionId,

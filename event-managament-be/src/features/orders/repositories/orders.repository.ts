@@ -4,9 +4,10 @@ import { Prisma } from "@prisma/client";
 export interface IOrdersRepositoryProps {
   invoice: string;
   totalPrice: number;
+  totalOriginalPrice: number;
   pointUsed: number;
   customerId: string;
-  eventId: string;
+  eventId?: string | null;
   paymentMethod: string;
   voucherId?: string;
   promotionId?: string;
@@ -16,6 +17,7 @@ export interface IOrdersRepositoryProps {
     subTotal: number;
     pricePerUnit?: number;
     totalPrice?: number;
+    promotionId?: string;
   }[];
   snapToken?: string;
   originalPrice: number;
@@ -31,7 +33,7 @@ export class OrdersRepository {
       data: {
         invoice: data.invoice,
         totalFinalPrice: data.totalPrice,
-        totalOriginalPrice: data.originalPrice,
+        totalOriginalPrice: data.totalOriginalPrice,
         pointsUsed: data.pointUsed,
         userId: data.customerId,
         eventId: data.eventId,
@@ -42,6 +44,7 @@ export class OrdersRepository {
         items: {
           create: data.items.map((item) => ({
             ticketType: { connect: { id: item.ticketTypeId } },
+            promotion: item.promotionId ? { connect: { id: item.promotionId } } : undefined,
             quantity: item.qty,
             totalPrice: item.subTotal,
             pricePerUnit:
@@ -78,7 +81,16 @@ export class OrdersRepository {
           event: true,
           items: {
             include: {
-              ticketType: true,
+              ticketType: {
+                include: {
+                  event: {
+                    include: {
+                      organizer: true
+                    }
+                  }
+                }
+              },
+              promotion: true,
             },
           },
         },
@@ -103,9 +115,19 @@ export class OrdersRepository {
           },
         },
         promotion: true,
+        userCoupon: true,
         items: {
           include: {
-            ticketType: true,
+            ticketType: {
+              include: {
+                event: {
+                  include: {
+                    organizer: true
+                  }
+                }
+              }
+            },
+            promotion: true,
           },
         },
       },

@@ -1,4 +1,5 @@
-import React, { useRef, useCallback, useEffect } from "react";
+import React, { useRef, useCallback, useEffect, useState } from "react";
+import { Snackbar, Alert } from "@mui/material";
 import { HistoryIcon } from "./ReferralIcons";
 import { ActivityIcon } from "./ActivityIcon";
 import { LoadingSpinner } from "./LoadingSkeleton";
@@ -21,6 +22,7 @@ const RecentActivityCard: React.FC<RecentActivityCardProps> = ({
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const displayedActivities = activities.slice(0, displayCount);
+  const [snackText, setSnackText] = useState("");
 
   const handleScroll = useCallback(() => {
     if (!scrollRef.current || isLoading || !hasMore) return;
@@ -60,16 +62,35 @@ const RecentActivityCard: React.FC<RecentActivityCardProps> = ({
             key={activity.id}
             className="flex items-center justify-between p-2 md:p-4 border-2 border-gray-200 dark:border-zinc-800 bg-white dark:bg-black hover:bg-gray-100 dark:hover:bg-zinc-900 hover:shadow-[1px_1px_0px_0px_#ccc] dark:hover:shadow-[1px_1px_0px_0px_#333333] transition-all group cursor-default"
           >
-            <div className="flex items-center gap-2 md:gap-4">
-              <div className={`size-8 md:size-12 border-2 border-gray-300 dark:border-zinc-700 ${activity.iconColor} ${activity.type === 'referral' ? 'text-black' : 'text-white'} flex items-center justify-center group-hover:rotate-12 transition-transform shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[1px_1px_0px_0px_rgba(255,255,255,0.2)]`}>
+            <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-1 mr-2">
+              <div className={`size-8 md:size-12 shrink-0 border-2 flex items-center justify-center group-hover:rotate-12 transition-transform shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[1px_1px_0px_0px_rgba(255,255,255,0.2)] ${
+                activity.type === 'point_usage'
+                  ? 'bg-red-100 dark:bg-red-950 border-red-400 dark:border-red-600 text-red-500 dark:text-red-400'
+                  : activity.type === 'referral'
+                  ? 'bg-green-100 dark:bg-green-950 border-green-400 dark:border-green-600 text-green-600 dark:text-green-400'
+                  : activity.type === 'coupon'
+                  ? 'bg-pink-100 dark:bg-pink-950 border-pink-400 dark:border-pink-600 text-pink-500 dark:text-pink-400'
+                  : 'bg-gray-100 dark:bg-zinc-900 border-gray-300 dark:border-zinc-700 text-gray-600 dark:text-gray-400'
+              }`}>
                 <ActivityIcon type={activity.type} />
               </div>
-              <div className="min-w-0">
-                <p className="font-black text-sm md:text-lg uppercase leading-tight text-gray-900 dark:text-white truncate">{activity.title}</p>
-                <p className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wide truncate">{activity.description}</p>
+              <div className="min-w-0 flex-1">
+                <p className="font-black text-sm md:text-lg uppercase leading-tight text-gray-900 dark:text-white truncate">
+                  {activity.title}
+                </p>
+                <p 
+                  onClick={() => setSnackText(activity.description)}
+                  className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wide truncate cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 active:text-[#a855f7] transition-colors"
+                >
+                  {activity.description}
+                </p>
               </div>
             </div>
-            {activity.points > 0 ? (
+            {activity.type === "point_usage" ? (
+              <span className="font-black text-sm md:text-xl shrink-0 bg-white dark:bg-black text-red-500 dark:text-red-400 border-2 border-red-400 dark:border-red-500 transform rotate-1 px-1.5 md:px-2 py-0.5 md:py-1">
+                -{Math.abs(activity.points).toLocaleString()} pts
+              </span>
+            ) : activity.points > 0 ? (
               <span className={`font-black text-sm md:text-xl shrink-0 ${activity.type === 'referral' ? 'bg-white dark:bg-black text-[#00bcd4] dark:text-[#00FFFF] border-2 border-[#00bcd4] dark:border-[#00FFFF] transform -rotate-2 shadow-[0_0_8px_rgba(6,182,212,0.4)]' : 'text-gray-900 dark:text-white bg-gray-100 dark:bg-zinc-900 border-2 border-gray-300 dark:border-zinc-700'} px-1.5 md:px-2 py-0.5 md:py-1`}>
                 +{activity.points.toLocaleString()}
               </span>
@@ -85,6 +106,22 @@ const RecentActivityCard: React.FC<RecentActivityCardProps> = ({
           <p className="text-center text-xs text-gray-500 py-2">No more activities</p>
         )}
       </div>
+
+      <Snackbar
+        open={!!snackText}
+        autoHideDuration={3000}
+        onClose={() => setSnackText("")}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setSnackText("")}
+          severity="info"
+          variant="filled"
+          sx={{ borderRadius: 0, fontWeight: 900, textTransform: "uppercase", fontSize: "0.7rem", letterSpacing: "0.05em" }}
+        >
+          {snackText}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
