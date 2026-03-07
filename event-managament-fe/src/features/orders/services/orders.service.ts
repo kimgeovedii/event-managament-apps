@@ -1,4 +1,5 @@
 import apiFetch from "@/services/apiFetch";
+import { ordersRepository } from "../repositories/orders.repository";
 import {
   CreateOrderPayload,
   Order,
@@ -12,18 +13,19 @@ export const ordersService = {
     return data;
   },
 
-  getOrders: async (params?: {
-    page?: number;
-    limit?: number;
-    [key: string]: any;
-  }): Promise<OrdersResponse> => {
-    const { data } = await apiFetch.get<OrdersResponse>("/orders", { params });
-    return data;
+  getOrders: async (
+    params?: {
+      page?: number;
+      limit?: number;
+      [key: string]: any;
+    },
+    token?: string,
+  ): Promise<OrdersResponse> => {
+    return ordersRepository.getOrders(params, token);
   },
 
-  getOrderById: async (id: string): Promise<Order> => {
-    const { data } = await apiFetch.get<Order>(`/orders/${id}`);
-    return data;
+  getOrderById: async (id: string, token?: string): Promise<Order> => {
+    return ordersRepository.getOrderById(id, token);
   },
 
   payOrder: async (id: string, payload: PayOrderPayload): Promise<Order> => {
