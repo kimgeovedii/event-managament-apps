@@ -14,6 +14,7 @@ export interface OrderItem {
     event?: {
       id: string;
       name: string;
+      endDate?: string;
       organizerId: string;
       organizer?: {
         id: string;
