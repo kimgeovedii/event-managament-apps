@@ -203,7 +203,7 @@ const OrderDetail: React.FC<IOrderDetailProps> = ({
                                   sx={{
                                     py: 0.5,
                                     px: 1.5,
-                                    fontSize: "0.6rem",
+                                    fontSize: "0.8rem",
                                     fontWeight: 900,
                                     textTransform: "uppercase",
                                     letterSpacing: "0.05em",
@@ -247,7 +247,7 @@ const OrderDetail: React.FC<IOrderDetailProps> = ({
             <Divider className="!border-black dark:!border-neon-magenta !border-[1.5px] mb-6" />
 
             <Box
-              sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 4 }}
+              sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 4, mt: 2 }}
             >
               <Box display="flex" justifyContent="space-between">
                 <Typography className="text-gray-500 dark:text-gray-400 font-bold uppercase text-[8px] md:text-xs">
@@ -294,13 +294,9 @@ const OrderDetail: React.FC<IOrderDetailProps> = ({
                     className="text-neon-cyan"
                   >
                     <Typography className="font-bold uppercase text-[8px] md:text-xs">
-                      Promo: {promo.name}
-                      <span className="ml-1 font-mono text-[7px] md:text-[10px] opacity-70 lowercase">
-                        ({promo.code}
-                        {promo.discountPercentage ? ` · ${Number(promo.discountPercentage)}%` : ""})
-                      </span>
+                      Discount: {promo.code} {promo.discountPercentage ? ` · ${Number(promo.discountPercentage)}%` : ""}
                     </Typography>
-                    <Typography className="font-black text-[8px] md:text-xs text-neon-cyan">
+                    <Typography className="font-black text-[8px] md:text-xs text-neon-cyan shadow-neon-cyan">
                       - IDR {promo.totalSaved.toLocaleString("id-ID")}
                     </Typography>
                   </Box>
