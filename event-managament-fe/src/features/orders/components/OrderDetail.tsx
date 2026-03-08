@@ -10,7 +10,6 @@ import {
   Typography,
 } from "@mui/material";
 import { format } from "date-fns";
-import { useUploadPaymentProof } from "../hooks/useOrders";
 import ReviewModal from "@/features/reviews/components/ReviewModal";
 import { groupOrderItemsByOrganizer } from "../utils/groupOrders";
 
@@ -21,10 +20,7 @@ interface IOrderDetailProps {
   isOrganizerView?: boolean;
 }
 
-const getStatusColor = (status: string, hasProof: boolean = false) => {
-  if (status === "PENDING" && hasProof) {
-    return "bg-neon-cyan text-black";
-  }
+const getStatusColor = (status: string) => {
   switch (status) {
     case "PAID":
       return "bg-neon-cyan text-black";
@@ -45,8 +41,6 @@ const OrderDetail: React.FC<IOrderDetailProps> = ({
   onPay,
   isOrganizerView = false,
 }) => {
-  const uploadProofMutation = useUploadPaymentProof();
-  const [proofFile, setProofFile] = useState<File | null>(null);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
 
   // Calculate total discount from vouchers/coupons
@@ -56,16 +50,6 @@ const OrderDetail: React.FC<IOrderDetailProps> = ({
     const points = Number(order.pointsUsed) || 0;
     return Math.max(0, original - final - points);
   }, [order]);
-
-  const handleUploadProof = async () => {
-    if (!proofFile) return;
-    try {
-      await uploadProofMutation.mutateAsync({ id: order.id, file: proofFile });
-      setProofFile(null);
-    } catch (error: any) {
-      alert(error.message || "Failed to upload proof");
-    }
-  };
 
   return (
     <Box
@@ -85,8 +69,11 @@ const OrderDetail: React.FC<IOrderDetailProps> = ({
       >
         <Box>
           <Typography className="font-display font-black uppercase tracking-tighter text-base md:text-3xl text-black dark:text-white mb-1 md:mb-2">
-            Invoice:{" "}
-            <Box component="span" className="text-neon-magenta select-all drop-shadow-[0_0_5px_rgba(255,0,229,0.3)]">
+            Order Number:{" "}
+            <Box
+              component="span"
+              className="text-neon-magenta select-all drop-shadow-[0_0_5px_rgba(255,0,229,0.3)]"
+            >
               {order.invoice}
             </Box>
           </Typography>
@@ -106,11 +93,9 @@ const OrderDetail: React.FC<IOrderDetailProps> = ({
           </Typography>
           <Box
             component="span"
-            className={`px-3 md:px-4 py-1.5 font-black text-[8px] md:text-xs uppercase tracking-widest shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(0,240,255,0.4)] ${getStatusColor(order.status, !!order.paymentProofUrl)}`}
+            className={`px-3 md:px-4 py-1.5 font-black text-[8px] md:text-xs uppercase tracking-widest shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(0,240,255,0.4)] ${getStatusColor(order.status)}`}
           >
-            {order.status === "PENDING" && order.paymentProofUrl 
-              ? "AWAITING VALIDATION" 
-              : order.status}
+            {order.status}
           </Box>
         </Box>
       </Box>
@@ -122,7 +107,12 @@ const OrderDetail: React.FC<IOrderDetailProps> = ({
           className="brutalist-card border-[3px] !border-black dark:!border-neon-cyan dark:shadow-[8px_8px_0_0_rgba(0,240,255,0.4)] !bg-white dark:!bg-[#0a0a0a]"
           sx={{ borderRadius: 0 }}
         >
-          <CardContent sx={{ p: { xs: 2, md: 4 }, "&:last-child": { pb: { xs: 2, md: 4 } } }}>
+          <CardContent
+            sx={{
+              p: { xs: 2, md: 4 },
+              "&:last-child": { pb: { xs: 2, md: 4 } },
+            }}
+          >
             <Typography
               variant="h5"
               className="font-display font-black uppercase tracking-tighter mb-4 text-black dark:text-white text-base md:text-2xl"
@@ -133,42 +123,77 @@ const OrderDetail: React.FC<IOrderDetailProps> = ({
 
             <Box sx={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {groupOrderItemsByOrganizer(order.items).map((group) => (
-                <Box key={group.organizerId} sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                <Box
+                  key={group.organizerId}
+                  sx={{ display: "flex", flexDirection: "column", gap: 3 }}
+                >
                   <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Box sx={{ height: "2px", flex: 1, backgroundColor: "rgba(0,0,0,0.1)", dark: { backgroundColor: "rgba(255,255,255,0.1)" } }} className="bg-black/10 dark:bg-white/10" />
+                    <Box
+                      sx={{
+                        height: "2px",
+                        flex: 1,
+                        backgroundColor: "rgba(0,0,0,0.1)",
+                        dark: { backgroundColor: "rgba(255,255,255,0.1)" },
+                      }}
+                      className="bg-black/10 dark:bg-white/10"
+                    />
                     <Typography className="font-display font-black uppercase text-[10px] tracking-widest text-neon-purple dark:text-neon-cyan whitespace-nowrap">
                       EO: {group.organizerName}
                     </Typography>
-                    <Box sx={{ height: "2px", flex: 1, backgroundColor: "rgba(0,0,0,0.1)", dark: { backgroundColor: "rgba(255,255,255,0.1)" } }} className="bg-black/10 dark:bg-white/10" />
+                    <Box
+                      sx={{
+                        height: "2px",
+                        flex: 1,
+                        backgroundColor: "rgba(0,0,0,0.1)",
+                        dark: { backgroundColor: "rgba(255,255,255,0.1)" },
+                      }}
+                      className="bg-black/10 dark:bg-white/10"
+                    />
                   </Box>
 
                   {group.eventGroups.map((eg) => (
-                    <Box key={eg.eventId} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                    <Box
+                      key={eg.eventId}
+                      sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+                    >
                       {/* Event Name Header */}
                       <Typography className="font-black uppercase text-[9px] md:text-xs tracking-widest text-gray-600 dark:text-gray-300 pl-1 border-l-4 border-neon-purple dark:border-neon-cyan ml-1">
                         🎤 {eg.eventName}
                       </Typography>
 
-                      <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pl: 1 }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 2,
+                          pl: 1,
+                        }}
+                      >
                         {eg.items.map((item) => (
                           <Box
                             key={item.id}
                             className="border-2 border-dashed !border-gray-300 dark:!border-neon-purple p-4"
-                            sx={{ 
-                              display: "flex", 
+                            sx={{
+                              display: "flex",
                               flexDirection: { xs: "column", sm: "row" },
-                              gap: 2 
+                              gap: 2,
                             }}
                           >
                             <Box
-                              sx={{ flex: 1, display: "flex", flexDirection: "column" }}
+                              sx={{
+                                flex: 1,
+                                display: "flex",
+                                flexDirection: "column",
+                              }}
                             >
                               <Typography className="text-neon-purple dark:text-neon-cyan font-black uppercase text-[8px] md:text-[10px] tracking-widest">
                                 {item.ticketType.name}
                               </Typography>
                               <Typography className="text-gray-500 dark:text-gray-400 font-bold mt-1 md:mt-2 text-[8px] md:text-xs">
                                 Price: IDR{" "}
-                                {Number(item.ticketType.price).toLocaleString("id-ID")}
+                                {Number(item.ticketType.price).toLocaleString(
+                                  "id-ID",
+                                )}
                               </Typography>
                             </Box>
 
@@ -180,7 +205,10 @@ const OrderDetail: React.FC<IOrderDetailProps> = ({
                                 justifyContent: "space-between",
                                 alignItems: { xs: "center", sm: "flex-end" },
                                 pt: { xs: 2, sm: 0 },
-                                borderTop: { xs: "1px dashed #eee", sm: "none" },
+                                borderTop: {
+                                  xs: "1px dashed #eee",
+                                  sm: "none",
+                                },
                               }}
                               className="dark:!border-t-neon-cyan/50 sm:dark:!border-t-0"
                             >
@@ -191,35 +219,40 @@ const OrderDetail: React.FC<IOrderDetailProps> = ({
                                 <Typography className="font-display font-black text-sm md:text-lg text-black dark:text-neon-cyan sm:mt-1">
                                   IDR{" "}
                                   {(
-                                    Number(item.ticketType.price) * item.quantity
+                                    Number(item.ticketType.price) *
+                                    item.quantity
                                   ).toLocaleString("id-ID")}
                                 </Typography>
                               </Box>
-                              {order.status === "PAID" && !isOrganizerView && (
+                              {order.status === "PAID" &&
+                                !isOrganizerView &&
+                                item.ticketType.event?.endDate &&
+                                new Date() >
+                                  new Date(item.ticketType.event.endDate) && (
                                   <Button
-                                  size="small"
-                                  onClick={() => setIsReviewOpen(true)}
-                                  className="bg-neon-magenta text-white sm:mt-4 brutalist-button hover:shadow-neon-pink"
-                                  sx={{
-                                    py: 0.5,
-                                    px: 1.5,
-                                    fontSize: "0.6rem",
-                                    fontWeight: 900,
-                                    textTransform: "uppercase",
-                                    letterSpacing: "0.05em",
-                                    boxShadow: "3px 3px 0 0 #000",
-                                    border: "2px solid black",
-                                    borderRadius: 0,
-                                    "&:hover": {
-                                      backgroundColor: "#ff008a",
-                                      transform: "translate(-2px, -2px)",
-                                      color: "white",
-                                    },
-                                  }}
-                                >
-                                  Review Vibe
-                                </Button>
-                              )}
+                                    size="small"
+                                    onClick={() => setIsReviewOpen(true)}
+                                    className="bg-neon-magenta text-white sm:mt-4 brutalist-button hover:shadow-neon-pink"
+                                    sx={{
+                                      py: 0.5,
+                                      px: 1.5,
+                                      fontSize: "0.8rem",
+                                      fontWeight: 900,
+                                      textTransform: "uppercase",
+                                      letterSpacing: "0.05em",
+                                      boxShadow: "3px 3px 0 0 #000",
+                                      border: "2px solid black",
+                                      borderRadius: 0,
+                                      "&:hover": {
+                                        backgroundColor: "#ff008a",
+                                        transform: "translate(-2px, -2px)",
+                                        color: "white",
+                                      },
+                                    }}
+                                  >
+                                    Review Vibe
+                                  </Button>
+                                )}
                             </Box>
                           </Box>
                         ))}
@@ -237,7 +270,12 @@ const OrderDetail: React.FC<IOrderDetailProps> = ({
           className="brutalist-card border-[3px] !border-black dark:!border-neon-magenta dark:shadow-[8px_8px_0_0_rgba(255,0,229,0.4)] !bg-white dark:!bg-[#0a0a0a]"
           sx={{ borderRadius: 0 }}
         >
-          <CardContent sx={{ p: { xs: 2, md: 4 }, "&:last-child": { pb: { xs: 2, md: 4 } } }}>
+          <CardContent
+            sx={{
+              p: { xs: 2, md: 4 },
+              "&:last-child": { pb: { xs: 2, md: 4 } },
+            }}
+          >
             <Typography
               variant="h5"
               className="font-display font-black uppercase tracking-tighter mb-4 text-black dark:text-white text-base md:text-2xl"
@@ -247,7 +285,13 @@ const OrderDetail: React.FC<IOrderDetailProps> = ({
             <Divider className="!border-black dark:!border-neon-magenta !border-[1.5px] mb-6" />
 
             <Box
-              sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 4 }}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                mb: 4,
+                mt: 2,
+              }}
             >
               <Box display="flex" justifyContent="space-between">
                 <Typography className="text-gray-500 dark:text-gray-400 font-bold uppercase text-[8px] md:text-xs">
@@ -264,20 +308,32 @@ const OrderDetail: React.FC<IOrderDetailProps> = ({
                   Original Total
                 </Typography>
                 <Typography className="font-black text-[8px] md:text-xs text-black dark:text-white">
-                  IDR{" "}
-                  {Number(order.totalOriginalPrice).toLocaleString("id-ID")}
+                  IDR {Number(order.totalOriginalPrice).toLocaleString("id-ID")}
                 </Typography>
               </Box>
-              
+
               {/* Event Promotions (from items) — show actual IDR discount */}
               {(() => {
                 // Calculate promo discount per promotion by comparing item original vs actual
-                const promoMap = new Map<string, { name: string; code: string; discountPercentage?: number | null; discountAmount?: number | null; totalSaved: number }>();
+                const promoMap = new Map<
+                  string,
+                  {
+                    name: string;
+                    code: string;
+                    discountPercentage?: number | null;
+                    discountAmount?: number | null;
+                    totalSaved: number;
+                  }
+                >();
                 order.items.forEach((item) => {
                   if (item.promotion) {
-                    const originalItemPrice = Number(item.pricePerUnit) * item.quantity;
+                    const originalItemPrice =
+                      Number(item.pricePerUnit) * item.quantity;
                     const actualItemPrice = Number(item.totalPrice);
-                    const saved = Math.max(0, originalItemPrice - actualItemPrice);
+                    const saved = Math.max(
+                      0,
+                      originalItemPrice - actualItemPrice,
+                    );
                     const existing = promoMap.get(item.promotion.id);
                     promoMap.set(item.promotion.id, {
                       ...item.promotion,
@@ -294,13 +350,12 @@ const OrderDetail: React.FC<IOrderDetailProps> = ({
                     className="text-neon-cyan"
                   >
                     <Typography className="font-bold uppercase text-[8px] md:text-xs">
-                      Promo: {promo.name}
-                      <span className="ml-1 font-mono text-[7px] md:text-[10px] opacity-70 lowercase">
-                        ({promo.code}
-                        {promo.discountPercentage ? ` · ${Number(promo.discountPercentage)}%` : ""})
-                      </span>
+                      Discount: {promo.code}{" "}
+                      {promo.discountPercentage
+                        ? ` · ${Number(promo.discountPercentage)}%`
+                        : ""}
                     </Typography>
-                    <Typography className="font-black text-[8px] md:text-xs text-neon-cyan">
+                    <Typography className="font-black text-[8px] md:text-xs text-neon-cyan shadow-neon-cyan">
                       - IDR {promo.totalSaved.toLocaleString("id-ID")}
                     </Typography>
                   </Box>
@@ -324,97 +379,53 @@ const OrderDetail: React.FC<IOrderDetailProps> = ({
               )}
 
               {/* Referral Coupon — compute actual IDR saved */}
-              {order.userCoupon && (() => {
-                // couponDiscount = original - promoDiscount - points - final
-                const original = Number(order.totalOriginalPrice) || 0;
-                const final = Number(order.totalFinalPrice) || 0;
-                const points = Number(order.pointsUsed) || 0;
-                // Promo discount from items
-                let promoDisc = 0;
-                order.items.forEach((item) => {
-                  if (item.promotion) {
-                    promoDisc += Math.max(0, Number(item.pricePerUnit) * item.quantity - Number(item.totalPrice));
-                  }
-                });
-                const couponSaved = Math.max(0, original - promoDisc - points - final);
-                return (
-                  <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    sx={{ color: "#FF00FF" }}
-                  >
-                    <Typography className="font-bold uppercase text-[8px] md:text-xs" sx={{ color: "#FF00FF" }}>
-                      Referral Coupon
-                      <span className="ml-1 font-mono text-[7px] md:text-[10px] opacity-70 lowercase">
-                        ({order.userCoupon.code} · {Number(order.userCoupon.discountPercentage)}%)
-                      </span>
-                    </Typography>
-                    <Typography className="font-black text-[8px] md:text-xs" sx={{ color: "#FF00FF" }}>
-                      - IDR {couponSaved.toLocaleString("id-ID")}
-                    </Typography>
-                  </Box>
-                );
-              })()}
+              {order.userCoupon &&
+                (() => {
+                  // couponDiscount = original - promoDiscount - points - final
+                  const original = Number(order.totalOriginalPrice) || 0;
+                  const final = Number(order.totalFinalPrice) || 0;
+                  const points = Number(order.pointsUsed) || 0;
+                  // Promo discount from items
+                  let promoDisc = 0;
+                  order.items.forEach((item) => {
+                    if (item.promotion) {
+                      promoDisc += Math.max(
+                        0,
+                        Number(item.pricePerUnit) * item.quantity -
+                          Number(item.totalPrice),
+                      );
+                    }
+                  });
+                  const couponSaved = Math.max(
+                    0,
+                    original - promoDisc - points - final,
+                  );
+                  return (
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      sx={{ color: "#FF00FF" }}
+                    >
+                      <Typography
+                        className="font-bold uppercase text-[8px] md:text-xs"
+                        sx={{ color: "#FF00FF" }}
+                      >
+                        Referral Coupon
+                        <span className="ml-1 font-mono text-[7px] md:text-[10px] opacity-70 lowercase">
+                          ({order.userCoupon.code} ·{" "}
+                          {Number(order.userCoupon.discountPercentage)}%)
+                        </span>
+                      </Typography>
+                      <Typography
+                        className="font-black text-[8px] md:text-xs"
+                        sx={{ color: "#FF00FF" }}
+                      >
+                        - IDR {couponSaved.toLocaleString("id-ID")}
+                      </Typography>
+                    </Box>
+                  );
+                })()}
             </Box>
-
-            {order.paymentProofUrl ? (
-              <Box className="mb-6">
-                <Typography className="text-gray-500 dark:text-gray-400 font-bold uppercase text-[8px] md:text-xs mb-2 text-center">
-                  Payment Proof
-                </Typography>
-                <Box className="border-2 !border-black dark:!border-neon-cyan p-1 md:p-2 !bg-gray-50 dark:!bg-[#111] flex justify-center shadow-[4px_4px_0_0_#000] dark:shadow-[4px_4px_0_0_#00f0ff]">
-                  <img
-                    src={order.paymentProofUrl}
-                    alt="Payment Proof"
-                    className="w-full h-auto max-h-64 object-contain filter grayscale hover:grayscale-0 transition-all duration-500"
-                  />
-                </Box>
-              </Box>
-            ) : (
-              order.status === "PENDING" &&
-              !isOrganizerView && (
-                <Box className="mb-6 border-4 border-dashed !border-black dark:!border-neon-purple p-3 md:p-4 bg-neon-purple/5 dark:!bg-[#111]">
-                  <Typography className="font-display font-black uppercase text-[10px] md:text-xs mb-3 text-black dark:!text-neon-cyan text-center tracking-widest">
-                    Upload Proof
-                  </Typography>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      if (e.target.files?.[0]) {
-                        setProofFile(e.target.files[0]);
-                      }
-                    }}
-                    className="w-full mb-4 text-[8px] md:text-[10px] font-bold p-1 md:p-2 file:mr-2 md:file:mr-4 file:py-1 file:px-2 md:file:py-1.5 md:file:px-3 file:border-2 file:!border-black dark:file:!border-neon-cyan file:font-black file:!bg-neon-cyan dark:file:!bg-[#111] file:!text-black dark:file:!text-neon-cyan hover:file:!bg-black hover:dark:file:!bg-neon-cyan hover:file:!text-neon-cyan hover:dark:file:!text-black transition-colors !text-black dark:!text-white"
-                  />
-                  <Button
-                    fullWidth
-                    disabled={!proofFile || uploadProofMutation.isPending}
-                    onClick={handleUploadProof}
-                    className="border-2 !border-black dark:!border-neon-cyan bg-black text-white dark:bg-[#111] dark:!text-neon-cyan brutalist-button"
-                    sx={{
-                      py: 1,
-                      fontSize: { xs: "0.6rem", md: "0.875rem" },
-                      fontWeight: 900,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.1em",
-                      borderRadius: 0,
-                      "&:hover": {
-                        transform: "translate(-2px, -2px)",
-                        boxShadow: "4px 4px 0 0 #00F0FF",
-                      },
-                      "&.Mui-disabled": {
-                        opacity: 0.5,
-                      },
-                    }}
-                  >
-                    {uploadProofMutation.isPending
-                      ? "Hacking..."
-                      : "Submit Vibe"}
-                  </Button>
-                </Box>
-              )
-            )}
 
             <Divider className="!border-black dark:!border-neon-magenta border-t-2 border-dashed mb-6" />
 
@@ -456,20 +467,7 @@ const OrderDetail: React.FC<IOrderDetailProps> = ({
                 {isPaying ? "Writing to DB..." : "Confirm Vibe"}
               </Button>
             )}
-            {order.status === "PENDING" &&
-              !isOrganizerView &&
-              order.paymentProofUrl && (
-                <Box className="w-full py-2 md:py-3 bg-neon-cyan/20 dark:bg-neon-cyan/10 text-neon-cyan font-black uppercase tracking-widest text-[8px] md:text-xs text-center border-2 border-neon-cyan shadow-neon/20">
-                  Awaiting Validation
-                </Box>
-              )}
-            {order.status === "PENDING" &&
-              !isOrganizerView &&
-              !order.paymentProofUrl && (
-                <Box className="w-full py-2 md:py-3 bg-neon-magenta/20 dark:bg-neon-magenta/10 text-neon-magenta font-black uppercase tracking-widest text-[8px] md:text-xs text-center border-2 border-neon-magenta shadow-neon-pink/20">
-                  Proof Needed
-                </Box>
-              )}
+            
             {order.status === "PAID" && (
               <Box className="w-full py-2 md:py-3 bg-black dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-[8px] md:text-xs text-center border-4 border-black dark:border-neon-cyan shadow-neon/10">
                 Vibe Secured

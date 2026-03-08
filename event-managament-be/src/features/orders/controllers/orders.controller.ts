@@ -1,5 +1,7 @@
 ﻿import { Request, Response, NextFunction } from "express";
 import { OrdersService } from "../services/orders.service.js";
+import { snap } from "../../../config/midtrans.js";
+import { prisma } from "../../../config/prisma.js";
 
 export class OrdersController {
   private ordersService: OrdersService;
@@ -114,27 +116,55 @@ export class OrdersController {
     }
   };
 
-  public uploadPaymentProof = async (
+  public handleMidtransNotification = async (
     req: Request,
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const orderId = req.params.id as string;
-      const file = req.file;
-
-      if (!file) {
-        res.status(400).send({ message: "No payment proof file uploaded" });
-        return;
-      }
-
-      const result = await this.ordersService.updatePaymentProof(
-        orderId,
-        file.path,
+      const statusResponse = await (snap as any).transaction.notification(
+        req.body,
       );
 
-      res.status(200).send(result);
+      const orderId = statusResponse.order_id;
+      const transactionStatus = statusResponse.transaction_status;
+      const fraudStatus = statusResponse.fraud_status;
+
+      let paymentStatus = "PENDING";
+
+      if (transactionStatus == "capture") {
+        if (fraudStatus == "accept") {
+          paymentStatus = "PAID";
+        }
+      } else if (transactionStatus == "settlement") {
+        paymentStatus = "PAID";
+      } else if (
+        transactionStatus == "cancel" ||
+        transactionStatus == "deny" ||
+        transactionStatus == "expire"
+      ) {
+        paymentStatus = "CANCELED";
+      }
+
+      const transaction = await prisma.transaction.findUnique({
+        where: { invoice: orderId },
+      });
+
+      if (transaction) {
+        if (paymentStatus === "PAID" && transaction.status !== "PAID") {
+          await this.ordersService.pay(transaction.id, {
+            method: statusResponse.payment_type,
+          });
+        } else if (paymentStatus !== transaction.status) {
+          await this.ordersService.update(transaction.id, {
+            status: paymentStatus,
+          });
+        }
+      }
+
+      res.status(200).send("OK");
     } catch (error) {
+      console.error("Webhook Error:", error);
       next(error);
     }
   };

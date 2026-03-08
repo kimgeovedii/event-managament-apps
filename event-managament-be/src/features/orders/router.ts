@@ -3,7 +3,6 @@ import { OrdersController } from "./controllers/orders.controller.js";
 import { verifyToken } from "../../middlewares/verifyToken.js";
 import { requireRole } from "../../middlewares/requireRole.js";
 import { requireOrgRole } from "../../middlewares/requireOrgRole.js";
-import { uploadcloudinaryImage } from "../uploadCloudinary/utils/uploadImage.js";
 
 export class OrdersRouter {
   private router: Router;
@@ -16,6 +15,12 @@ export class OrdersRouter {
   }
 
   private setupRoutes = (): void => {
+    // Midtrans webhook
+    this.router.post(
+      "/midtrans-webhook",
+      this.ordersController.handleMidtransNotification,
+    );
+    
     // All orders routes require authentication
     this.router.use(verifyToken);
 
@@ -53,13 +58,6 @@ export class OrdersRouter {
       requireRole("ORGANIZER"),
       requireOrgRole(["ADMIN", "OWNER"], "order"),
       this.ordersController.processPayment,
-    );
-
-    this.router.patch(
-      "/:id/payment-proof",
-      requireRole("CUSTOMER"),
-      uploadcloudinaryImage("payment_proofs").single("paymentProof"),
-      this.ordersController.uploadPaymentProof,
     );
   };
 
