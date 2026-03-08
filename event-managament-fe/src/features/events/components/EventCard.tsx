@@ -7,12 +7,10 @@ import { Event } from "../types/event.types";
 import { 
   CalendarIcon, 
   MapPinIcon, 
-  ShoppingCartIcon
+  ShoppingCartIcon,
+  NoSymbolIcon
 } from "@heroicons/react/24/outline";
-import { useEventCard } from "../hooks/useEventCard";
-import { useCartStore } from "@/features/cart/store/useCartStore";
-import { useStoreLogin } from "@/features/auth/store/useAuthStore";
-import { useRouter } from "next/navigation";
+import { useEventCardActions, useEventCard } from "../hooks";
 import TicketSelectionModal from "./TicketSelectionModal";
 
 interface EventCardProps {
@@ -35,23 +33,14 @@ const EventCard: React.FC<EventCardProps> = ({ event, onToast }) => {
     imageSrc,
   } = useEventCard(event);
 
-  const { isAuthenticated } = useStoreLogin();
-  const { addItem, isLoading: cartLoading } = useCartStore();
-  const router = useRouter();
-
-  // Local feedback state
-  const [localLoading, setLocalLoading] = React.useState(false);
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
-
-  const handleAddToCart = async () => {
-    if (!isAuthenticated) {
-      if (onToast) onToast("Please log in to add items to cart", "error");
-      setTimeout(() => router.push("/login"), 1500);
-      return;
-    }
-
-    setIsModalOpen(true);
-  };
+  const {
+    cartLoading,
+    localLoading,
+    isModalOpen,
+    handleAddToCart,
+    handleCloseModal,
+    isOwnEvent,
+  } = useEventCardActions({ event, onToast });
 
   return (
     <div
@@ -126,22 +115,26 @@ const EventCard: React.FC<EventCardProps> = ({ event, onToast }) => {
           e.stopPropagation();
           handleAddToCart();
         }}
-        disabled={localLoading || cartLoading}
-        className={`absolute bottom-1.5 right-1.5 md:bottom-3 md:right-3 p-1.5 md:p-2 rounded-md md:rounded-xl backdrop-blur-2xl border border-black/10 dark:border-white/20 transition-all z-20 shadow-xl bg-white/50 dark:bg-white/10 hover:bg-neon-cyan hover:text-black dark:hover:bg-neon-cyan dark:hover:text-black group/btn ${
-          (localLoading || cartLoading) ? "opacity-50 cursor-not-allowed" : "hover:scale-110 active:scale-95"
+        disabled={localLoading || cartLoading || isOwnEvent}
+        className={`absolute bottom-1.5 right-1.5 md:bottom-3 md:right-3 p-1.5 md:p-2 rounded-md md:rounded-xl backdrop-blur-2xl border border-black/10 dark:border-white/20 transition-all z-20 shadow-xl bg-white/50 dark:bg-white/10 group/btn ${
+          (localLoading || cartLoading || isOwnEvent) ? "opacity-50 cursor-not-allowed grayscale" : "hover:bg-neon-cyan hover:text-black dark:hover:bg-neon-cyan dark:hover:text-black hover:scale-110 active:scale-95"
         }`}
-        title="Select Tickets"
+        title={isOwnEvent ? "You cannot purchase your own tickets" : "Select Tickets"}
       >
-        <ShoppingCartIcon className={`w-3.5 h-3.5 md:w-5 md:h-5 text-gray-900 dark:text-white group-hover/btn:text-black transition-colors ${localLoading ? "animate-bounce" : ""}`} strokeWidth={2} />
+        {isOwnEvent ? (
+          <NoSymbolIcon className="w-3.5 h-3.5 md:w-5 md:h-5 text-red-500" strokeWidth={2.5} />
+        ) : (
+          <ShoppingCartIcon className={`w-3.5 h-3.5 md:w-5 md:h-5 text-gray-900 dark:text-white group-hover/btn:text-black transition-colors ${localLoading ? "animate-bounce" : ""}`} strokeWidth={2} />
+        )}
         
         {/* Button Glow Effect */}
-        <div className="absolute inset-0 bg-neon-cyan/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity -z-10"></div>
+        {!isOwnEvent && <div className="absolute inset-0 bg-neon-cyan/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity -z-10"></div>}
       </button>
 
       {/* Ticket Selection Modal */}
       <TicketSelectionModal 
         open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={handleCloseModal}
         event={event}
         onToast={onToast || (() => {})}
       />

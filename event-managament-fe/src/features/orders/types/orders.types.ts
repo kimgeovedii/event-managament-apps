@@ -5,12 +5,30 @@ export interface OrderItem {
   quantity: number;
   pricePerUnit: string | number;
   totalPrice: string | number;
+  promotionId?: string | null;
   ticketType: {
     id: string;
     name: string;
     price: string | number;
     description: string | null;
+    event?: {
+      id: string;
+      name: string;
+      endDate?: string;
+      organizerId: string;
+      organizer?: {
+        id: string;
+        name: string;
+      };
+    };
   };
+  promotion?: {
+    id: string;
+    name: string;
+    code: string;
+    discountPercentage?: number | null;
+    discountAmount?: number | null;
+  } | null;
 }
 
 export interface Order {
@@ -26,6 +44,7 @@ export interface Order {
   status: "PENDING" | "PAID" | "CANCELED" | "REFUNDED";
   paymentMethod: string;
   paymentProofUrl?: string;
+  snapToken?: string;
   transactionDate: string;
   items: OrderItem[];
   user?: {
@@ -38,6 +57,18 @@ export interface Order {
     name: string;
     imageUrl: string | null;
   };
+  promotion?: {
+    id: string;
+    name: string;
+    code: string;
+    discountPercentage?: number | null;
+    discountAmount?: number | null;
+  } | null;
+  userCoupon?: {
+    id: string;
+    code: string;
+    discountPercentage: number;
+  } | null;
 }
 
 export interface CreateOrderPayload {

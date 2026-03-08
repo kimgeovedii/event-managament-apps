@@ -23,7 +23,7 @@ import {
 } from "@mui/material";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useFormik } from "formik";
-import { promotionValidationSchema } from "../schemas/promotions.schemas";
+import { promotionValidationSchema } from "../validations/promotions.schemas";
 
 interface Props {
   isOpen: boolean;
@@ -68,8 +68,10 @@ const PromotionFormModal = ({
       const payload: any = {
         name: values.name,
         code: values.code.toUpperCase(),
-        startDate: new Date(values.startDate).toISOString(),
-        endDate: new Date(values.endDate).toISOString(),
+        // startDate: new Date(values.startDate).toISOString(),
+        // endDate: new Date(values.endDate).toISOString(),
+        startDate: new Date(`${values.startDate}T00:00:00+07:00`).toISOString(),
+        endDate: new Date(`${values.endDate}T23:59:59+07:00`).toISOString(),
       };
 
       if (values.discountType === "percentage") {
@@ -116,8 +118,18 @@ const PromotionFormModal = ({
           discountPercentage: promotion.discountPercentage?.toString() || "",
           discountAmount: promotion.discountAmount?.toString() || "",
           maxUsage: promotion.maxUsage?.toString() || "",
-          startDate: new Date(promotion.startDate).toISOString().split("T")[0],
-          endDate: new Date(promotion.endDate).toISOString().split("T")[0],
+          // startDate: new Date(promotion.startDate).toISOString().split("T")[0],
+          // endDate: new Date(promotion.endDate).toISOString().split("T")[0],
+          startDate: new Date(
+            new Date(promotion.startDate).getTime() + 7 * 60 * 60 * 1000,
+          )
+            .toISOString()
+            .split("T")[0],
+          endDate: new Date(
+            new Date(promotion.endDate).getTime() + 7 * 60 * 60 * 1000,
+          )
+            .toISOString()
+            .split("T")[0],
           eventId: promotion.events?.[0]?.eventId || "",
         });
       }
@@ -132,9 +144,15 @@ const PromotionFormModal = ({
       onClose={onClose}
       maxWidth="sm"
       fullWidth
+      fullScreen={typeof window !== 'undefined' && window.innerWidth < 640} // Approximately 'sm' breakpoint
       slotProps={{
         paper: {
-          sx: { borderRadius: 1, p: 1 },
+          sx: { 
+            borderRadius: { xs: 0, sm: 4 }, 
+            p: { xs: 0, sm: 1 },
+            bgcolor: "background.paper",
+            backgroundImage: "none",
+          },
         },
       }}
     >
@@ -385,7 +403,9 @@ const PromotionFormModal = ({
               borderRadius: 2,
             }}
           >
-            {formik.isSubmitting || isCreating || isUpdating ? "Saving..." : "Save Promotion"}
+            {formik.isSubmitting || isCreating || isUpdating
+              ? "Saving..."
+              : "Save Promotion"}
           </Button>
         </DialogActions>
       </form>

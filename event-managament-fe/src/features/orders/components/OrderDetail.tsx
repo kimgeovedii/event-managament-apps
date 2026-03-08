@@ -10,8 +10,8 @@ import {
   Typography,
 } from "@mui/material";
 import { format } from "date-fns";
-import { useUploadPaymentProof } from "../hooks/useOrders";
 import ReviewModal from "@/features/reviews/components/ReviewModal";
+import { groupOrderItemsByOrganizer } from "../utils/groupOrders";
 
 interface IOrderDetailProps {
   order: Order;
@@ -41,44 +41,43 @@ const OrderDetail: React.FC<IOrderDetailProps> = ({
   onPay,
   isOrganizerView = false,
 }) => {
-  const uploadProofMutation = useUploadPaymentProof();
-  const [proofFile, setProofFile] = useState<File | null>(null);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
 
-  const handleUploadProof = async () => {
-    if (!proofFile) return;
-    try {
-      await uploadProofMutation.mutateAsync({ id: order.id, file: proofFile });
-      setProofFile(null);
-    } catch (error: any) {
-      alert(error.message || "Failed to upload proof");
-    }
-  };
+  // Calculate total discount from vouchers/coupons
+  const totalDiscount = React.useMemo(() => {
+    const original = Number(order.totalOriginalPrice) || 0;
+    const final = Number(order.totalFinalPrice) || 0;
+    const points = Number(order.pointsUsed) || 0;
+    return Math.max(0, original - final - points);
+  }, [order]);
 
   return (
     <Box
-      className="max-w-4xl mx-auto"
-      sx={{ display: "flex", flexDirection: "column", gap: 4 }}
+      className="max-w-2xl mx-auto px-2 sm:px-0"
+      sx={{ display: "flex", flexDirection: "column", gap: { xs: 2, md: 4 } }}
     >
       {/* Header */}
       <Box
-        className="border-b-4 border-black dark:border-white/20 pb-6"
+        className="border-b-4 !border-black dark:!border-neon-cyan pb-6"
         sx={{
           display: "flex",
           flexDirection: { xs: "column", md: "row" },
-          alignItems: { md: "flex-end" },
+          alignItems: { xs: "flex-start", md: "flex-end" },
           justifyContent: "space-between",
           gap: 2,
         }}
       >
         <Box>
-          <Typography className="font-display font-black uppercase tracking-tighter text-3xl text-black dark:text-white mb-2">
-            Invoice:{" "}
-            <Box component="span" className="text-neon-pink select-all">
+          <Typography className="font-display font-black uppercase tracking-tighter text-base md:text-3xl text-black dark:text-white mb-1 md:mb-2">
+            Order Number:{" "}
+            <Box
+              component="span"
+              className="text-neon-magenta select-all drop-shadow-[0_0_5px_rgba(255,0,229,0.3)]"
+            >
               {order.invoice}
             </Box>
           </Typography>
-          <Typography className="text-gray-500 font-bold uppercase tracking-widest text-xs">
+          <Typography className="text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest text-[8px] md:text-xs">
             {format(new Date(order.transactionDate), "dd MMMM yyyy HH:mm")}
           </Typography>
         </Box>
@@ -89,297 +88,433 @@ const OrderDetail: React.FC<IOrderDetailProps> = ({
             alignItems: { xs: "flex-start", md: "flex-end" },
           }}
         >
-          <Typography className="text-gray-500 font-bold uppercase tracking-widest text-[10px] mb-1">
+          <Typography className="text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest text-[8px] md:text-[10px] mb-1">
             Status
           </Typography>
           <Box
             component="span"
-            className={`px-4 py-1.5 font-black text-xs uppercase tracking-widest shadow-[4px_4px_0_0_rgba(0,0,0,1)] ${getStatusColor(order.status)}`}
+            className={`px-3 md:px-4 py-1.5 font-black text-[8px] md:text-xs uppercase tracking-widest shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(0,240,255,0.4)] ${getStatusColor(order.status)}`}
           >
             {order.status}
           </Box>
         </Box>
       </Box>
 
-      <Grid container spacing={4}>
-        {/* Left Column */}
-        <Grid size={{ xs: 12, md: 8 }}>
-          <Card
-            className="border-4 border-black dark:border-white/20 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(0,255,255,0.1)] bg-white dark:bg-[#0a0a0a]"
-            sx={{ borderRadius: 0 }}
+      {/* Main Content - Single Column Mobile First */}
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+        {/* Order Items Card */}
+        <Card
+          className="brutalist-card border-[3px] !border-black dark:!border-neon-cyan dark:shadow-[8px_8px_0_0_rgba(0,240,255,0.4)] !bg-white dark:!bg-[#0a0a0a]"
+          sx={{ borderRadius: 0 }}
+        >
+          <CardContent
+            sx={{
+              p: { xs: 2, md: 4 },
+              "&:last-child": { pb: { xs: 2, md: 4 } },
+            }}
           >
-            <CardContent sx={{ p: 4, "&:last-child": { pb: 4 } }}>
-              <Typography
-                variant="h5"
-                className="font-display font-black uppercase tracking-tighter mb-4 text-black dark:text-white"
-              >
-                Vibes Included
-              </Typography>
-              <Divider className="border-black dark:border-white/20 border-[1.5px] mb-6" />
+            <Typography
+              variant="h5"
+              className="font-display font-black uppercase tracking-tighter mb-4 text-black dark:text-white text-base md:text-2xl"
+            >
+              Vibes Included
+            </Typography>
+            <Divider className="!border-black dark:!border-neon-cyan !border-[1.5px] mb-6" />
 
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                {order.items.map((item) => (
-                  <Box
-                    key={item.id}
-                    className="border-2 border-dashed border-gray-300 dark:border-white/10 p-4"
-                    sx={{ display: "flex", gap: 2 }}
-                  >
-                    <Box
-                      sx={{ flex: 1, display: "flex", flexDirection: "column" }}
-                    >
-                      <Typography className="font-black uppercase text-sm mb-1 text-black dark:text-white">
-                        {order.event?.name}
-                      </Typography>
-                      <Typography className="text-neon-purple dark:text-neon-cyan font-black uppercase text-[10px] tracking-widest">
-                        {item.ticketType.name}
-                      </Typography>
-                      <Typography className="text-gray-500 font-bold mt-2 text-xs">
-                        Price: IDR{" "}
-                        {Number(item.ticketType.price).toLocaleString("id-ID")}
-                      </Typography>
-                    </Box>
-
-                    <Box
-                      sx={{
-                        textAlign: "right",
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "space-between",
-                        alignItems: "flex-end",
-                      }}
-                    >
-                      <Box>
-                        <Typography className="font-black text-sm text-black dark:text-white">
-                          x {item.quantity}
-                        </Typography>
-                        <Typography className="font-display font-black text-lg text-black dark:text-white mt-1">
-                          IDR{" "}
-                          {(
-                            Number(item.ticketType.price) * item.quantity
-                          ).toLocaleString("id-ID")}
-                        </Typography>
-                      </Box>
-                      {order.status === "PAID" && !isOrganizerView && (
-                        <Button
-                          size="medium"
-                          onClick={() => setIsReviewOpen(true)}
-                          className="bg-neon-magenta text-white mt-4"
-                          sx={{
-                            py: 1,
-                            px: 2.5,
-                            fontSize: "0.8rem",
-                            fontWeight: 900,
-                            textTransform: "uppercase",
-                            letterSpacing: "0.05em",
-                            boxShadow: "4px 4px 0 0 #000",
-                            border: "2px solid black",
-                            borderRadius: 0,
-                            "&:hover": {
-                              backgroundColor: "#ff008a",
-                              transform: "translate(-2px, -2px)",
-                              color: "white",
-                            },
-                            ...(theme) =>
-                              theme.palette.mode === "dark" && {
-                                boxShadow: "4px 4px 0 0 rgba(255,255,255,0.2)",
-                              },
-                          }}
-                        >
-                          Leave a Review
-                        </Button>
-                      )}
-                    </Box>
-                  </Box>
-                ))}
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Right Column */}
-        <Grid size={{ xs: 12, md: 4 }}>
-          <Card
-            className="border-4 border-black dark:border-white/20 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(0,255,255,0.1)] bg-white dark:bg-[#0a0a0a]"
-            sx={{ borderRadius: 0 }}
-          >
-            <CardContent sx={{ p: 4, "&:last-child": { pb: 4 } }}>
-              <Typography
-                variant="h5"
-                className="font-display font-black uppercase tracking-tighter mb-4 text-black dark:text-white"
-              >
-                Summary
-              </Typography>
-              <Divider className="border-black dark:border-white/20 border-[1.5px] mb-6" />
-
-              <Box
-                sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 4 }}
-              >
-                <Box display="flex" justifyContent="space-between">
-                  <Typography className="text-gray-500 font-bold uppercase text-xs">
-                    Payment Method
-                  </Typography>
-                  <Typography className="font-black uppercase text-xs text-black dark:text-white">
-                    {order.paymentMethod.replace(/_/g, " ")}
-                  </Typography>
-                </Box>
-                <Box display="flex" justifyContent="space-between">
-                  <Typography className="text-gray-500 font-bold uppercase text-xs">
-                    Original Total
-                  </Typography>
-                  <Typography className="font-black text-xs text-black dark:text-white">
-                    IDR{" "}
-                    {Number(order.totalOriginalPrice).toLocaleString("id-ID")}
-                  </Typography>
-                </Box>
-                {order.pointsUsed > 0 && (
-                  <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    className="text-neon-pink"
-                  >
-                    <Typography className="font-bold uppercase text-xs">
-                      Points Used
-                    </Typography>
-                    <Typography className="font-black text-xs">
-                      - IDR {order.pointsUsed.toLocaleString("id-ID")}
-                    </Typography>
-                  </Box>
-                )}
-              </Box>
-
-              {order.paymentProofUrl ? (
-                <Box className="mb6">
-                  <Typography className="text-gray-500 font-bold uppercase text-xs mb-2">
-                    Payment Proof
-                  </Typography>
-                  <Box className="border-2 border-black dark:border-white/20 p-2 bg-gray-50 dark:bg-gray-900 flex justify-center">
-                    <img
-                      src={order.paymentProofUrl}
-                      alt="Payment Proof"
-                      className="w-full h-auto max-h-64 object-contain"
-                    />
-                  </Box>
-                </Box>
-              ) : (
-                order.status === "PENDING" &&
-                !isOrganizerView && (
-                  <Box className="mb-6 border-4 border-dashed border-black dark:border-white/20 p-4">
-                    <Typography className="font-display font-black uppercase text-sm mb-2 text-black dark:text-white">
-                      Upload Payment Proof
-                    </Typography>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        if (e.target.files?.[0]) {
-                          setProofFile(e.target.files[0]);
-                        }
-                      }}
-                      className="w-full mb-4 text-xs font-bold p-2 file:mr-4 file:py-2 file:px-4 file:border-2 file:border-black file:font-black file:bg-neon-cyan file:text-black hover:file:bg-black hover:file:text-neon-cyan transition-colors dark:text-gray-300"
-                    />
-                    <Button
-                      fullWidth
-                      disabled={!proofFile || uploadProofMutation.isPending}
-                      onClick={handleUploadProof}
-                      className="bg-black text-white dark:bg-white dark:text-black"
-                      sx={{
-                        py: 1.5,
-                        fontWeight: 900,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.1em",
-                        borderRadius: 0,
-                        border: "2px solid",
-                        borderColor: "black",
-                        "&:hover": {
-                          transform: "translate(-2px, -2px)",
-                          boxShadow: "4px 4px 0 0 #ee2b8c",
-                        },
-                        "&.Mui-disabled": {
-                          opacity: 0.5,
-                        },
-                        transition: "all 0.2s",
-                      }}
-                    >
-                      {uploadProofMutation.isPending
-                        ? "Uploading..."
-                        : "Submit Proof"}
-                    </Button>
-                  </Box>
-                )
-              )}
-
-              <Divider className="border-black dark:border-white/20 border-t-2 border-dashed mb-6" />
-
-              <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="flex-end"
-                mb={4}
-              >
-                <Typography className="font-black uppercase text-sm text-black dark:text-white">
-                  Grand Total
-                </Typography>
-                <Typography className="font-display font-black text-2xl text-neon-purple dark:text-neon-cyan tracking-tighter">
-                  IDR {Number(order.totalFinalPrice).toLocaleString("id-ID")}
-                </Typography>
-              </Box>
-
-              {order.status === "PENDING" && isOrganizerView && (
-                <Button
-                  fullWidth
-                  onClick={onPay}
-                  disabled={isPaying}
-                  className="bg-neon-cyan text-black"
-                  sx={{
-                    py: 2,
-                    fontWeight: 900,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.1em",
-                    boxShadow: "6px 6px 0 0 #000",
-                    border: "2px solid black",
-                    borderRadius: 0,
-                    "&:hover": {
-                      backgroundColor: "#00e5ff",
-                      transform: "translate(-2px, -2px)",
-                    },
-                    "&.Mui-disabled": {
-                      opacity: 0.5,
-                      backgroundColor: "#00e5ff",
-                      color: "black",
-                    },
-                    transition: "all 0.2s",
-                    ...(theme) =>
-                      theme.palette.mode === "dark" && {
-                        boxShadow: "6px 6px 0 0 rgba(255,255,255,0.2)",
-                      },
-                  }}
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {groupOrderItemsByOrganizer(order.items).map((group) => (
+                <Box
+                  key={group.organizerId}
+                  sx={{ display: "flex", flexDirection: "column", gap: 3 }}
                 >
-                  {isPaying ? "Processing..." : "Confirm Payment"}
-                </Button>
-              )}
-              {order.status === "PENDING" &&
-                !isOrganizerView &&
-                order.paymentProofUrl && (
-                  <Box className="w-full py-4 bg-yellow-400 text-black font-black uppercase tracking-widest text-center border-4 border-black dark:border-white">
-                    Waiting for Organizer Confirmation
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <Box
+                      sx={{
+                        height: "2px",
+                        flex: 1,
+                        backgroundColor: "rgba(0,0,0,0.1)",
+                        dark: { backgroundColor: "rgba(255,255,255,0.1)" },
+                      }}
+                      className="bg-black/10 dark:bg-white/10"
+                    />
+                    <Typography className="font-display font-black uppercase text-[10px] tracking-widest text-neon-purple dark:text-neon-cyan whitespace-nowrap">
+                      EO: {group.organizerName}
+                    </Typography>
+                    <Box
+                      sx={{
+                        height: "2px",
+                        flex: 1,
+                        backgroundColor: "rgba(0,0,0,0.1)",
+                        dark: { backgroundColor: "rgba(255,255,255,0.1)" },
+                      }}
+                      className="bg-black/10 dark:bg-white/10"
+                    />
                   </Box>
-                )}
-              {order.status === "PENDING" &&
-                !isOrganizerView &&
-                !order.paymentProofUrl && (
-                  <Box className="w-full py-4 bg-red-400 text-white font-black uppercase tracking-widest text-center border-4 border-black dark:border-white">
-                    Payment Proof Required
+
+                  {group.eventGroups.map((eg) => (
+                    <Box
+                      key={eg.eventId}
+                      sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+                    >
+                      {/* Event Name Header */}
+                      <Typography className="font-black uppercase text-[9px] md:text-xs tracking-widest text-gray-600 dark:text-gray-300 pl-1 border-l-4 border-neon-purple dark:border-neon-cyan ml-1">
+                        🎤 {eg.eventName}
+                      </Typography>
+
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 2,
+                          pl: 1,
+                        }}
+                      >
+                        {eg.items.map((item) => (
+                          <Box
+                            key={item.id}
+                            className="border-2 border-dashed !border-gray-300 dark:!border-neon-purple p-4"
+                            sx={{
+                              display: "flex",
+                              flexDirection: { xs: "column", sm: "row" },
+                              gap: 2,
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                flex: 1,
+                                display: "flex",
+                                flexDirection: "column",
+                              }}
+                            >
+                              <Typography className="text-neon-purple dark:text-neon-cyan font-black uppercase text-[8px] md:text-[10px] tracking-widest">
+                                {item.ticketType.name}
+                              </Typography>
+                              <Typography className="text-gray-500 dark:text-gray-400 font-bold mt-1 md:mt-2 text-[8px] md:text-xs">
+                                Price: IDR{" "}
+                                {Number(item.ticketType.price).toLocaleString(
+                                  "id-ID",
+                                )}
+                              </Typography>
+                            </Box>
+
+                            <Box
+                              sx={{
+                                textAlign: { xs: "left", sm: "right" },
+                                display: "flex",
+                                flexDirection: { xs: "row", sm: "column" },
+                                justifyContent: "space-between",
+                                alignItems: { xs: "center", sm: "flex-end" },
+                                pt: { xs: 2, sm: 0 },
+                                borderTop: {
+                                  xs: "1px dashed #eee",
+                                  sm: "none",
+                                },
+                              }}
+                              className="dark:!border-t-neon-cyan/50 sm:dark:!border-t-0"
+                            >
+                              <Box>
+                                <Typography className="font-black text-[10px] md:text-sm text-black dark:text-white inline-block mr-2 sm:block sm:mr-0">
+                                  x {item.quantity}
+                                </Typography>
+                                <Typography className="font-display font-black text-sm md:text-lg text-black dark:text-neon-cyan sm:mt-1">
+                                  IDR{" "}
+                                  {(
+                                    Number(item.ticketType.price) *
+                                    item.quantity
+                                  ).toLocaleString("id-ID")}
+                                </Typography>
+                              </Box>
+                              {order.status === "PAID" &&
+                                !isOrganizerView &&
+                                item.ticketType.event?.endDate &&
+                                new Date() >
+                                  new Date(item.ticketType.event.endDate) && (
+                                  <Button
+                                    size="small"
+                                    onClick={() => setIsReviewOpen(true)}
+                                    className="bg-neon-magenta text-white sm:mt-4 brutalist-button hover:shadow-neon-pink"
+                                    sx={{
+                                      py: 0.5,
+                                      px: 1.5,
+                                      fontSize: "0.8rem",
+                                      fontWeight: 900,
+                                      textTransform: "uppercase",
+                                      letterSpacing: "0.05em",
+                                      boxShadow: "3px 3px 0 0 #000",
+                                      border: "2px solid black",
+                                      borderRadius: 0,
+                                      "&:hover": {
+                                        backgroundColor: "#ff008a",
+                                        transform: "translate(-2px, -2px)",
+                                        color: "white",
+                                      },
+                                    }}
+                                  >
+                                    Review Vibe
+                                  </Button>
+                                )}
+                            </Box>
+                          </Box>
+                        ))}
+                      </Box>
+
+                      {/* Per-event promo discount — shown below event items */}
+                      {(() => {
+                        let eventPromoSaved = 0;
+                        let promoCode = "";
+                        let promoPercent: number | null = null;
+                        eg.items.forEach((item) => {
+                          if (item.promotion) {
+                            const orig = Number(item.pricePerUnit) * item.quantity;
+                            const actual = Number(item.totalPrice);
+                            eventPromoSaved += Math.max(0, orig - actual);
+                            if (!promoCode) {
+                              promoCode = item.promotion.code;
+                              promoPercent = item.promotion.discountPercentage ? Number(item.promotion.discountPercentage) : null;
+                            }
+                          }
+                        });
+                        if (eventPromoSaved <= 0) return null;
+                        return (
+                          <Box
+                            className="mt-2 ml-1 px-3 py-2 border-l-4 border-neon-cyan bg-neon-cyan/5 dark:bg-neon-cyan/10"
+                            display="flex"
+                            justifyContent="space-between"
+                            alignItems="center"
+                          >
+                            <Typography className="font-bold uppercase text-[8px] md:text-[10px] tracking-wider text-neon-cyan">
+                              🏷️ {promoCode}{promoPercent ? ` · ${promoPercent}%` : ""}
+                            </Typography>
+                            <Typography className="font-black text-[8px] md:text-xs text-neon-cyan">
+                              - IDR {eventPromoSaved.toLocaleString("id-ID")}
+                            </Typography>
+                          </Box>
+                        );
+                      })()}
+                    </Box>
+                  ))}
+                </Box>
+              ))}
+            </Box>
+          </CardContent>
+        </Card>
+
+        {/* Summary Card */}
+        <Card
+          className="brutalist-card border-[3px] !border-black dark:!border-neon-magenta dark:shadow-[8px_8px_0_0_rgba(255,0,229,0.4)] !bg-white dark:!bg-[#0a0a0a]"
+          sx={{ borderRadius: 0 }}
+        >
+          <CardContent
+            sx={{
+              p: { xs: 2, md: 4 },
+              "&:last-child": { pb: { xs: 2, md: 4 } },
+            }}
+          >
+            <Typography
+              variant="h5"
+              className="font-display font-black uppercase tracking-tighter mb-4 text-black dark:text-white text-base md:text-2xl"
+            >
+              Summary
+            </Typography>
+            <Divider className="!border-black dark:!border-neon-magenta !border-[1.5px] mb-6" />
+
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                mb: 4,
+                mt: 2,
+              }}
+            >
+              <Box display="flex" justifyContent="space-between">
+                <Typography className="text-gray-500 dark:text-gray-400 font-bold uppercase text-[8px] md:text-xs">
+                  Payment Method
+                </Typography>
+                <Typography className="font-black uppercase text-[8px] md:text-xs text-black dark:text-neon-cyan">
+                  {order.paymentMethod.replace(/_/g, " ")}
+                </Typography>
+              </Box>
+
+              {/* Original Price (before any discount) */}
+              <Box display="flex" justifyContent="space-between">
+                <Typography className="text-gray-500 dark:text-gray-400 font-bold uppercase text-[8px] md:text-xs">
+                  Sub Total
+                </Typography>
+                <Typography className="font-black text-[8px] md:text-xs text-black dark:text-white">
+                  IDR {Number(order.totalOriginalPrice).toLocaleString("id-ID")}
+                </Typography>
+              </Box>
+
+              {/* Event Promos — total discount only */}
+              {(() => {
+                let totalPromoSaved = 0;
+                order.items.forEach((item) => {
+                  if (item.promotion) {
+                    const orig = Number(item.pricePerUnit) * item.quantity;
+                    const actual = Number(item.totalPrice);
+                    totalPromoSaved += Math.max(0, orig - actual);
+                  }
+                });
+                if (totalPromoSaved <= 0) return null;
+                return (
+                  <Box display="flex" justifyContent="space-between" className="text-neon-cyan">
+                    <Typography className="font-bold uppercase text-[8px] md:text-xs">
+                      🏷️ Event Promos
+                    </Typography>
+                    <Typography className="font-black text-[8px] md:text-xs text-neon-cyan">
+                      - IDR {totalPromoSaved.toLocaleString("id-ID")}
+                    </Typography>
                   </Box>
-                )}
-              {order.status === "PAID" && (
-                <Box className="w-full py-4 bg-black dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-center border-4 border-black dark:border-white">
-                  Payment Successful
+                );
+              })()}
+
+              {/* Points Used */}
+              {order.pointsUsed > 0 && (
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  className="text-neon-magenta"
+                >
+                  <Typography className="font-bold uppercase text-[8px] md:text-xs">
+                    Points Burned
+                  </Typography>
+                  <Typography className="font-black text-[8px] md:text-xs text-neon-pink shadow-neon-pink/20">
+                    - IDR {Number(order.pointsUsed).toLocaleString("id-ID")}
+                  </Typography>
                 </Box>
               )}
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+
+              {/* Referral Coupon — compute actual IDR saved */}
+              {order.userCoupon &&
+                (() => {
+                  // couponDiscount = original - promoDiscount - points - final
+                  const original = Number(order.totalOriginalPrice) || 0;
+                  const final = Number(order.totalFinalPrice) || 0;
+                  const points = Number(order.pointsUsed) || 0;
+                  // Promo discount from items
+                  let promoDisc = 0;
+                  order.items.forEach((item) => {
+                    if (item.promotion) {
+                      promoDisc += Math.max(
+                        0,
+                        Number(item.pricePerUnit) * item.quantity -
+                          Number(item.totalPrice),
+                      );
+                    }
+                  });
+                  const couponSaved = Math.max(
+                    0,
+                    original - promoDisc - points - final,
+                  );
+                  return (
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      sx={{ color: "#FF00FF" }}
+                    >
+                      <Typography
+                        className="font-bold uppercase text-[8px] md:text-xs"
+                        sx={{ color: "#FF00FF" }}
+                      >
+                        Referral Coupon
+                        <span className="ml-1 font-mono text-[7px] md:text-[10px] opacity-70 lowercase">
+                          ({order.userCoupon.code} ·{" "}
+                          {Number(order.userCoupon.discountPercentage)}%)
+                        </span>
+                      </Typography>
+                      <Typography
+                        className="font-black text-[8px] md:text-xs"
+                        sx={{ color: "#FF00FF" }}
+                      >
+                        - IDR {couponSaved.toLocaleString("id-ID")}
+                      </Typography>
+                    </Box>
+                  );
+                })()}
+            </Box>
+
+            <Divider className="!border-black dark:!border-neon-magenta border-t-2 border-dashed mb-6" />
+
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              mb={4}
+            >
+              <Typography className="font-black uppercase text-[8px] md:text-xs text-black dark:text-white">
+                Grand Total
+              </Typography>
+              <Typography className="font-display font-black text-base md:text-3xl text-neon-purple dark:text-neon-cyan tracking-tighter drop-shadow-[0_0_10px_rgba(0,240,255,0.2)]">
+                IDR {Number(order.totalFinalPrice).toLocaleString("id-ID")}
+              </Typography>
+            </Box>
+
+            {order.status === "PENDING" && isOrganizerView && (
+              <Button
+                fullWidth
+                onClick={onPay}
+                disabled={isPaying}
+                className="border-2 border-black dark:border-neon-cyan bg-neon-cyan text-black brutalist-button shadow-[6px_6px_0_0_#000] dark:shadow-[6px_6px_0_0_#00e5ff]"
+                sx={{
+                  py: { xs: 1, md: 2 },
+                  fontSize: { xs: "0.6rem", md: "0.875rem" },
+                  fontWeight: 900,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.1em",
+                  borderRadius: 0,
+                  "&:hover": {
+                    backgroundColor: "#00e5ff",
+                    transform: "translate(-2px, -2px)",
+                    boxShadow: "8px 8px 0 0 #000",
+                  },
+                  transition: "all 0.2s",
+                }}
+              >
+                {isPaying ? "Writing to DB..." : "Confirm Vibe"}
+              </Button>
+            )}
+
+            {/* Continue Payment for user — reopen Midtrans popup */}
+            {order.status === "PENDING" && !isOrganizerView && order.snapToken && (
+              <Button
+                fullWidth
+                onClick={() => {
+                  (window as any).snap.pay(order.snapToken, {
+                    onSuccess: () => window.location.reload(),
+                    onPending: () => window.location.reload(),
+                    onError: () => window.location.reload(),
+                    onClose: () => {},
+                  });
+                }}
+                className="border-2 border-black dark:border-neon-purple bg-neon-purple text-white brutalist-button shadow-[6px_6px_0_0_#000] dark:shadow-[6px_6px_0_0_rgba(168,85,247,0.5)]"
+                sx={{
+                  py: { xs: 1.5, md: 2 },
+                  fontSize: { xs: "0.7rem", md: "0.875rem" },
+                  fontWeight: 900,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.1em",
+                  borderRadius: 0,
+                  "&:hover": {
+                    backgroundColor: "#9333ea",
+                    transform: "translate(-2px, -2px)",
+                    boxShadow: "8px 8px 0 0 #000",
+                  },
+                  transition: "all 0.2s",
+                }}
+              >
+                🔒 Continue Payment
+              </Button>
+            )}
+            
+            {order.status === "PAID" && (
+              <Box className="w-full py-2 md:py-3 bg-black dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-[8px] md:text-xs text-center border-4 border-black dark:border-neon-cyan shadow-neon/10">
+                Vibe Secured
+              </Box>
+            )}
+          </CardContent>
+        </Card>
+      </Box>
 
       {order.items?.length > 0 && (
         <ReviewModal

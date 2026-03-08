@@ -4,10 +4,7 @@ import React from "react";
 import { Event } from "../types/event.types";
 import TicketSelectionCard from "./TicketSelectionCard";
 import { ShoppingCartIcon, LockClosedIcon } from "@heroicons/react/24/solid";
-import { useBookingSidebar } from "../hooks/useBookingSidebar";
-import { useCartStore } from "@/features/cart/store/useCartStore";
-import { useStoreLogin } from "@/features/auth/store/useAuthStore";
-import { useRouter } from "next/navigation";
+import { useBookingSidebarLogic } from "../hooks";
 import { Snackbar, Alert } from "@mui/material";
 
 interface BookingSidebarProps {
@@ -15,49 +12,17 @@ interface BookingSidebarProps {
 }
 
 const BookingSidebar: React.FC<BookingSidebarProps> = ({ event }) => {
-  const { quantities, handleUpdateQuantity, selectedTickets, total } =
-    useBookingSidebar(event);
-
-  const { isAuthenticated } = useStoreLogin();
-  const { addItem, isLoading: cartLoading } = useCartStore();
-  const router = useRouter();
-
-  // Snackbar State
-  const [snackbar, setSnackbar] = React.useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "error" | "info" | "warning",
-  });
-
-  const handleAddToCart = async () => {
-    if (!isAuthenticated) {
-      setSnackbar({
-        open: true,
-        message: "Please log in to add items to cart",
-        severity: "error",
-      });
-      router.push("/login");
-      return;
-    }
-
-    try {
-      // Add all selected tickets to cart
-      await Promise.all(
-        selectedTickets.map((ticket) => addItem(ticket.id, ticket.qty)),
-      );
-      setSnackbar({
-        open: true,
-        message: "Successfully added to cart!",
-        severity: "success",
-      });
-    } catch (error) {
-      setSnackbar({
-        open: true,
-        message: "Failed to add to cart. Please try again.",
-        severity: "error",
-      });
-    }
-  };
+  const {
+    quantities,
+    handleUpdateQuantity,
+    selectedTickets,
+    total,
+    cartLoading,
+    snackbar,
+    handleCloseSnackbar,
+    handleAddToCart,
+    isOwnEvent,
+  } = useBookingSidebarLogic(event);
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-right-10 duration-700">
@@ -113,7 +78,7 @@ const BookingSidebar: React.FC<BookingSidebarProps> = ({ event }) => {
         </div>
 
         <div className="space-y-4 mb-8">
-          {selectedTickets.map((t) => (
+          {selectedTickets.map((t: any) => (
             <div
               key={t.id}
               className="flex justify-between items-center group/item"
@@ -154,19 +119,28 @@ const BookingSidebar: React.FC<BookingSidebarProps> = ({ event }) => {
         </div>
 
         <button
-          disabled={selectedTickets.length === 0 || cartLoading}
+          disabled={selectedTickets.length === 0 || cartLoading || isOwnEvent}
           onClick={handleAddToCart}
-          className="relative w-full py-4 rounded-2xl bg-neon-cyan text-black font-black uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-3 transition-all hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(0,255,221,0.4)] active:scale-[0.98] disabled:opacity-20 disabled:grayscale disabled:cursor-not-allowed group/btn overflow-hidden"
+          className={`relative w-full py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-3 transition-all ${
+            isOwnEvent 
+              ? "bg-gray-500 text-white opacity-50 cursor-not-allowed grayscale" 
+              : "bg-neon-cyan text-black hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(0,255,221,0.4)] active:scale-[0.98] disabled:opacity-20 disabled:grayscale disabled:cursor-not-allowed group/btn overflow-hidden"
+          }`}
         >
-          <ShoppingCartIcon
-            className="size-5 transition-transform group-hover/btn:-translate-y-1"
-            strokeWidth={2.5}
-          />
-          {cartLoading ? "PROCESSING..." : "CONFIRM BOOKING"}
+          {isOwnEvent ? (
+            <LockClosedIcon className="size-5" />
+          ) : (
+            <ShoppingCartIcon
+              className="size-5 transition-transform group-hover/btn:-translate-y-1"
+              strokeWidth={2.5}
+            />
+          )}
+          {cartLoading ? "PROCESSING..." : isOwnEvent ? "OWN EVENT" : "CONFIRM BOOKING"}
 
           {/* Shine effect on hover */}
-          <div className="absolute top-0 -left-full w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent group-hover/btn:animate-shine"></div>
+          {!isOwnEvent && <div className="absolute top-0 -left-full w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent group-hover/btn:animate-shine"></div>}
         </button>
+
 
         <div className="mt-8 flex flex-col items-center gap-3">
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10">
@@ -189,14 +163,11 @@ const BookingSidebar: React.FC<BookingSidebarProps> = ({ event }) => {
       <Snackbar
         open={snackbar.open}
         autoHideDuration={4000}
-        onClose={(_, reason) => {
-          if (reason === "clickaway") return;
-          setSnackbar((prev) => ({ ...prev, open: false }));
-        }}
+        onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert
-          onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+          onClose={handleCloseSnackbar}
           severity={snackbar.severity}
           variant="filled"
           sx={{
